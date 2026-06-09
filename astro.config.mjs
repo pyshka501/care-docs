@@ -118,6 +118,11 @@ export default defineConfig({
 								translations: { ru: 'RE-PLAN' },
 								items: [{ autogenerate: { directory: 'carl/replan' } }],
 							},
+							{
+								label: 'Evaluation',
+								translations: { ru: 'Оценка' },
+								items: [{ autogenerate: { directory: 'carl/evaluation' } }],
+							},
 						],
 					},
 				]),
