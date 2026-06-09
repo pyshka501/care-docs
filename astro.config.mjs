@@ -143,6 +143,11 @@ export default defineConfig({
 								translations: { ru: 'Оркестрация' },
 								items: [{ autogenerate: { directory: 'carl/orchestration' } }],
 							},
+							{
+								label: 'AgentSkills',
+								translations: { ru: 'AgentSkills' },
+								items: [{ autogenerate: { directory: 'carl/skills' } }],
+							},
 						],
 					},
 				]),
