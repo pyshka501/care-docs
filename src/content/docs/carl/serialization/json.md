@@ -45,7 +45,27 @@ Some fields are intentionally **not** serialized because they hold live objects:
 `sub_chain` (handoff), `agents` (supervisor), `metrics`, `cache.key_fn`, and the
 callbacks on `ReasoningContext`. Re-attach these in code after loading.
 
+## Result serialization
+
+Results round-trip too — persist an execution losslessly and reload it later
+(this is what [`RunRecord`](/carl/care-integration/run-record/) wraps):
+
+```python
+result = chain.execute(context)
+
+result.save("result.json")                 # lossless by default
+loaded = ReasoningResult.load("result.json")
+
+d = result.to_dict(full=True)              # full=True keeps every step's detail
+ReasoningResult.from_dict(d)
+s = result.to_json();  ReasoningResult.from_json(s)
+```
+
+Per-step results serialize individually via
+`StepExecutionResult.to_dict(truncate=False)` / `from_dict` — `truncate` controls
+whether long step outputs are clipped.
+
 ## See also
 
 - [Migration: legacy → typed steps](/carl/serialization/migration/)
-- [ReasoningChain](/carl/chains/overview/)
+- [ReasoningChain](/carl/chains/overview/) · [RunRecord](/carl/care-integration/run-record/)

@@ -244,6 +244,11 @@ document.addEventListener('astro:page-load', render);
 								items: [{ autogenerate: { directory: 'carl/serialization' } }],
 							},
 							{
+								label: 'CARE Integration',
+								translations: { ru: 'Интеграция с CARE' },
+								items: [{ autogenerate: { directory: 'carl/care-integration' } }],
+							},
+							{
 								label: 'Cookbook',
 								translations: { ru: 'Cookbook' },
 								items: [{ autogenerate: { directory: 'carl/cookbook' } }],
