@@ -5,38 +5,51 @@ sidebar:
   order: 4
 ---
 
+Most of these commands accept `--json` for machine-readable output.
+
 ## `care catalog`
 
-List installed AgentSkills, MCP servers, tools, and capability memory cards.
+List installed AgentSkills, MCP servers, tools, and capability memory cards. Point
+it at the directories/files to enumerate.
 
 ```bash
-care catalog --json --kind skill
+care catalog --skills ./skills --mcp-config ./mcp_servers.toml --tools ./tools
+care catalog --kind tool --json
 ```
 
 | Flag | Purpose |
 | --- | --- |
-| `--json` | Machine-readable output. |
-| `--kind ...` | Filter by capability kind. |
+| `--skills DIR` | Directory of `<name>/SKILL.md` folders (repeatable). |
+| `--mcp-config PATH` | Path to an `mcp_servers.toml`. |
+| `--tools DIR` | Directory of `@carl_tool` Python files. |
+| `--kind agent_skill\|mcp_server\|tool\|memory_card` | Filter to one entry kind. |
+| `--json` | JSON instead of the grouped text listing. |
 
-## `care validate <chain.json>`
+## `care validate <file>`
 
-Parse and preflight a CARL chain file — catch problems before running.
+Parse and preflight a chain JSON file (bare-chain or wrapper form) — catch problems
+before running.
 
 ```bash
 care validate chain.json
-```
-
-## `care import <pattern>...`
-
-Batch-validate (dry-run by default) or import chain JSON files into Memory.
-
-```bash
-care import "chains/*.json"            # dry-run validate
-care import "chains/*.json" --apply    # actually import
+care validate chain.json --json
 ```
 
 | Flag | Purpose |
 | --- | --- |
-| `--apply` | Import (default is a dry-run validation). |
+| `--json` | Emit the `PreflightResult` as JSON. |
 
-Run `care <command> --help` for the full flag set.
+## `care import <pattern>...`
+
+Validate (dry-run) or import chain JSON files into Memory. Accepts paths or globs
+(`**/*.json` for recursive walks).
+
+```bash
+care import "chains/**/*.json"               # dry-run validate
+care import "chains/**/*.json" --apply        # actually save to Memory
+```
+
+| Flag | Default | Purpose |
+| --- | --- | --- |
+| `--apply` | off (dry-run) | Actually save chains to Memory. |
+| `--channel NAME` | `latest` | Default channel for entries that don't specify one. |

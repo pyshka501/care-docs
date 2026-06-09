@@ -10,29 +10,57 @@ sidebar:
 Search shared `agent_skill` listings on Memory.
 
 ```bash
-care marketplace "pdf extraction"
+care marketplace "pdf extraction" --top-k 5 --deep
 ```
+
+| Flag | Default | Purpose |
+| --- | --- | --- |
+| `--top-k N` | `10` | Max listings. |
+| `--min-score F` | `0.0` | Drop listings below this relevance score. |
+| `--tag T` | — | Require tag (repeatable, AND). |
+| `--namespace NS` | — | Scope the search to a namespace. |
+| `--deep` | off | Also match `skill_instructions` (slower, more recall). |
 
 ## `care evolve <chain_id>`
 
-Submit an evolution run for a chain, watch it, and optionally accept the winner —
-the terminal twin of the Evolution screen.
+Submit an evolution run for a saved chain, optionally watch it, and accept the
+winner — the terminal twin of the Evolution screen.
 
 ```bash
-care evolve my-chain --wait --accept
+care evolve my-chain --iterations 8 --population 12 --wait --accept
+care evolve my-chain --objective accuracy --objective brevity \
+  --validation-criteria "Reward concise, correct answers" --wait
+```
+
+| Flag | Default | Purpose |
+| --- | --- | --- |
+| `--mode full_chain\|per_step` | `full_chain` | Evolution mode. |
+| `--iterations N` | `5` | Max generations. |
+| `--population N` | `8` | Population per generation. |
+| `--validation-criteria TEXT` | `""` | Prompt for the validation judge. |
+| `--objective NAME` | — | Multi-objective fitness term (repeatable). |
+| `--test-data-path PATH` | — | Evaluation test data. |
+| `--threshold F` | — | Fitness threshold for early stop. |
+| `--wait` | off | Block on the SSE stream, printing per-generation progress. |
+| `--accept` | off | After `--wait`, promote the best individual (requires `--wait`). |
+
+## `care help`
+
+Render the tutorial walkthrough + key cheat-sheet.
+
+```bash
+care help --markdown
+care help --category library
+care help --screen LibraryScreen
 ```
 
 | Flag | Purpose |
 | --- | --- |
-| `--wait` | Block until the run completes. |
-| `--accept` | Promote the best individual into the stable channel. |
+| `--markdown` | Emit Markdown (README quick-reference) instead of styled text. |
+| `--category global\|library\|generation\|execution\|evolution` | Restrict the bindings listing to one category. |
+| `--screen NAME` | Restrict bindings to one screen (e.g. `LibraryScreen`). |
 
-## `care help`
-
-Render the tutorial + key cheat-sheet.
-
-```bash
-care help --markdown    # markdown instead of styled terminal output
-```
-
-Run `care <command> --help` for the full flag set.
+:::tip
+Almost every command also accepts `--json` for scripting, and Memory-reading
+commands accept `--channel` (default `latest`).
+:::

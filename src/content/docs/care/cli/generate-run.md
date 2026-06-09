@@ -51,12 +51,20 @@ care run my-chain --export chain.py            # export, don't run
 | `--json` | Emit the preflight result as JSON. |
 | `--log PATH` / `--log-level debug\|info` | Write a structured debug log of the run. |
 
-## `care replay <run.json>`
+## `care replay <source>`
 
-Step through a saved `ReasoningResult` / `RunRecord` JSON from a previous run.
+Step through a saved `ReasoningResult` / `RunRecord` JSON from a previous run. Use
+`-` to read from stdin.
 
 ```bash
-care replay run.json
+care replay run.json            # whole session, one block per step
+care replay run.json --step 2   # just step 2 (0-indexed)
+cat run.json | care replay -
 ```
+
+| Flag | Purpose |
+| --- | --- |
+| `--step N` | Render only step N (0-indexed); default renders the whole session. |
+| `--json` | Structured payload (chain metadata + every step) instead of the walkthrough. |
 
 Run `care <command> --help` for the authoritative, up-to-date flag set.
