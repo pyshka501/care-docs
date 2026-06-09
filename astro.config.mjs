@@ -86,6 +86,11 @@ export default defineConfig({
 								translations: { ru: 'Slash-команды' },
 								items: [{ autogenerate: { directory: 'care/slash-commands' } }],
 							},
+							{
+								label: 'Capabilities',
+								translations: { ru: 'Возможности' },
+								items: [{ autogenerate: { directory: 'care/capabilities' } }],
+							},
 						],
 					},
 					{
