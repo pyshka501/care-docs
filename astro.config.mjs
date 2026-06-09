@@ -72,7 +72,10 @@ export default defineConfig({
 import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
 const render = () => {
   const dark = document.documentElement.dataset.theme === 'dark';
-  mermaid.initialize({ startOnLoad: false, theme: dark ? 'dark' : 'default', securityLevel: 'loose', fontFamily: 'Manrope, sans-serif' });
+  const vars = dark
+    ? { primaryColor: '#1f3b37', primaryBorderColor: '#33d9b2', primaryTextColor: '#e6f7f4', lineColor: '#9cebdd', secondaryColor: '#252b35', tertiaryColor: '#1f242c' }
+    : { primaryColor: '#e8f5f1', primaryBorderColor: '#2a7d6f', primaryTextColor: '#13242e', lineColor: '#6b5f52', secondaryColor: '#f4ebe0', tertiaryColor: '#ffffff' };
+  mermaid.initialize({ startOnLoad: false, theme: 'base', themeVariables: vars, securityLevel: 'loose', fontFamily: 'Manrope, sans-serif' });
   const nodes = document.querySelectorAll('pre.mermaid:not([data-processed])');
   if (nodes.length) mermaid.run({ nodes }).catch(() => {});
 };
@@ -81,6 +84,8 @@ document.addEventListener('astro:page-load', render);
 `,
 				},
 			],
+			// Dark "terminal" code blocks on every page (matches the care-landing aesthetic).
+			expressiveCode: { themes: ['github-dark'] },
 			social: [
 				{
 					icon: 'github',
