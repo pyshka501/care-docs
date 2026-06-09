@@ -73,6 +73,11 @@ export default defineConfig({
 								items: [{ autogenerate: { directory: 'care/tui' } }],
 							},
 							{
+								label: 'Configuration',
+								translations: { ru: 'Конфигурация' },
+								items: [{ autogenerate: { directory: 'care/configuration' } }],
+							},
+							{
 								label: 'CLI',
 								items: [{ autogenerate: { directory: 'care/cli' } }],
 							},
