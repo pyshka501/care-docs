@@ -128,6 +128,11 @@ export default defineConfig({
 								translations: { ru: 'Эволюция' },
 								items: [{ autogenerate: { directory: 'carl/evolution' } }],
 							},
+							{
+								label: 'Tracing & Cost',
+								translations: { ru: 'Трейсинг и стоимость' },
+								items: [{ autogenerate: { directory: 'carl/tracing' } }],
+							},
 						],
 					},
 				]),
