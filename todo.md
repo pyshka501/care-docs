@@ -6,6 +6,20 @@
 
 ---
 
+## ✅ Статус (2026-06-09): ядро + полировка готовы, сайт живой
+
+**Live:** https://pyshka501.github.io/care-docs/ · 152 страницы · все деплои зелёные.
+
+- **CARE (EN)** — полностью: Getting Started, Concepts/architecture, TUI + screens, Configuration, CLI (все команды), Slash-команды (все), Capabilities, Examples, Reference/FAQ/glossary.
+- **CARL (EN)** — полностью: §3.1–3.19 (steps ×16, chains, search, memory, async, replan, evaluation, evolution, tracing, llm, orchestration, skills, mcp, serialization, cookbook, API ref, changelog).
+- **RU** — полностью двуязычно: CARL 55/55 + CARE 19/19 (фоновые переводчики).
+- **Каркас/полировка** — Starlight + i18n + топики, бренд Warm Sand/Deep Crystal (из care-landing), EVOC, поиск, **Mermaid-диаграммы** (client-side, бренд-тема), **терминальная тема кода** (Expressive Code github-dark), custom 404, CONTRIBUTING, CI-деплой на GitHub Pages.
+- Все примеры сверены с исходником (`carl-experiments` 0.3.0 / `care`).
+
+**Осталось (нужны реальные ассеты / участие):** OG-картинки (соц-превью), asciinema-записи TUI, скриншоты экранов, опц. ещё Mermaid-диаграммы (lifecycle/мульти-агент), кастомный `<ProductChooser>`-компонент. Деплой можно перенести на кастомный домен (убрать `base`).
+
+---
+
 ## 0. Решения и соглашения
 
 | Параметр | Решение | Обоснование |
