@@ -1,0 +1,62 @@
+---
+title: Конфигурация
+description: Как CARE читает конфигурацию — четыре слоя и маппинг TOML ↔ env.
+sidebar:
+  order: 1
+---
+
+CARE читает конфигурацию из четырёх слоёв в порядке возрастания приоритета:
+
+1. Значения по умолчанию, встроенные в `care.config.CareConfig`.
+2. `~/.config/care/config.toml` (глобальный для пользователя).
+3. `./care.toml` (переопределения для конкретного проекта).
+4. Переменные окружения `CARE_*` (наивысший приоритет).
+
+Самый быстрый способ получить рабочую конфигурацию — [`care init`](/ru/care/cli/setup/), который
+записывает стартовый `.env`; [`care doctor`](/ru/care/cli/setup/) проверяет его.
+
+## Маппинг TOML ↔ env
+
+Вложенные поля используют **двойные подчёркивания** в форме env-переменных, отражая вложенность
+секций TOML. Например:
+
+```toml
+[mage]
+model = "qwen/qwen3-coder"
+```
+
+эквивалентно:
+
+```bash
+CARE_MAGE__MODEL="qwen/qwen3-coder"
+```
+
+а `[chat] default_mode = "production"` — это `CARE_CHAT__DEFAULT_MODE=production`.
+
+## Секции
+
+`CareConfig` включает одиннадцать секций, каждая с env-префиксом `CARE_<СЕКЦИЯ>__`:
+
+| Секция | Env-префикс | Назначение |
+| --- | --- | --- |
+| `mage` | `CARE_MAGE__*` | Генератор MAGE (провайдер, API-ключ, модель, режим). |
+| `memory` | `CARE_MEMORY__*` | Подключение к GigaEvo Memory. |
+| `platform` | `CARE_PLATFORM__*` | Подключение к GigaEvo Platform (эволюция). |
+| `upload` | `CARE_UPLOAD__*` | Эндпоинт загрузки артефактов (`/upload`). |
+| `sandbox` | `CARE_SANDBOX__*` | Бэкенд песочницы AgentSkill + лимиты. |
+| `tools` | `CARE_TOOLS__*` | Реестр `@carl_tool` + встроенные инструменты + синтез. |
+| `telemetry` | `CARE_TELEMETRY__*` | Opt-in стрим событий (Langfuse, …). |
+| `defaults` | `CARE_DEFAULTS__*` | Значения UI по умолчанию (язык, размер истории). |
+| `chat` | `CARE_CHAT__*` | Чат-поверхность (режим по умолчанию, история ad-hoc, повторные попытки). |
+| `context` | `CARE_CONTEXT__*` | Инжекция пользовательского контекста (CARE.md + дайджест LTM). |
+| `artifacts` | `CARE_ARTIFACTS__*` | Директория хранения сохранённых артефактов. |
+
+См. [справочник секций](/ru/care/configuration/sections/) для ключевых параметров каждой, или
+[`.env.example`](https://github.com/Glazkoff/care/blob/main/.env.example) для полной
+поверхности.
+
+## Первый запуск
+
+Без `~/.config/care/config.toml` на диске первый запуск приземляется на экран
+**Настроек**, чтобы вы могли настроить URL Memory / Platform + учётные данные MAGE.
+Возвращающиеся пользователи сразу попадают в чат-поверхность.
