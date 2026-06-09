@@ -58,6 +58,8 @@ a terminal twin. Run `care <subcommand> --help` for the full flag set on each.
 | --- | --- |
 | `care help [--markdown]` | Render the tutorial + cheat-sheet. |
 
-:::note
-Per-command detail pages are being filled in — see the [master plan](https://github.com/pyshka501/care-docs/blob/main/todo.md).
+:::tip
+Detailed pages (in the sidebar): [Generate, Run & Replay](/care/cli/generate-run/) ·
+[Setup](/care/cli/setup/) · [Discovery & Validation](/care/cli/discovery/) ·
+[Memory & Library](/care/cli/memory/) · [Capabilities & Evolution](/care/cli/capabilities/).
 :::
