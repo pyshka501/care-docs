@@ -81,7 +81,13 @@ ToolStepConfig(
 
 The fallback tool receives the same keyword arguments as the primary tool.
 
+## Registering many tools at once
+
+Use the [`@carl_tool` decorator + dynamic discovery](/carl/steps/tool-discovery/) to
+register tools in bulk (from a module, a glob, or a factory) instead of one
+`register_tool` call at a time.
+
 ## See also
 
-- [Tool discovery](/carl/steps/advanced/) — register tools dynamically at runtime.
+- [Tool discovery](/carl/steps/tool-discovery/) — `@carl_tool`, `register_tools_from_path`, runtime discovery.
 - [Dynamic references](/carl/chains/dynamic-references/) — what you can put in `input_mapping`.

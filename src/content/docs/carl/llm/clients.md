@@ -31,16 +31,42 @@ client = OpenAICompatibleClient(OpenAIClientConfig(
 
 ## Anthropic
 
-`AnthropicClient` is a native client built from `AnthropicClientConfig`:
+`AnthropicClient` is a native client (built from `AnthropicClientConfig`) that
+reaches Anthropic-only features the OpenAI-compatible path can't.
 
 ```python
 from mmar_carl import AnthropicClient, AnthropicClientConfig
 
 client = AnthropicClient(AnthropicClientConfig(
     api_key="sk-ant-...",
-    model="claude-3-5-sonnet-latest",
+    model="claude-3-7-sonnet-latest",   # default
+    max_tokens=4096,                    # required by Anthropic
+    thinking_budget=2000,               # enable extended thinking (Claude 3.7+)
+    cache_system=True,                  # prompt-cache the system prompt
 ))
 ```
+
+| `AnthropicClientConfig` field | Default | Purpose |
+| --- | --- | --- |
+| `api_key` | — (required) | Anthropic key (`ANTHROPIC_API_KEY` is the SDK fallback). |
+| `model` | `claude-3-7-sonnet-latest` | Model id. |
+| `temperature` | `0.7` | 0.0–1.0. |
+| `max_tokens` | `4096` | **Required** by Anthropic (no implicit cap). |
+| `timeout` | `120.0` | Seconds. |
+| `base_url` | `None` | Override the API host (gateway / VPC). |
+| `extra_headers` | `{}` | Extra HTTP headers. |
+| `thinking_budget` | `None` | Token budget for extended thinking. |
+| `cache_system` | `False` | Mark system blocks `cache_control: ephemeral` for prompt caching. |
+
+### Anthropic-only methods
+
+- **`get_response_with_thinking(prompt, *, system_prompt=None, retries=3)`** →
+  `dict` with the structured `thinking` trace + the answer (needs `thinking_budget`).
+- **`get_response_with_image(...)`** — native vision (image URL or base64).
+- **`get_response_with_tools(...)`** — native Anthropic tool-calling. Convert
+  OpenAI-style tool schemas with `openai_tools_to_anthropic(tools)`.
+
+A missing SDK or key raises `AnthropicClientError`.
 
 ## The client interface
 
