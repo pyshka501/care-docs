@@ -163,6 +163,11 @@ export default defineConfig({
 								translations: { ru: 'Cookbook' },
 								items: [{ autogenerate: { directory: 'carl/cookbook' } }],
 							},
+							{
+								label: 'Reference',
+								translations: { ru: 'Справочник' },
+								items: [{ autogenerate: { directory: 'carl/reference' } }],
+							},
 						],
 					},
 				]),
