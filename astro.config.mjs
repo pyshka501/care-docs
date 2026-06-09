@@ -71,6 +71,11 @@ export default defineConfig({
 								label: 'CLI',
 								items: [{ autogenerate: { directory: 'care/cli' } }],
 							},
+							{
+								label: 'Slash Commands',
+								translations: { ru: 'Slash-команды' },
+								items: [{ autogenerate: { directory: 'care/slash-commands' } }],
+							},
 						],
 					},
 					{
