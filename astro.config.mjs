@@ -88,6 +88,21 @@ export default defineConfig({
 								translations: { ru: 'Концепции' },
 								items: [{ autogenerate: { directory: 'carl/concepts' } }],
 							},
+							{
+								label: 'Steps',
+								translations: { ru: 'Шаги' },
+								items: [{ autogenerate: { directory: 'carl/steps' } }],
+							},
+							{
+								label: 'Building Chains',
+								translations: { ru: 'Построение цепочек' },
+								items: [{ autogenerate: { directory: 'carl/chains' } }],
+							},
+							{
+								label: 'Async & Streaming',
+								translations: { ru: 'Async и стриминг' },
+								items: [{ autogenerate: { directory: 'carl/async' } }],
+							},
 						],
 					},
 				]),
