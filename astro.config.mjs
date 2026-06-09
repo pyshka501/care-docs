@@ -123,6 +123,11 @@ export default defineConfig({
 								translations: { ru: 'Оценка' },
 								items: [{ autogenerate: { directory: 'carl/evaluation' } }],
 							},
+							{
+								label: 'Evolution',
+								translations: { ru: 'Эволюция' },
+								items: [{ autogenerate: { directory: 'carl/evolution' } }],
+							},
 						],
 					},
 				]),
