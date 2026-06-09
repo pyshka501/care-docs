@@ -33,7 +33,9 @@
 
 ## Фаза 1 — Каркас проекта (Starlight + i18n + деплой)
 
-> **Статус (2026-06-09): каркас поднят, `npm run build` зелёный (15 страниц), проверено визуально.**
+> **Статус (2026-06-09): каркас поднят и ЗАДЕПЛОЕН → https://pyshka501.github.io/care-docs/**
+> `npm run build` зелёный (15 страниц), проверено визуально, CI на GitHub Pages зелёный.
+> Репозиторий сделан public, Pages включён (source = GitHub Actions), Node 22 в CI.
 > Готово: Starlight (Astro 6.3 / Starlight 0.39.3) + i18n (EN root / RU) + `starlight-sidebar-topics`
 > (раздельные сайдбары CARE/CARL) + лендинг-сплит с EVOC + бренд-палитра/шрифты (Manrope/JetBrains Mono) +
 > Pagefind-поиск + favicon/mascot + CI-workflow (черновик) + README. Контент: getting-started/quick-start
@@ -393,11 +395,11 @@
 
 ## 📌 Открытые вопросы / решить с пользователем
 
-- [!] **Домен и хостинг**: GitHub Pages под `pyshka501.github.io/care-docs` или кастомный домен? (по умолчанию беру GitHub Pages).
+- [x] ~~**Домен и хостинг**~~: РЕШЕНО → GitHub Pages на `pyshka501.github.io/care-docs` (`base: '/care-docs'`). Кастомный домен — при желании позже (тогда убрать `base`).
 - [!] **Глубина RU на старте**: переводить всё сразу или сначала EN целиком + RU для getting-started/concepts? (предлагаю второе).
 - [!] **API Reference CARL**: ручной curated или автоген из docstrings? (нужно глянуть качество docstrings — по умолчанию начинаю с curated по модулям).
 - [!] **Версионирование доков**: нужно ли (CARL ещё 0.x, CARE early)? (по умолчанию — без версий, latest).
-- [!] **Приватность репо**: сейчас `private` — для GitHub Pages на free-плане нужен public или Pages с Actions; уточнить.
+- [x] ~~**Приватность репо**~~: РЕШЕНО → репозиторий сделан **public**, GitHub Pages через Actions.
 
 ---
 
