@@ -113,6 +113,11 @@ export default defineConfig({
 								translations: { ru: 'Async и стриминг' },
 								items: [{ autogenerate: { directory: 'carl/async' } }],
 							},
+							{
+								label: 'RE-PLAN',
+								translations: { ru: 'RE-PLAN' },
+								items: [{ autogenerate: { directory: 'carl/replan' } }],
+							},
 						],
 					},
 				]),
