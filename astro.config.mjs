@@ -84,8 +84,8 @@ document.addEventListener('astro:page-load', render);
 `,
 				},
 			],
-			// Dark "terminal" code blocks on every page (matches the care-landing aesthetic).
-			expressiveCode: { themes: ['github-dark'] },
+			// Code blocks follow the site theme: light code on light pages, dark on dark.
+			expressiveCode: { themes: ['github-dark', 'github-light'] },
 			social: [
 				{
 					icon: 'github',
@@ -118,11 +118,6 @@ document.addEventListener('astro:page-load', render);
 								items: [{ autogenerate: { directory: 'care/concepts' } }],
 							},
 							{
-								label: 'TUI',
-								translations: { ru: 'TUI' },
-								items: [{ autogenerate: { directory: 'care/tui' } }],
-							},
-							{
 								label: 'Configuration',
 								translations: { ru: 'Конфигурация' },
 								items: [{ autogenerate: { directory: 'care/configuration' } }],
@@ -130,6 +125,11 @@ document.addEventListener('astro:page-load', render);
 							{
 								label: 'CLI',
 								items: [{ autogenerate: { directory: 'care/cli' } }],
+							},
+							{
+								label: 'TUI',
+								translations: { ru: 'TUI' },
+								items: [{ autogenerate: { directory: 'care/tui' } }],
 							},
 							{
 								label: 'Slash Commands',
@@ -171,7 +171,27 @@ document.addEventListener('astro:page-load', render);
 							{
 								label: 'Steps',
 								translations: { ru: 'Шаги' },
-								items: [{ autogenerate: { directory: 'carl/steps' } }],
+								items: [
+									{ autogenerate: { directory: 'carl/steps' } },
+									{
+										label: 'Orchestration',
+										translations: { ru: 'Оркестрация' },
+										collapsed: true,
+										items: [{ autogenerate: { directory: 'carl/orchestration' } }],
+									},
+									{
+										label: 'AgentSkills',
+										translations: { ru: 'AgentSkills' },
+										collapsed: true,
+										items: [{ autogenerate: { directory: 'carl/skills' } }],
+									},
+									{
+										label: 'MCP',
+										translations: { ru: 'MCP' },
+										collapsed: true,
+										items: [{ autogenerate: { directory: 'carl/mcp' } }],
+									},
+								],
 							},
 							{
 								label: 'Building Chains',
@@ -217,21 +237,6 @@ document.addEventListener('astro:page-load', render);
 								label: 'LLM Clients',
 								translations: { ru: 'LLM-клиенты' },
 								items: [{ autogenerate: { directory: 'carl/llm' } }],
-							},
-							{
-								label: 'Orchestration',
-								translations: { ru: 'Оркестрация' },
-								items: [{ autogenerate: { directory: 'carl/orchestration' } }],
-							},
-							{
-								label: 'AgentSkills',
-								translations: { ru: 'AgentSkills' },
-								items: [{ autogenerate: { directory: 'carl/skills' } }],
-							},
-							{
-								label: 'MCP',
-								translations: { ru: 'MCP' },
-								items: [{ autogenerate: { directory: 'carl/mcp' } }],
 							},
 							{
 								label: 'Serialization',
