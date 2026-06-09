@@ -138,6 +138,11 @@ export default defineConfig({
 								translations: { ru: 'LLM-клиенты' },
 								items: [{ autogenerate: { directory: 'carl/llm' } }],
 							},
+							{
+								label: 'Orchestration',
+								translations: { ru: 'Оркестрация' },
+								items: [{ autogenerate: { directory: 'carl/orchestration' } }],
+							},
 						],
 					},
 				]),
