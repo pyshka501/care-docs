@@ -18,7 +18,7 @@ npm run build      # production build → ./dist
 npm run preview    # preview the production build
 ```
 
-Node 20+ (see `.nvmrc`).
+Node 22.12+ (Astro 6 requirement; see `.nvmrc`).
 
 ## Structure
 
