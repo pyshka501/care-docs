@@ -8,12 +8,15 @@ sidebar:
 CARE is the user-facing consumer at the top of a four-module stack. Each module
 owns one stage of an agent's lifecycle.
 
-```text
-                    ┌──────── GigaEvo Memory ────────┐  (save / load)
-                    ▼                                 │
-You → CARE → MAGE ──generate──▶ CARL ──result──▶ CARE ┘
-                                                 │
-                                                 └──evolve──▶ GigaEvo Platform ──winner──▶ Memory
+```mermaid
+flowchart LR
+    User([You]) --> CARE
+    CARE -->|task| MAGE
+    MAGE -->|chain| CARL
+    CARL -->|result| CARE
+    CARE <-->|save / load| Memory[(GigaEvo Memory)]
+    CARE -->|evolve| Platform[GigaEvo Platform]
+    Platform -->|winner| Memory
 ```
 
 | Module | Package | Stage | Role |

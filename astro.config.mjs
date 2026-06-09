@@ -31,16 +31,56 @@ function rehypeBaseLinks() {
 	return (/** @type {any} */ tree) => walk(tree);
 }
 
+/**
+ * Turn ```mermaid fenced blocks into `<pre class="mermaid">…</pre>` at the mdast
+ * stage — before Expressive Code sees them — so a client script can render them
+ * as diagrams. Build-safe: no headless browser at build time (rendering is
+ * client-side via the CDN module in `head`).
+ */
+function remarkMermaid() {
+	const esc = (/** @type {string} */ s) =>
+		s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+	const walk = (/** @type {any} */ node) => {
+		if (!node || !Array.isArray(node.children)) return;
+		node.children = node.children.map((/** @type {any} */ child) => {
+			if (child.type === 'code' && child.lang === 'mermaid') {
+				return { type: 'html', value: `<pre class="mermaid">${esc(child.value)}</pre>` };
+			}
+			walk(child);
+			return child;
+		});
+	};
+	return (/** @type {any} */ tree) => walk(tree);
+}
+
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://pyshka501.github.io',
 	base,
-	markdown: { rehypePlugins: [rehypeBaseLinks] },
+	markdown: { remarkPlugins: [remarkMermaid], rehypePlugins: [rehypeBaseLinks] },
 	integrations: [
 		starlight({
 			title: 'CARE & CARL',
 			favicon: '/favicon.png',
 			customCss: ['./src/styles/custom.css'],
+			// Client-side Mermaid rendering (build-safe; renders `<pre class="mermaid">`).
+			head: [
+				{
+					tag: 'script',
+					attrs: { type: 'module' },
+					content: `
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+const render = () => {
+  const dark = document.documentElement.dataset.theme === 'dark';
+  mermaid.initialize({ startOnLoad: false, theme: dark ? 'dark' : 'default', securityLevel: 'loose', fontFamily: 'Manrope, sans-serif' });
+  const nodes = document.querySelectorAll('pre.mermaid:not([data-processed])');
+  if (nodes.length) mermaid.run({ nodes }).catch(() => {});
+};
+render();
+document.addEventListener('astro:page-load', render);
+`,
+				},
+			],
 			social: [
 				{
 					icon: 'github',
