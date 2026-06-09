@@ -68,6 +68,11 @@ export default defineConfig({
 								items: [{ autogenerate: { directory: 'care/getting-started' } }],
 							},
 							{
+								label: 'Concepts',
+								translations: { ru: 'Концепции' },
+								items: [{ autogenerate: { directory: 'care/concepts' } }],
+							},
+							{
 								label: 'TUI',
 								translations: { ru: 'TUI' },
 								items: [{ autogenerate: { directory: 'care/tui' } }],
