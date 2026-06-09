@@ -203,10 +203,10 @@
 > §3.2 (концепции), §3.3 (Steps), §3.4 (Building Chains), §3.5 (Search), §3.6 (Async), §3.7 (Memory):
 > Steps — overview + LLM/Tool/Memory/Transform/Conditional/StructuredOutput + loops/caching + advanced(все 16 типов);
 > Chains — ReasoningChain/ChainBuilder/from_description/dynamic-references; Search — extraction + vector;
-> Memory — overview + COW + LTM + schema; Async — execution + streaming; RE-PLAN — overview + checkers/aggregation; Evaluation — metrics + datasets + reflection; Evolution — evolver + mutation/results; Tracing — observability + viz + cost; LLM-clients — clients + retries + record/replay; Orchestration — supervisor/handoff/debate/sampling/human-in-loop + events; AgentSkills — overview + resolvers + sandbox; MCP — tools + resources; Serialization — JSON + migration.
+> Memory — overview + COW + LTM + schema; Async — execution + streaming; RE-PLAN — overview + checkers/aggregation; Evaluation — metrics + datasets + reflection; Evolution — evolver + mutation/results; Tracing — observability + viz + cost; LLM-clients — clients + retries + record/replay; Orchestration — supervisor/handoff/debate/sampling/human-in-loop + events; AgentSkills — overview + resolvers + sandbox; MCP — tools + resources; Serialization — JSON + migration; Cookbook — catalog + end-to-end.
 > Все примеры сверены с исходником 0.3.0 (точные поля/импорты). RU-зеркало этих страниц — следующим заходом
 > (сейчас Starlight отдаёт EN как фолбэк). **Осталось (по порядку):** (готово §3.5–3.9)
->      >  §3.17 Cookbook, §3.18 API ref, §3.19 Changelog.
+>      >   §3.18 API ref, §3.19 Changelog.
 
 ### 3.1 Getting Started + Quick Start
 - [ ] **Quick Start** (5 минут): установка → минимальная цепочка из 2 шагов → `chain.execute(context)` → вывод (на базе README Quick Start, но проверенный против 0.3.0).

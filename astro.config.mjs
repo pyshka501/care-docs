@@ -158,6 +158,11 @@ export default defineConfig({
 								translations: { ru: 'Сериализация' },
 								items: [{ autogenerate: { directory: 'carl/serialization' } }],
 							},
+							{
+								label: 'Cookbook',
+								translations: { ru: 'Cookbook' },
+								items: [{ autogenerate: { directory: 'carl/cookbook' } }],
+							},
 						],
 					},
 				]),
