@@ -153,6 +153,11 @@ export default defineConfig({
 								translations: { ru: 'MCP' },
 								items: [{ autogenerate: { directory: 'carl/mcp' } }],
 							},
+							{
+								label: 'Serialization',
+								translations: { ru: 'Сериализация' },
+								items: [{ autogenerate: { directory: 'carl/serialization' } }],
+							},
 						],
 					},
 				]),
