@@ -200,11 +200,14 @@
 > **Версия 0.3.0.**
 >
 > **Прогресс (2026-06-09):** готовы EN-страницы §3.1 (getting-started/quick-start),
-> §3.2 (концепции) и большие куски §3.3 (Steps), §3.4 (Building Chains), §3.6 (Async):
+> §3.2 (концепции), §3.3 (Steps), §3.4 (Building Chains), §3.5 (Search), §3.6 (Async), §3.7 (Memory):
 > Steps — overview + LLM/Tool/Memory/Transform/Conditional/StructuredOutput + loops/caching + advanced(все 16 типов);
-> Chains — ReasoningChain/ChainBuilder/from_description/dynamic-references; Async — execution + streaming.
+> Chains — ReasoningChain/ChainBuilder/from_description/dynamic-references; Search — extraction + vector;
+> Memory — overview + COW + LTM + schema; Async — execution + streaming.
 > Все примеры сверены с исходником 0.3.0 (точные поля/импорты). RU-зеркало этих страниц — следующим заходом
-> (сейчас Starlight отдаёт EN как фолбэк). Осталось: продвинутые шаги вглубь (Orchestration/Skills/MCP/Evaluation), §3.5/3.7–3.19.
+> (сейчас Starlight отдаёт EN как фолбэк). **Осталось (по порядку):** §3.8 RE-PLAN, §3.9 Evaluation/Metrics,
+> §3.10 Evolution, §3.11 Tracing/Cost, §3.12 LLM-clients, §3.13 Orchestration, §3.14 Skills, §3.15 MCP,
+> §3.16 Serialization, §3.17 Cookbook, §3.18 API ref, §3.19 Changelog.
 
 ### 3.1 Getting Started + Quick Start
 - [ ] **Quick Start** (5 минут): установка → минимальная цепочка из 2 шагов → `chain.execute(context)` → вывод (на базе README Quick Start, но проверенный против 0.3.0).

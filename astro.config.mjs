@@ -99,6 +99,16 @@ export default defineConfig({
 								items: [{ autogenerate: { directory: 'carl/chains' } }],
 							},
 							{
+								label: 'Context & Search',
+								translations: { ru: 'Контекст и поиск' },
+								items: [{ autogenerate: { directory: 'carl/search' } }],
+							},
+							{
+								label: 'Memory',
+								translations: { ru: 'Память' },
+								items: [{ autogenerate: { directory: 'carl/memory' } }],
+							},
+							{
 								label: 'Async & Streaming',
 								translations: { ru: 'Async и стриминг' },
 								items: [{ autogenerate: { directory: 'carl/async' } }],
