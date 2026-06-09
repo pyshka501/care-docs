@@ -96,6 +96,16 @@ export default defineConfig({
 								translations: { ru: 'Возможности' },
 								items: [{ autogenerate: { directory: 'care/capabilities' } }],
 							},
+							{
+								label: 'Examples',
+								translations: { ru: 'Примеры' },
+								items: [{ autogenerate: { directory: 'care/examples' } }],
+							},
+							{
+								label: 'Reference',
+								translations: { ru: 'Справочник' },
+								items: [{ autogenerate: { directory: 'care/reference' } }],
+							},
 						],
 					},
 					{
