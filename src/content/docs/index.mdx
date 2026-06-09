@@ -1,0 +1,56 @@
+---
+title: CARE & CARL
+description: Generate, run, and evolve agent reasoning chains — from a polished terminal UI or a Python library.
+template: splash
+hero:
+  tagline: Two tools, one ecosystem. Build reasoning agents in a beautiful TUI, or wire them up as a Python library.
+  image:
+    file: ../../assets/evoc-mascot.webp
+  actions:
+    - text: Explore CARE
+      link: care/getting-started/quick-start/
+      icon: right-arrow
+      variant: primary
+    - text: Explore CARL
+      link: carl/getting-started/quick-start/
+      icon: right-arrow
+      variant: minimal
+---
+
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+## Choose your path
+
+<CardGrid>
+	<LinkCard
+		title="CARE → the TUI & CLI"
+		href="care/getting-started/quick-start/"
+		description="Collaborative Agent Reasoning Ecosystem. A Textual terminal UI + headless `care` CLI to generate, run, save, and evolve agent chains. Start here if you want to use agents interactively."
+	/>
+	<LinkCard
+		title="CARL → the library"
+		href="carl/getting-started/quick-start/"
+		description="Collaborative Agent Reasoning Library. A Python framework for chain-of-thought reasoning with DAG-based parallel execution. Start here if you want to build agents in code."
+	/>
+</CardGrid>
+
+## How they fit together
+
+**CARE** is the user-facing consumer at the top of a four-module stack:
+
+<CardGrid>
+	<Card title="MAGE — generation" icon="seti:python">
+		Turns a natural-language task into a CARL chain.
+	</Card>
+	<Card title="CARL — execution" icon="rocket">
+		Runs the chain: DAG parallelism, RAG context, tools, memory, multi-agent.
+	</Card>
+	<Card title="GigaEvo Memory — persistence" icon="document">
+		Stores chains, agents, skills, and run history.
+	</Card>
+	<Card title="GigaEvo Platform — evolution" icon="random">
+		Runs a genetic search over chains and promotes the winners.
+	</Card>
+</CardGrid>
+
+In short: **CARL is the engine, CARE is the cockpit.** You can use CARL on its own as a library, or drive the whole ecosystem through CARE.

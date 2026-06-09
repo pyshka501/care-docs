@@ -1,0 +1,57 @@
+---
+title: CARE & CARL
+description: Генерируйте, запускайте и эволюционируйте reasoning-цепочки агентов — из красивого терминального UI или из Python-библиотеки.
+template: splash
+hero:
+  tagline: Два инструмента, одна экосистема. Стройте reasoning-агентов в удобном TUI или собирайте их как Python-библиотеку.
+  image:
+    file: ../../../assets/evoc-mascot.webp
+  actions:
+    - text: Открыть CARE
+      link: care/getting-started/quick-start/
+      icon: right-arrow
+      variant: primary
+    - text: Открыть CARL
+      link: carl/getting-started/quick-start/
+      icon: right-arrow
+      variant: minimal
+---
+
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+
+## Выберите свой путь
+
+<CardGrid>
+	<LinkCard
+		title="CARE → TUI и CLI"
+		href="care/getting-started/quick-start/"
+		description="Collaborative Agent Reasoning Ecosystem. Терминальный UI на Textual + headless-CLI `care` для генерации, запуска, сохранения и эволюции цепочек агентов. Начните здесь, если хотите работать с агентами интерактивно."
+	/>
+	<LinkCard
+		title="CARL → библиотека"
+		href="carl/getting-started/quick-start/"
+		description="Collaborative Agent Reasoning Library. Python-фреймворк для chain-of-thought reasoning с параллельным исполнением на DAG. Начните здесь, если хотите строить агентов в коде."
+	/>
+</CardGrid>
+
+## Как они связаны
+
+**CARE** — пользовательский слой поверх стека из четырёх модулей:
+
+<CardGrid>
+	<Card title="MAGE — генерация" icon="seti:python">
+		Превращает задачу на естественном языке в CARL-цепочку.
+	</Card>
+	<Card title="CARL — исполнение" icon="rocket">
+		Запускает цепочку: DAG-параллелизм, RAG-контекст, инструменты, память, мульти-агент.
+	</Card>
+	<Card title="GigaEvo Memory — хранение" icon="document">
+		Хранит цепочки, агентов, навыки и историю запусков.
+	</Card>
+	<Card title="GigaEvo Platform — эволюция" icon="random">
+		Запускает генетический поиск по цепочкам и продвигает лучших.
+	</Card>
+</CardGrid>
+
+Если коротко: **CARL — это движок, CARE — это кабина пилота.** CARL можно использовать
+отдельно как библиотеку или управлять всей экосистемой через CARE.

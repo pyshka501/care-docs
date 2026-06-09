@@ -1,0 +1,44 @@
+/* CARE & CARL docs — brand theme.
+   Tokens mirror github.com/Glazkoff/care-landing (AIRI aesthetic, mascot EVOC).
+   Fonts: Manrope (sans) + JetBrains Mono (mono).
+   Accent: Aqua Bloom (#2ebfae) on light, Deep Crystal (#33d9b2) on dark. */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root {
+	--sl-font: 'Manrope', 'Segoe UI', system-ui, -apple-system, sans-serif;
+	--sl-font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+
+	/* radii / glow lifted from the landing */
+	--brand-radius-sm: 8px;
+	--brand-radius-md: 14px;
+	--brand-radius-lg: 22px;
+	--brand-glow: 0 0 40px rgba(46, 191, 174, 0.25);
+}
+
+/* Dark theme = Deep Crystal */
+:root {
+	--sl-color-accent-low: #16332f;
+	--sl-color-accent: #2ebfae;
+	--sl-color-accent-high: #9cebdd;
+	--sl-color-text-accent: #33d9b2;
+}
+
+/* Light theme = Aqua Bloom */
+:root[data-theme='light'] {
+	--sl-color-accent-low: #c9efe9;
+	--sl-color-accent: #1a9a8c;
+	--sl-color-accent-high: #0f3b35;
+	--sl-color-text-accent: #1a9a8c;
+}
+
+/* Brand-tinted hero buttons + cards (extends the landing's .btn-primary glow) */
+.hero .actions a[data-variant='primary'] {
+	box-shadow: var(--brand-glow);
+	border-radius: var(--brand-radius-md);
+}
+
+/* Crisper inline code + code blocks in the brand mono face */
+.sl-markdown-content code {
+	font-family: var(--sl-font-mono);
+}
