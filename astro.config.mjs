@@ -148,6 +148,11 @@ export default defineConfig({
 								translations: { ru: 'AgentSkills' },
 								items: [{ autogenerate: { directory: 'carl/skills' } }],
 							},
+							{
+								label: 'MCP',
+								translations: { ru: 'MCP' },
+								items: [{ autogenerate: { directory: 'carl/mcp' } }],
+							},
 						],
 					},
 				]),
