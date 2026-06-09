@@ -31,6 +31,7 @@ from mmar_carl import (
     ReasoningContext,
     Language,
     OpenAICompatibleClient,
+    OpenAIClientConfig,
 )
 
 steps = [
@@ -59,11 +60,11 @@ chain = ReasoningChain(steps=steps, max_workers=2)
 ## 3. Run it
 
 ```python
-client = OpenAICompatibleClient(
+client = OpenAICompatibleClient(OpenAIClientConfig(
     base_url="https://openrouter.ai/api/v1",
     api_key="sk-or-v1-...",
     model="qwen/qwen3-coder",
-)
+))
 
 context = ReasoningContext(
     outer_context="<your input text here>",

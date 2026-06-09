@@ -133,6 +133,11 @@ export default defineConfig({
 								translations: { ru: 'Трейсинг и стоимость' },
 								items: [{ autogenerate: { directory: 'carl/tracing' } }],
 							},
+							{
+								label: 'LLM Clients',
+								translations: { ru: 'LLM-клиенты' },
+								items: [{ autogenerate: { directory: 'carl/llm' } }],
+							},
 						],
 					},
 				]),
