@@ -118,6 +118,11 @@ document.addEventListener('astro:page-load', render);
 								items: [{ autogenerate: { directory: 'care/concepts' } }],
 							},
 							{
+								label: 'Workflows',
+								translations: { ru: 'Сценарии работы' },
+								items: [{ autogenerate: { directory: 'care/workflows' } }],
+							},
+							{
 								label: 'Configuration',
 								translations: { ru: 'Конфигурация' },
 								items: [{ autogenerate: { directory: 'care/configuration' } }],
