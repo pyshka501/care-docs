@@ -1,16 +1,16 @@
 ---
-title: CARE & CARL
-description: Generate, run, and evolve agent reasoning chains — from a polished terminal UI or a Python library.
+title: MAESTRO CARE
+description: Generate, run, and evolve reasoning chains — from a polished terminal UI (TUI and CLI).
 template: splash
 hero:
-  tagline: Two tools, one ecosystem. Build reasoning agents in a beautiful TUI, or wire them up as a Python library.
+  tagline: One ecosystem for reasoning agents. Describe a task, and MAESTRO CARE builds, runs, and evolves the chain — right in the terminal.
   image:
     file: ../../assets/evoc-mascot.webp
   actions:
-    - text: CARE
+    - text: Get started
       link: care/getting-started/quick-start/
-      variant: minimal
-    - text: CARL
+      variant: primary
+    - text: The CARL format
       link: carl/getting-started/quick-start/
       variant: minimal
 ---
@@ -21,27 +21,27 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
 <CardGrid>
 	<LinkCard
-		title="CARE → the TUI & CLI"
+		title="MAESTRO CARE → the TUI & CLI"
 		href="care/getting-started/quick-start/"
-		description="Collaborative Agent Reasoning Ecosystem. A Textual terminal UI + headless `care` CLI to generate, run, save, and evolve agent chains. Start here if you want to use agents interactively."
+		description="The terminal app: a Textual TUI plus a headless `care` CLI that generates, runs, saves, and evolves reasoning chains. Start here to work with agents interactively."
 	/>
 	<LinkCard
-		title="CARL → the library"
+		title="CARL → the chain format"
 		href="carl/getting-started/quick-start/"
-		description="Collaborative Agent Reasoning Library. A Python framework for chain-of-thought reasoning with DAG-based parallel execution. Start here if you want to build agents in code."
+		description="The format reasoning chains are written in: typed steps, dependencies, and per-step context. Start here to learn how a chain is structured."
 	/>
 </CardGrid>
 
-## How they fit together
+## How it fits together
 
-**CARE** is the user-facing consumer at the top of a four-module stack:
+**MAESTRO CARE** is the product on top of a four-part stack. Each part owns one stage of a chain's life.
 
 <CardGrid>
 	<Card title="MAGE — generation" icon="seti:python">
 		Turns a natural-language task into a CARL chain.
 	</Card>
-	<Card title="CARL — execution" icon="rocket">
-		Runs the chain: DAG parallelism, RAG context, tools, memory, multi-agent.
+	<Card title="CARL — the chain format" icon="open-book">
+		The format every chain is written in: steps, dependencies, and context queries.
 	</Card>
 	<Card title="GigaEvo Memory — persistence" icon="document">
 		Stores chains, agents, skills, and run history.
@@ -51,4 +51,4 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 	</Card>
 </CardGrid>
 
-In short: **CARL is the engine, CARE is the cockpit.** You can use CARL on its own as a library, or drive the whole ecosystem through CARE.
+In short: **CARL is the format, MAESTRO CARE is the cockpit.** MAGE writes a chain in the CARL format, and MAESTRO CARE runs and evolves it.
