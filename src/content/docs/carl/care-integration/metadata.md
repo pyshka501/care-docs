@@ -1,11 +1,11 @@
 ---
-title: CARE Metadata
+title: MAESTRO CARE Metadata
 description: Attach typed provenance to a chain, and re-prime a context from it.
 sidebar:
   order: 4
 ---
 
-CARE stamps a typed provenance block onto `chain.metadata["care"]` so a saved chain
+MAESTRO CARE stamps a typed provenance block onto `chain.metadata["care"]` so a saved chain
 remembers the task it was generated for, the files attached, who made it, and its
 tags. You can read/write it with two `ReasoningChain` methods.
 
@@ -30,7 +30,7 @@ meta = chain.get_care_metadata()   # -> CareChainMetadata | None
 
 Pass **either** `meta=` **or** the individual kwargs — mixing raises `ValueError`.
 `get_care_metadata()` returns `None` when the chain has no `care` block (i.e. it
-wasn't created by a CARE-aware tool).
+wasn't created by a MAESTRO CARE-aware tool).
 
 ### CareChainMetadata fields
 
@@ -40,7 +40,7 @@ The namespace key is `CARE_METADATA_NAMESPACE` (`"care"`).
 
 ## Re-prime a context from a saved chain
 
-`ReasoningContext.from_chain_inputs` builds a fresh context from a chain's CARE
+`ReasoningContext.from_chain_inputs` builds a fresh context from a chain's MAESTRO CARE
 metadata — the "re-run from the library" entry point:
 
 ```python
@@ -59,4 +59,4 @@ input; any extra `**kwargs` (e.g. `language=`, `system_prompt=`) pass through.
 ## See also
 
 - [Preflight](/carl/care-integration/preflight/) · [RunRecord](/carl/care-integration/run-record/)
-- [JSON serialization](/carl/serialization/json/) — CARE metadata round-trips with the chain.
+- [JSON serialization](/carl/serialization/json/) — MAESTRO CARE metadata round-trips with the chain.

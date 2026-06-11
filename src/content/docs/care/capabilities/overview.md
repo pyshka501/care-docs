@@ -5,7 +5,7 @@ sidebar:
   order: 1
 ---
 
-Generated chains can reach beyond the LLM via **tools** and **AgentSkills**. CARE
+Generated chains can reach beyond the LLM via **tools** and **AgentSkills**. MAESTRO CARE
 surfaces everything installed through the **Catalog** (`Ctrl+K`, or
 [`care catalog`](/care/cli/discovery/)).
 
@@ -15,8 +15,8 @@ Tools are Python functions a chain's tool steps can call.
 
 - **Registry** — register functions with `@carl_tool`; the `tools` config controls
   the registry (`CARE_TOOLS__*`).
-- **Bundled builtins** — CARE ships ready tools (e.g. `web_search`).
-- **On-the-fly synthesis** — when a chain needs a tool that isn't registered, CARE
+- **Bundled builtins** — MAESTRO CARE ships ready tools (e.g. `web_search`).
+- **On-the-fly synthesis** — when a chain needs a tool that isn't registered, MAESTRO CARE
   can synthesise one from a description, plan its inputs, and wire it in.
 
 See [CARL tool steps](/carl/steps/tool/) for how chains invoke tools.
@@ -24,7 +24,7 @@ See [CARL tool steps](/carl/steps/tool/) for how chains invoke tools.
 ## AgentSkills
 
 [AgentSkills](https://agentskills.io) are portable skill folders (`SKILL.md` +
-scripts/assets). CARE's catalog discovers installed skills (from `~/.agents/skills/`,
+scripts/assets). MAESTRO CARE's catalog discovers installed skills (from `~/.agents/skills/`,
 `./.claude/skills/`, and the `agent-skills` library) and chains run them via
 AgentSkill steps. The full model — URIs, execution modes, resolvers — is documented
 in [CARL → AgentSkills](/carl/skills/overview/).
@@ -38,7 +38,7 @@ skills are tracked in a SHA-pinned trust store you can audit and revoke from the
 
 ## Context injection
 
-CARE can inject extra context into generation (`CARE_CONTEXT__*`):
+MAESTRO CARE can inject extra context into generation (`CARE_CONTEXT__*`):
 
 - **`CARE.md`** — a project context file, picked up like a system brief.
 - **Long-term-memory digest** — a summary of saved memory folded into the prompt.

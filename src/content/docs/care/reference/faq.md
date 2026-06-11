@@ -1,6 +1,6 @@
 ---
 title: FAQ & Troubleshooting
-description: Common questions and fixes when running CARE.
+description: Common questions and fixes when running MAESTRO CARE.
 sidebar:
   order: 1
 ---
@@ -21,7 +21,7 @@ in-chat run) reports a missing dependency, install it:
 uv sync --extra carl     # or: pip install 'care[carl]'
 ```
 
-CARE imports upstreams lazily, so a minimal install still boots — the hint tells
+MAESTRO CARE imports upstreams lazily, so a minimal install still boots — the hint tells
 you exactly which extra to add.
 
 ## LLM errors (401 / 403 / 429)
@@ -36,7 +36,7 @@ Set the model with `CARE_MAGE__MODEL` (e.g. `qwen/qwen3-coder`).
 
 ## First launch lands on Settings
 
-Expected — with no `~/.config/care/config.toml`, CARE opens the **Settings** screen
+Expected — with no `~/.config/care/config.toml`, MAESTRO CARE opens the **Settings** screen
 so you can enter MAGE/Memory/Platform creds. Returning users go straight to chat.
 
 ## My keys are in plaintext TOML

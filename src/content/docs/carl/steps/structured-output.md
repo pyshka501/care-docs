@@ -60,6 +60,26 @@ StructuredOutputStepConfig(
 )
 ```
 
+## Streaming
+
+A structured-output step streams token-by-token automatically when the context
+has an [`on_llm_chunk`](/carl/async/overview/#monitoring-callbacks) callback **and**
+the client supports streaming — there's no config flag to set. Chunks are
+forwarded to your callback (tagged `stage="structured_output"`) as they arrive.
+
+As a latency optimisation, the executor watches the running buffer and returns the
+moment a balanced JSON object parses cleanly — so it doesn't wait on any trailing
+tokens the model occasionally hallucinates after the closing `}`. If no balanced
+object materialises, it falls back to the full accumulated buffer.
+
+```python
+def on_chunk(chunk: str, **kwargs):
+    print(chunk, end="", flush=True)
+
+context.on_llm_chunk = on_chunk   # structured-output steps now stream
+```
+
 ## See also
 
 - [Structured output example](https://github.com/Glazkoff/carl-experiments/blob/main/examples/tool_calling/structured_output_example.py) in the repo.
+- [Token-level streaming](/carl/async/streaming/#token-level-streaming) — the `on_llm_chunk` callback.

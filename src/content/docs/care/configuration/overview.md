@@ -1,11 +1,11 @@
 ---
 title: Configuration
-description: How CARE reads configuration — the four layers, and TOML ↔ env mapping.
+description: How MAESTRO CARE reads configuration — the four layers, and TOML ↔ env mapping.
 sidebar:
   order: 1
 ---
 
-CARE reads configuration from four layers, in increasing precedence:
+MAESTRO CARE reads configuration from four layers, in increasing precedence:
 
 1. Defaults baked into `care.config.CareConfig`.
 2. `~/.config/care/config.toml` (user-global).

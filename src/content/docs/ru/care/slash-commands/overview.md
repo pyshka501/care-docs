@@ -1,6 +1,6 @@
 ---
 title: Слэш-команды
-description: Все /команды в TUI CARE.
+description: Все /команды в TUI MAESTRO CARE.
 sidebar:
   order: 1
 ---
@@ -24,7 +24,7 @@ sidebar:
 | `/settings` | Открыть экран Настроек. |
 | `/new` | Начать новый чат (сбросить историю Ad-Hoc). |
 | `/clear` | Очистить транскрипт. |
-| `/quit` | Выйти из CARE. |
+| `/quit` | Выйти из MAESTRO CARE. |
 
 ## Цепочки и библиотека
 

@@ -7,7 +7,7 @@ sidebar:
 
 A `RunRecord` bundles everything about one execution — the chain snapshot, the
 input, the (lossless) result, and timing — into a single JSON-serialisable record.
-It's what CARE stores as run history and what [`care replay`](/care/cli/generate-run/)
+It's what MAESTRO CARE stores as run history and what [`care replay`](/care/cli/generate-run/)
 reads back.
 
 ## Capture a run
@@ -58,4 +58,4 @@ Then step through it with [`care replay run-001.json`](/care/cli/generate-run/).
 ## See also
 
 - [Result serialization](/carl/serialization/json/#result-serialization) — the `ReasoningResult` inside a record.
-- [CARE integration overview](/carl/care-integration/overview/)
+- [MAESTRO CARE integration overview](/carl/care-integration/overview/)

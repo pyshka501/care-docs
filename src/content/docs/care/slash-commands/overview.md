@@ -1,6 +1,6 @@
 ---
 title: Slash Commands
-description: Every in-chat /command in the CARE TUI.
+description: Every in-chat /command in the MAESTRO CARE TUI.
 sidebar:
   order: 1
 ---
@@ -24,7 +24,7 @@ for a 5-step walkthrough.
 | `/settings` | Open the Settings screen. |
 | `/new` | Start a fresh chat (resets Ad-Hoc history). |
 | `/clear` | Clear the transcript. |
-| `/quit` | Exit CARE. |
+| `/quit` | Exit MAESTRO CARE. |
 
 ## Chains & library
 

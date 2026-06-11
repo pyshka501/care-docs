@@ -1,6 +1,6 @@
 ---
 title: The TUI
-description: The CARE terminal interface — chat surface, modes, keys, and how a run unfolds.
+description: The MAESTRO CARE terminal interface — chat surface, modes, keys, and how a run unfolds.
 sidebar:
   order: 1
 ---
