@@ -5,7 +5,7 @@ sidebar:
   order: 3
 ---
 
-Concrete walkthroughs of the main ways people use CARE. They assume you've run
+Concrete walkthroughs of the main ways people use MAESTRO CARE. They assume you've run
 [`care init`](/care/cli/setup/) and launched the TUI with `care`.
 
 ## 1. Quick one-off answer (Ad-Hoc)
@@ -24,7 +24,7 @@ The fastest path — no setup beyond MAGE creds.
 Turn a task into a saved, evolving agent.
 
 1. Switch to Production: `/mode production` (needs Memory configured).
-2. Type the task → CARE **generates → saves** the chain (you get a `chain_id`) →
+2. Type the task → MAESTRO CARE **generates → saves** the chain (you get a `chain_id`) →
    runs a **baseline** → (if Platform is wired) **kicks off evolution**.
 3. Watch evolution: `/evolution watch <run_id>`.
 4. Accept the winner: `/evolution accept <run_id> <individual_id>` (or
@@ -72,13 +72,13 @@ Edit a chain in natural language instead of regenerating.
 /revise <chain_id> add a verification step before the final answer
 ```
 
-CARE previews the edit plan, you confirm, and it saves a **new version**. (In
+MAESTRO CARE previews the edit plan, you confirm, and it saves a **new version**. (In
 Production, a plain follow-up prompt does this automatically against the current
 chain.) Promote the version you like with `/promote`.
 
 ## 6. The canonical multi-agent flow
 
-The end-to-end loop CARE is built around:
+The end-to-end loop MAESTRO CARE is built around:
 
 > Generate agent **A** → save it → generate **B** and **C** → return to **A** from
 > the Library → re-run it from the same task + context files → **evolve A** and
