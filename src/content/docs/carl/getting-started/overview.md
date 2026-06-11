@@ -1,17 +1,19 @@
 ---
 title: What is CARL?
-description: A Python library for chain-of-thought reasoning with DAG-based parallel execution.
+description: The format reasoning chains are written in — typed steps, dependencies, and DAG execution — with mmar-carl as its reference library.
 sidebar:
   order: 2
 ---
 
-**MMAR CARL** — Collaborative Agent Reasoning Library — is a Python library for
-building universal chain-of-thought reasoning systems with RAG-like context
-extraction and DAG-based parallel execution.
+**CARL** is the format reasoning chains are written in. A chain is a list of typed
+**steps** with dependencies, per-step context queries, and execution settings. The
+reference implementation of the format is the `mmar-carl` Python library
+(Collaborative Agent Reasoning Library): it reads a chain, builds a directed
+acyclic graph (DAG), runs everything that can run in parallel, and pulls relevant
+context from your input for each step.
 
-You define a chain of reasoning **steps** with dependencies; CARL builds a
-directed acyclic graph, runs everything that can run in parallel, and extracts
-relevant context from your input for each step automatically.
+In MAESTRO CARE, MAGE writes chains in this format and the runtime executes them.
+CARL chains can also be authored and run directly from Python.
 
 ## Key features
 

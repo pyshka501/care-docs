@@ -60,7 +60,7 @@ export default defineConfig({
 	markdown: { remarkPlugins: [remarkMermaid], rehypePlugins: [rehypeBaseLinks] },
 	integrations: [
 		starlight({
-			title: 'CARE & CARL',
+			title: 'MAESTRO CARE',
 			favicon: '/favicon.png',
 			customCss: ['./src/styles/custom.css'],
 			// Client-side Mermaid rendering (build-safe; renders `<pre class="mermaid">`).
@@ -103,7 +103,7 @@ document.addEventListener('astro:page-load', render);
 				// Two independent products → two separate sidebars.
 				starlightSidebarTopics([
 					{
-						label: 'CARE',
+						label: 'MAESTRO CARE',
 						link: '/care/getting-started/quick-start/',
 						icon: 'laptop',
 						items: [

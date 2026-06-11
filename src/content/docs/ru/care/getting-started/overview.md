@@ -1,14 +1,14 @@
 ---
-title: Что такое CARE?
-description: Collaborative Agent Reasoning Ecosystem — TUI и CLI для генерации, запуска и эволюции цепочек агентов.
+title: Что такое MAESTRO CARE?
+description: TUI и CLI, которые генерируют, запускают и эволюционируют reasoning-цепочки в формате CARL.
 sidebar:
   order: 2
 ---
 
-**CARE** — Collaborative Agent Reasoning Ecosystem — это TUI на Textual + headless-CLI
-`care` для генерации, запуска и эволюции цепочек агентов [CARL](/ru/carl/getting-started/quick-start/).
-Это пользовательский слой поверх стека из четырёх модулей: **MAGE** (генерация),
-**CARL** (исполнение), **GigaEvo Memory** (хранение) и **GigaEvo Platform** (эволюция).
+**MAESTRO CARE** — это TUI на Textual и headless-CLI `care` для генерации, запуска
+и эволюции reasoning-цепочек в [формате CARL](/ru/carl/getting-started/quick-start/).
+Это продукт поверх стека из четырёх частей: **MAGE** (генерация), **CARL** (формат
+цепочек), **GigaEvo Memory** (хранение) и **GigaEvo Platform** (эволюция).
 
 ## Режимы чата
 
@@ -18,8 +18,8 @@ sidebar:
 
 | Режим | Что происходит на каждый промпт |
 | --- | --- |
-| **Ad-Hoc** | MAGE генерирует цепочку, CARL сразу её выполняет, ответ выводится инлайн. Агент может зацикливаться (ReAct), пока не решит, что задача выполнена. **Ничего не сохраняется.** |
-| **Production** | MAGE генерирует *воспроизводимую* цепочку, CARE сохраняет её в Memory под стабильным `chain_id`, запускает один baseline для затравки датасета и (если подключён Platform) стартует эволюцию. |
+| **Ad-Hoc** | MAGE генерирует цепочку, MAESTRO CARE сразу её выполняет, ответ выводится инлайн. Агент может зацикливаться (ReAct), пока не решит, что задача выполнена. **Ничего не сохраняется.** |
+| **Production** | MAGE генерирует *воспроизводимую* цепочку, MAESTRO CARE сохраняет её в Memory под стабильным `chain_id`, запускает один baseline для затравки датасета и (если подключён Platform) стартует эволюцию. |
 
 Production требует `CARE_MEMORY__BASE_URL`. Без настроенной Memory выбор Production
 автоматически откатывается в Ad-Hoc с предупреждением.
