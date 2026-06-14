@@ -28,7 +28,7 @@ MCPStepDescription(
 )
 ```
 
-→ Full guide: **MCP section** (upcoming).
+→ Full guide: [MCP overview](/carl/mcp/overview/).
 
 ## MCP resource — read a resource into memory
 
@@ -87,8 +87,9 @@ The sub-chain's full `ReasoningResult` is available at
 | Evaluation | `EvaluationStepDescription` · `EvaluationStepConfig` | Inline quality gate on a prior step's output; reacts via `on_fail` (continue / abort / retry-with-feedback). | — |
 
 :::note
-Dedicated sections for **Orchestration** (supervisor / debate / parallel sampling
-/ handoff / human-in-the-loop), **AgentSkills**, **MCP**, and **Evaluation** are
-on the [roadmap](https://github.com/pyshka501/care-docs/blob/main/todo.md) — this
-page links the verified essentials in the meantime.
+Each of these has a dedicated section with full guides:
+[Orchestration](/carl/orchestration/overview/) (supervisor / debate / parallel
+sampling / handoff / human-in-the-loop), [AgentSkills](/carl/skills/overview/),
+[MCP](/carl/mcp/overview/), and [Evaluation](/carl/evaluation/metrics/). This page
+is the at-a-glance map.
 :::

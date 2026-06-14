@@ -71,6 +71,17 @@ LLMStepDescription(
 )
 ```
 
+Two extras worth calling out:
+
+- **`token_budget_warning`** — emits a warning when the step's total tokens exceed
+  the threshold. It only fires with a client that reports usage (e.g.
+  `OpenAICompatibleClient`); see the actuals in [cost estimation](/carl/tracing/cost/).
+- **`use_message_history`** — sends a structured `system`/`user`/`assistant`
+  message list instead of a flat prompt: the system prompt + outer context become
+  the first `system` message, prior turns from `context.messages` are included, and
+  the step's reply is appended back to `context.messages`. Requires a client that
+  implements `get_response_with_messages` (e.g. `OpenAICompatibleClient`).
+
 ## Execution modes
 
 - **`FAST`** (default) — a single LLM pass.
@@ -88,6 +99,40 @@ LLMStepConfig(
     self_critic_instruction="Reject answers that aren't backed by the data.",
 )
 ```
+
+`self_critic_evaluators` names evaluators in order; **all** must approve. `"llm"`
+is the built-in LLM reviewer. Register your own (non-LLM or custom) evaluator with
+`context.register_self_critic_evaluator(name, evaluator)` — subclass
+`SelfCriticEvaluatorBase` and return a `SelfCriticDecision(verdict=..., review_text=...)`.
+
+### Example
+
+The repo's [execution-modes example](https://github.com/Glazkoff/carl-experiments/blob/main/examples/orchestration/execution_modes_mock_example.py)
+(mock client, no API key) runs a 3-step chain: a `FAST` pass, a `SELF_CRITIC` step
+with the default `"llm"` evaluator, and a `SELF_CRITIC` step whose evaluator chain
+adds a custom keyword guard.
+
+```python
+class KeywordGuardEvaluator(SelfCriticEvaluatorBase):
+    def __init__(self, required_keyword: str):
+        self.required_keyword = required_keyword.lower()
+
+    async def evaluate(self, step, candidate, base_prompt, context, llm_client, retries):
+        if self.required_keyword in candidate.lower():
+            return SelfCriticDecision(verdict="APPROVE", review_text="found")
+        return SelfCriticDecision(verdict="DISAPPROVE", review_text="missing keyword")
+
+context.register_self_critic_evaluator("keyword_guard", KeywordGuardEvaluator("mitigation"))
+
+LLMStepConfig(
+    execution_mode=ExecutionMode.SELF_CRITIC,
+    self_critic_evaluators=["llm", "keyword_guard"],  # both must approve
+    self_critic_max_revisions=2,
+)
+```
+
+Per-step mode telemetry (`execution_mode`, `llm_calls`, revision `rounds`,
+`quality_warning`) lands in `context.metadata["execution_mode_details"]`.
 
 ## See also
 

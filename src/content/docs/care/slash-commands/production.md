@@ -30,6 +30,7 @@ flow. See [chat modes](/care/getting-started/overview/) for the mode difference.
 
 | Command | What it does |
 | --- | --- |
+| `/promote <chain_id> <version>` | Promote a version (or accepted evolution winner) into the **stable** channel. |
 | `/upload <chain_id>` | POST the chain to `CARE_UPLOAD__URL`. |
 | `/forget <chain_id> [--force]` | Soft-delete a chain + its dataset. |
 

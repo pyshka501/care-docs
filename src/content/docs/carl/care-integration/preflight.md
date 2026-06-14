@@ -46,5 +46,5 @@ CI read the raw lists.
 
 ## See also
 
-- [CARE integration overview](/carl/care-integration/overview/)
+- [MAESTRO CARE integration overview](/carl/care-integration/overview/)
 - The CLI twin: [`care validate`](/care/cli/discovery/) preflights a chain file.

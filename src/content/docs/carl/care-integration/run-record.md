@@ -58,4 +58,4 @@ Then step through it with [`care replay run-001.json`](/care/cli/generate-run/).
 ## See also
 
 - [Result serialization](/carl/serialization/json/#result-serialization) — the `ReasoningResult` inside a record.
-- [CARE integration overview](/carl/care-integration/overview/)
+- [MAESTRO CARE integration overview](/carl/care-integration/overview/)

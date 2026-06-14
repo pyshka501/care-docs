@@ -83,6 +83,38 @@ A checker's verdict requests one of these `ReplanAction` values:
 | `max_visits_per_checkpoint` | — | Cap re-entries of a checkpoint. |
 | `fail_on_budget_exhaustion` | — | Fail (vs continue) when the budget runs out. |
 
+## Example
+
+The repo's [deterministic RE-PLAN example](https://github.com/Glazkoff/carl-experiments/blob/main/examples/replan/replan_deterministic_example.py)
+(mock client, no API key) runs a 3-step memo chain. Step 2 emits `NEEDS_REPLAN`
+on its first attempt; a rule-based checker matches that substring, retries the
+step with feedback, and the second attempt succeeds.
+
+```python
+from mmar_carl import ReplanPolicy, RuleBasedReplanCheckerConfig, ReplanAction
+
+policy = ReplanPolicy(
+    enabled=True,
+    checkers=[
+        RuleBasedReplanCheckerConfig(
+            name="risk_quality_guard",
+            result_substrings=["NEEDS_REPLAN"],
+            action_on_match=ReplanAction.RETRY_CURRENT_STEP,
+            feedback_on_match=["Add explicit mitigation ownership and concrete risks."],
+        )
+    ],
+)
+
+chain = ReasoningChain(steps=steps, max_workers=1, replan_policy=policy)
+result = chain.execute(context)
+
+for event in result.replan_events:
+    print(event.step_number, event.final_action, event.rollback_target)
+```
+
+`result.replan_events` records each RE-PLAN decision — the step, the chosen
+action, the checker vote tally (`event.aggregation`), and any rollback target.
+
 ## See also
 
 - [Checkers & aggregation](/carl/replan/checkers/)

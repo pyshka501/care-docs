@@ -1,5 +1,5 @@
 ---
-title: CARE Metadata
+title: MAESTRO CARE Metadata
 description: Attach typed provenance to a chain, and re-prime a context from it.
 sidebar:
   order: 4
@@ -40,7 +40,7 @@ The namespace key is `CARE_METADATA_NAMESPACE` (`"care"`).
 
 ## Re-prime a context from a saved chain
 
-`ReasoningContext.from_chain_inputs` builds a fresh context from a chain's CARE
+`ReasoningContext.from_chain_inputs` builds a fresh context from a chain's MAESTRO CARE
 metadata — the "re-run from the library" entry point:
 
 ```python
@@ -59,4 +59,4 @@ input; any extra `**kwargs` (e.g. `language=`, `system_prompt=`) pass through.
 ## See also
 
 - [Preflight](/carl/care-integration/preflight/) · [RunRecord](/carl/care-integration/run-record/)
-- [JSON serialization](/carl/serialization/json/) — CARE metadata round-trips with the chain.
+- [JSON serialization](/carl/serialization/json/) — MAESTRO CARE metadata round-trips with the chain.

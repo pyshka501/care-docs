@@ -37,5 +37,6 @@ best individual back into the stable channel.
 
 ## Where to go next
 
+- [Workflows](/care/workflows/modes/) — Ad-Hoc vs **Production** in depth, and end-to-end [scenarios](/care/workflows/scenarios/).
 - [Quick Start](/care/getting-started/quick-start/) — boot the TUI in five minutes.
 - [CLI reference](/care/cli/overview/) — every `care` subcommand.

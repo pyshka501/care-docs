@@ -47,6 +47,41 @@ ToolStepDescription(
 
 For an until-loop (run until the flag becomes truthy), set `negate_condition=True`.
 
+## ChainBuilder loop helpers
+
+`ChainBuilder` wraps the manual API with `add_until_loop` and `add_while_loop`:
+pass a list of body steps and a `condition_key`, and the builder renumbers the
+body and attaches the right `LoopConfig` (`add_while_loop` continues while truthy;
+`add_until_loop` continues until truthy).
+
+## Example
+
+The repo's [loop example](https://github.com/Glazkoff/carl-experiments/blob/main/examples/orchestration/loop_until_example.py)
+(no API key) shows a research loop that keeps searching until enough facts are
+gathered:
+
+```python
+body = [
+    ToolStepDescription(number=0, title="Search Facts",
+                        config=ToolStepConfig(tool_name="search_facts", input_mapping={})),
+    ToolStepDescription(number=0, title="Evaluate Research",
+                        config=ToolStepConfig(tool_name="evaluate_research", input_mapping={})),
+    ToolStepDescription(number=0, title="Check Done",
+                        config=ToolStepConfig(tool_name="check_done", input_mapping={})),
+]
+
+chain = (
+    ChainBuilder()
+    .add_until_loop(body_steps=body, condition_key="$metadata.step_3", max_iterations=10)
+    .build()
+)
+```
+
+After the run, the per-step iteration counts are in
+`context.metadata["loop_iteration_history"]`. The example also covers a
+retry-until-success loop, the manual `loop_back_to` / `loop_config` API, and an
+`add_while_loop` queue drainer.
+
 ## See also
 
 - [Loop example](https://github.com/Glazkoff/carl-experiments/blob/main/examples/orchestration/loop_until_example.py) in the repo.

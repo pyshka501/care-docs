@@ -16,6 +16,34 @@ step you drop into a chain.
 | [Parallel sampling](/carl/orchestration/parallel-sampling/) | `ParallelSamplingStepDescription` | sample N answers and vote / judge the best (LLM council). |
 | [Human-in-the-loop](/carl/orchestration/human-in-the-loop/) | `HumanInputStepDescription` | a human must approve or supply a value. |
 
+## Typed result-data views
+
+Each orchestration step records its details in `StepExecutionResult.result_data`
+(a loose `dict`). For the common patterns, CARL offers **typed views** so you can
+read fields without poking at dict keys. The accessors live on
+`StepExecutionResult` and return `None` when the step type doesn't match (or the
+payload doesn't validate), so they chain cleanly with the walrus operator:
+
+```python
+for sr in result.step_results:
+    if (debate := sr.as_debate_transcript()):
+        print(debate.verdict)
+        for turn in debate.transcript:          # list[DebateTurn]
+            print(turn.round, turn.role, turn.argument)
+```
+
+| Accessor | Returns | Key fields |
+| --- | --- | --- |
+| `sr.as_skill_output()` | `SkillOutput` | `skill_name`, `execution_mode`, `output_files`, `parsed_output`, `iterations`. |
+| `sr.as_debate_transcript()` | `DebateTranscript` | `verdict`, `transcript` (`list[DebateTurn]` of `round`/`role`/`argument`), `rounds_executed`. |
+| `sr.as_supervisor_decision()` | `SupervisorDecision` | `agent_selected`, `routing_reply`, `sub_result`, `sub_chain_success`, `steps_executed`. |
+| `sr.as_parallel_samples()` | `ParallelSamples` | `n_samples`, `n_successes`, `aggregation`, `candidates`. |
+
+The view models (`SkillOutput`, `DebateTranscript`, `DebateTurn`,
+`SupervisorDecision`, `ParallelSamples`) are importable from `mmar_carl`. They're
+permissive — extra or future keys are preserved rather than rejected — so reading
+through them never breaks on an upstream change.
+
 ## The event bus
 
 Steps can also coordinate by **events** instead of (or alongside) numeric

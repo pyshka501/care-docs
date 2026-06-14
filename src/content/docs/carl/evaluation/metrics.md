@@ -65,6 +65,40 @@ class WordCountMetric(MetricBase):
 they're custom metrics, not library imports.
 :::
 
+## Example
+
+The repo's [metrics example](https://github.com/Glazkoff/carl-experiments/blob/main/examples/evaluation/metrics_example.py)
+runs with a mock LLM client (no API key) and defines four custom metrics —
+`WordCountMetric`, `SentenceLengthMetric`, `KeywordCoverageMetric`, and a
+`MockLLMJudgeMetric` (an async, I/O-shaped stand-in for an LLM-as-a-judge). It
+attaches them at both granularities and reads the scores back off the result.
+
+```python
+steps = [
+    LLMStepDescription(
+        number=1, title="Data Overview", aim="Summarise the dataset",
+        metrics=[WordCountMetric(), SentenceLengthMetric()],
+    ),
+    LLMStepDescription(
+        number=2, title="Trend Analysis", aim="Identify revenue trends",
+        dependencies=[1],
+        metrics=[KeywordCoverageMetric(["growth", "revenue"]), MockLLMJudgeMetric()],
+    ),
+]
+
+# Chain-level metrics run on the final step's output.
+chain = ReasoningChain(steps=steps, metrics=[KeywordCoverageMetric(["recommend"])])
+result = await chain.execute_async(context)
+
+for sr in result.step_results:
+    print(sr.step_number, sr.metrics)   # per-step scores → StepExecutionResult.metrics
+print(result.metrics)                   # chain-level scores → ReasoningResult.metrics
+```
+
+Per-step scores land in `StepExecutionResult.metrics`; chain-level scores in
+`ReasoningResult.metrics`. A metric that raises never aborts execution — the
+score is simply omitted.
+
 ### Case-aware metrics
 
 When evaluating a [dataset](/carl/evaluation/datasets/), a metric can opt in to
