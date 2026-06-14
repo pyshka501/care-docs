@@ -1,6 +1,6 @@
 ---
 title: The TUI
-description: The CARE terminal interface — chat surface, modes, keys, and how a run unfolds.
+description: The MAESTRO CARE terminal interface — chat surface, modes, keys, and how a run unfolds.
 sidebar:
   order: 1
 ---
@@ -11,7 +11,7 @@ toggle above it.
 
 ## The chat surface
 
-- **Type a task** in natural language → MAGE generates a chain, CARL runs it, the
+- **Type a task** in natural language → MAGE generates a chain, MAESTRO CARE runs it, the
   answer prints inline.
 - **Type a [slash command](/care/slash-commands/overview/)** (`/help`, `/library`, …)
   for the non-chat affordances.
@@ -20,7 +20,7 @@ toggle above it.
 
 ### How a run unfolds
 
-As MAGE generates and CARL executes, the transcript shows a **stage trail** —
+As MAGE generates and MAESTRO CARE executes the chain, the transcript shows a **stage trail** —
 `▶ Friendly Label…` lines that complete to `✓`, with `⎿` sub-rows for details.
 The status bar tracks token usage live.
 

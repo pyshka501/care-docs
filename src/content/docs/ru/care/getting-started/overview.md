@@ -5,7 +5,11 @@ sidebar:
   order: 2
 ---
 
-**MAESTRO CARE** — это TUI на Textual и headless-CLI `care` для генерации, запуска
+Опишите задачу обычными словами — и **MAESTRO CARE** соберёт под неё AI-агента,
+запустит его у вас на глазах и будет улучшать результат, всё прямо в терминале,
+без ручной настройки пайплайнов.
+
+Если заглянуть под капот, **MAESTRO CARE** — это TUI на Textual и headless-CLI `care` для генерации, запуска
 и эволюции reasoning-цепочек в [формате CARL](/ru/carl/getting-started/quick-start/).
 Это продукт поверх стека из четырёх частей: **MAGE** (генерация), **CARL** (формат
 цепочек), **GigaEvo Memory** (хранение) и **GigaEvo Platform** (эволюция).

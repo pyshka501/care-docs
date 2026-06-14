@@ -1,11 +1,11 @@
 ---
 title: Examples
-description: Bundled example chains and the end-to-end CARE workflow.
+description: Bundled example chains and the end-to-end MAESTRO CARE workflow.
 sidebar:
   order: 1
 ---
 
-CARE ships a couple of ready-made chains you can validate, import, and run.
+MAESTRO CARE ships a couple of ready-made chains you can validate, import, and run.
 
 ## Bundled chains
 
@@ -35,7 +35,7 @@ care run <chain_id> --export chain.py             # export to a runnable module
 
 ## The end-to-end workflow
 
-The canonical CARE loop, start to finish:
+The canonical MAESTRO CARE loop, start to finish:
 
 1. **Generate** — type a task in the [chat surface](/care/tui/overview/) (or `care generate "<task>"`).
 2. **Run** — Ad-Hoc runs inline; Production saves to the [Library](/care/tui/screens/).
@@ -46,7 +46,7 @@ The canonical CARE loop, start to finish:
 ## Recording a demo
 
 `examples/asciicast/recording_script.md` has a keystroke script for recording an
-asciicast of a CARE session.
+asciicast of a MAESTRO CARE session.
 
 ## See also
 

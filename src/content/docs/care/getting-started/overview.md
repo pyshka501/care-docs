@@ -5,8 +5,12 @@ sidebar:
   order: 2
 ---
 
-**MAESTRO CARE** is a Textual TUI plus a headless `care` CLI for generating,
-running, and evolving reasoning chains written in the
+Describe a task in plain language, and **MAESTRO CARE** assembles an AI agent for
+it, runs it in front of you, and keeps improving the result — all from your
+terminal, with no pipelines to wire by hand.
+
+Under the hood, **MAESTRO CARE** is a Textual TUI plus a headless `care` CLI for
+generating, running, and evolving reasoning chains written in the
 [CARL format](/carl/getting-started/quick-start/). It is the product on top of a
 four-part stack: **MAGE** (generation), **CARL** (the chain format),
 **GigaEvo Memory** (persistence), and **GigaEvo Platform** (evolution).

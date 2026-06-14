@@ -1,12 +1,12 @@
 ---
 title: CARE Integration
-description: The 0.3.0 APIs that let CARE (and CARE-aware tools) save, re-run, and introspect chains.
+description: The 0.3.0 APIs that let MAESTRO CARE (and MAESTRO CARE-aware tools) save, re-run, and introspect chains.
 sidebar:
   order: 1
 ---
 
-CARL 0.3.0 added a typed surface that [CARE](/care/getting-started/quick-start/) (and
-any CARE-aware tool) uses to persist, re-run, and introspect chains. You can use
+CARL 0.3.0 added a typed surface that [MAESTRO CARE](/care/getting-started/quick-start/) (and
+any MAESTRO CARE-aware tool) uses to persist, re-run, and introspect chains. You can use
 these directly too.
 
 | Piece | What it's for |
@@ -15,6 +15,6 @@ these directly too.
 | [RunRecord](/carl/care-integration/run-record/) | A durable, replayable audit record of one execution (chain + input + result + timing). |
 | [CARE metadata](/carl/care-integration/metadata/) | A typed provenance block on the chain (task, attached files, tags) — and re-priming a context from it. |
 
-These are the building blocks behind CARE's Library: save a generated chain with
+These are the building blocks behind the MAESTRO CARE Library: save a generated chain with
 its metadata, preflight it before a re-run, execute, and store a `RunRecord` of
 each run.

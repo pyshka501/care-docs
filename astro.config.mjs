@@ -62,6 +62,12 @@ export default defineConfig({
 		starlight({
 			title: 'MAESTRO CARE',
 			favicon: '/favicon.png',
+			// Brand crystal mark from the landing (light/dark variants); wordmark stays.
+			logo: {
+				light: './src/assets/logo-light.svg',
+				dark: './src/assets/logo-dark.svg',
+				alt: 'MAESTRO CARE',
+			},
 			customCss: ['./src/styles/custom.css'],
 			// Client-side Mermaid rendering (build-safe; renders `<pre class="mermaid">`).
 			head: [

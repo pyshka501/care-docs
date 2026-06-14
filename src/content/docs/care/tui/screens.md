@@ -1,11 +1,11 @@
 ---
 title: Screens Reference
-description: Every CARE screen and modal — how to reach it and what it does.
+description: Every MAESTRO CARE screen and modal — how to reach it and what it does.
 sidebar:
   order: 2
 ---
 
-CARE ships a screen per lifecycle stage. The three you'll use most are the chat
+MAESTRO CARE ships a screen per lifecycle stage. The three you'll use most are the chat
 surface, the **Library**, and the **Evolution** screen.
 
 ## Primary screens

@@ -5,7 +5,7 @@ sidebar:
   order: 4
 ---
 
-CARE stamps a typed provenance block onto `chain.metadata["care"]` so a saved chain
+MAESTRO CARE stamps a typed provenance block onto `chain.metadata["care"]` so a saved chain
 remembers the task it was generated for, the files attached, who made it, and its
 tags. You can read/write it with two `ReasoningChain` methods.
 
@@ -22,7 +22,7 @@ chain.set_care_metadata(
     tags=["finance", "summary"],
 )
 
-# or hand over a ready model (CARE's usual path)
+# or hand over a ready model (MAESTRO CARE's usual path)
 chain.set_care_metadata(meta=CareChainMetadata(task_description="..."))
 
 meta = chain.get_care_metadata()   # -> CareChainMetadata | None
@@ -30,7 +30,7 @@ meta = chain.get_care_metadata()   # -> CareChainMetadata | None
 
 Pass **either** `meta=` **or** the individual kwargs — mixing raises `ValueError`.
 `get_care_metadata()` returns `None` when the chain has no `care` block (i.e. it
-wasn't created by a CARE-aware tool).
+wasn't created by a MAESTRO CARE-aware tool).
 
 ### CareChainMetadata fields
 

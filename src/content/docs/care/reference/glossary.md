@@ -1,18 +1,18 @@
 ---
 title: Glossary
-description: Key CARE terms in one place.
+description: Key MAESTRO CARE terms in one place.
 sidebar:
   order: 2
 ---
 
 | Term | Meaning |
 | --- | --- |
-| **CARE** | Collaborative Agent Reasoning Ecosystem — the TUI + `care` CLI you interact with. |
-| **CARL** | Collaborative Agent Reasoning Library — the engine that *runs* chains. See the [CARL docs](/carl/getting-started/quick-start/). |
+| **MAESTRO CARE** | The product you interact with — a Textual TUI plus the headless `care` CLI. (*CARE* = Collaborative Agent Reasoning Ecosystem.) |
+| **CARL** | The format reasoning chains are written in — typed steps, dependencies, and DAG execution. Reference library: `mmar-carl` (Collaborative Agent Reasoning Library). See the [CARL docs](/carl/getting-started/quick-start/). |
 | **MAGE** | The generator that turns a task into a CARL chain. |
 | **GigaEvo Memory** | The store for saved entities (chains, agents, skills, run records) — the Library. |
 | **GigaEvo Platform** | The evolution service (genetic search over chains). |
-| **Chain** | A CARL reasoning chain — the unit MAGE generates and CARL executes. |
+| **Chain** | A reasoning chain in the CARL format — the unit MAGE generates and MAESTRO CARE runs. |
 | **`chain_id`** | The stable id a chain is saved under in Memory. |
 | **Agent** | A saved, named chain in the Library you return to and re-run. |
 | **AgentSkill** | A portable skill folder (`SKILL.md` + scripts) a chain can run. See [Capabilities](/care/capabilities/overview/). |

@@ -1,18 +1,18 @@
 ---
 title: Глоссарий
-description: Ключевые термины CARE в одном месте.
+description: Ключевые термины MAESTRO CARE в одном месте.
 sidebar:
   order: 2
 ---
 
 | Термин | Значение |
 | --- | --- |
-| **CARE** | Collaborative Agent Reasoning Ecosystem — TUI + CLI `care`, с которым вы работаете. |
-| **CARL** | Collaborative Agent Reasoning Library — движок, который *запускает* цепочки. См. [документацию CARL](/ru/carl/getting-started/quick-start/). |
+| **MAESTRO CARE** | Продукт, с которым вы работаете, — TUI на Textual и headless-CLI `care`. (*CARE* = Collaborative Agent Reasoning Ecosystem.) |
+| **CARL** | Формат, в котором описываются reasoning-цепочки, — типизированные шаги, зависимости и исполнение по DAG. Референсная библиотека: `mmar-carl` (Collaborative Agent Reasoning Library). См. [документацию CARL](/ru/carl/getting-started/quick-start/). |
 | **MAGE** | Генератор, превращающий задачу в CARL-цепочку. |
 | **GigaEvo Memory** | Хранилище сохранённых сущностей (цепочки, агенты, навыки, записи запусков) — Библиотека. |
 | **GigaEvo Platform** | Сервис эволюции (генетический поиск по цепочкам). |
-| **Цепочка (Chain)** | Цепочка рассуждений CARL — единица, которую MAGE генерирует, а CARL исполняет. |
+| **Цепочка (Chain)** | Цепочка рассуждений в формате CARL — единица, которую MAGE генерирует, а MAESTRO CARE запускает. |
 | **`chain_id`** | Стабильный идентификатор, под которым цепочка сохраняется в Memory. |
 | **Агент (Agent)** | Сохранённая именованная цепочка в Библиотеке, к которой вы возвращаетесь и повторно запускаете. |
 | **AgentSkill** | Переносимая папка навыка (`SKILL.md` + скрипты), которую может запускать цепочка. См. [Возможности](/ru/care/capabilities/overview/). |
