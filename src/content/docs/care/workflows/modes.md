@@ -19,7 +19,7 @@ The toggle above the prompt (or `/mode`) picks one of two modes. They differ in
 
 ## Ad-Hoc
 
-The fast path. Type a task → MAGE generates → CARL runs → the answer prints. The
+The fast path. Type a task → MAGE generates → MAESTRO CARE runs → the answer prints. The
 agent may iterate (ReAct) until done; when several steps succeed MAESTRO CARE makes one
 extra call to synthesise a single coherent reply. Ad-Hoc keeps a short rolling
 history (`CARE_CHAT__AD_HOC_HISTORY_TURNS`, default 6) so follow-ups have context.

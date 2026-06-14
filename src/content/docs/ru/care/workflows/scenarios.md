@@ -17,7 +17,7 @@ sidebar:
    ```text
    Summarise the key risks in @report.pdf and rank them by severity.
    ```
-3. Ответ печатается inline. Продолжайте в том же треде; `/new` начинает заново.
+3. Ответ печатается инлайн. Продолжайте в том же треде; `/new` начинает заново.
 
 ## 2. Сборка и эволюция Production-агента
 

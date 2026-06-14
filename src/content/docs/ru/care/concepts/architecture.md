@@ -8,12 +8,15 @@ sidebar:
 MAESTRO CARE — продукт на вершине стека из четырёх частей. Каждая часть отвечает
 за один этап жизни цепочки.
 
-```text
-                    ┌──────── GigaEvo Memory ────────┐  (save / load)
-                    ▼                                 │
-You → MAESTRO CARE → MAGE ──CARL-цепочка──▶ MAESTRO CARE ┘  (запуск)
-                                              │
-                                              └──evolve──▶ GigaEvo Platform ──winner──▶ Memory
+```mermaid
+flowchart LR
+    User([Вы]) --> Care["MAESTRO CARE"]
+    Care -->|задача| MAGE
+    MAGE -->|CARL-цепочка| Care
+    Care -->|запуск| Result([Результат])
+    Care <-->|сохранить / загрузить| Memory[(GigaEvo Memory)]
+    Care -->|эволюция| Platform[GigaEvo Platform]
+    Platform -->|победитель| Memory
 ```
 
 | Часть | Пакет | Этап | Роль |
