@@ -94,6 +94,12 @@ fixTitle();
 document.addEventListener('astro:page-load', fixTitle);
 `,
 				},
+				{
+					// First-visit default-language redirect: Russian-browser visitors land on
+					// /ru/ (URLs unchanged for everyone else). Runs once; respects later switching.
+					tag: 'script',
+					content: `(function(){try{var K='care-docs-lang';if(localStorage.getItem(K))return;localStorage.setItem(K,'auto');var b='${base}';var p=location.pathname;var isRu=(navigator.language||'').toLowerCase().indexOf('ru')===0;var onRu=p.indexOf(b+'/ru/')===0||p===b+'/ru';if(isRu&&!onRu&&p.indexOf(b)===0){var rest=p.slice(b.length);location.replace(b+'/ru'+(rest===''||rest==='/'?'/':rest)+location.search+location.hash);}}catch(e){}})();`,
+				},
 			],
 			// Code blocks follow the site theme: light code on light pages, dark on dark.
 			expressiveCode: { themes: ['github-dark', 'github-light'] },
