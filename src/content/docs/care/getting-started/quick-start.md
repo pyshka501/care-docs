@@ -2,7 +2,7 @@
 title: Quick Start
 description: Boot MAESTRO CARE and generate your first chain in the CARL format in five minutes.
 sidebar:
-  order: 1
+  order: 2
 ---
 
 Get from a fresh checkout to a running agent in about five minutes.

@@ -5,7 +5,7 @@ sidebar:
   order: 1
 ---
 
-CARL 0.3.0 added a typed surface that [MAESTRO CARE](/care/getting-started/quick-start/) (and
+CARL 0.3.0 added a typed surface that [MAESTRO CARE](/care/getting-started/overview/) (and
 any MAESTRO CARE-aware tool) uses to persist, re-run, and introspect chains. You can use
 these directly too.
 

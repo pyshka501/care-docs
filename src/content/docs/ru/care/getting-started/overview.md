@@ -2,7 +2,7 @@
 title: Что такое MAESTRO CARE?
 description: TUI и CLI, которые генерируют, запускают и эволюционируют reasoning-цепочки в формате CARL.
 sidebar:
-  order: 2
+  order: 1
 ---
 
 **MAESTRO CARE** — это TUI на Textual и headless-CLI `care` для генерации, запуска

@@ -2,7 +2,7 @@
 title: What is MAESTRO CARE?
 description: A TUI and CLI that generates, runs, and evolves reasoning chains written in the CARL format.
 sidebar:
-  order: 2
+  order: 1
 ---
 
 **MAESTRO CARE** is a Textual TUI plus a headless `care` CLI for generating,

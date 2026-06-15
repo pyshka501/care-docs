@@ -115,7 +115,7 @@ document.addEventListener('astro:page-load', fixTitle);
 				starlightSidebarTopics([
 					{
 						label: 'MAESTRO CARE',
-						link: '/care/getting-started/quick-start/',
+						link: '/care/getting-started/overview/',
 						icon: 'laptop',
 						items: [
 							{
