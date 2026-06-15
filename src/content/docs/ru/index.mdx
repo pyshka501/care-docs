@@ -13,6 +13,9 @@ hero:
     - text: Формат CARL
       link: carl/getting-started/quick-start/
       variant: minimal
+    - text: Agent Skill
+      link: care/skill/overview/
+      variant: minimal
 ---
 
 import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
@@ -29,6 +32,11 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 		title="CARL → формат цепочек"
 		href="carl/getting-started/quick-start/"
 		description="Формат, в котором описываются reasoning-цепочки: типизированные шаги, зависимости и контекст под каждый шаг. Начать отсюда, чтобы понять устройство цепочки."
+	/>
+	<LinkCard
+		title="Agent Skill → управляйте CARE из агента"
+		href="care/skill/overview/"
+		description="Скачиваемый скилл формата agentskills.io: даёт Claude Code или hermes запускать CLI `care` — генерировать, запускать и эволюционировать цепочки — с переносимым автоопределением. Начать отсюда, чтобы установить."
 	/>
 </CardGrid>
 
