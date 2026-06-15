@@ -22,7 +22,7 @@ flowchart LR
 | Part | Package | Stage | Role |
 | --- | --- | --- | --- |
 | **MAGE** | `mmar-mage` | Generation | Turns a natural-language task into a CARL chain. |
-| **CARL** | `mmar-carl` | Chain format | The format every chain is written in — typed steps, dependencies (DAG), and per-step context. See the [CARL docs](/carl/getting-started/quick-start/). |
+| **CARL** | `mmar-carl` | Chain format | The format every chain is written in — typed steps, dependencies (DAG), and per-step context. See the [CARL docs](/carl/getting-started/overview/). |
 | **GigaEvo Memory** | `gigaevo-client` | Persistence | Stores entities (chain / agent / agent_skill / memory_card), the library, run history. |
 | **GigaEvo Platform** | — | Evolution | Genetic search over chains; accept-and-promote the winner. |
 
@@ -52,4 +52,4 @@ auto-falls back to [Ad-Hoc](/care/getting-started/overview/).
 ## See also
 
 - [What is MAESTRO CARE?](/care/getting-started/overview/) — modes and the big picture.
-- [CARL](/carl/getting-started/quick-start/) — the chain format, documented in full.
+- [CARL](/carl/getting-started/overview/) — the chain format, documented in full.

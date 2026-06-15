@@ -7,7 +7,7 @@ sidebar:
 
 **MAESTRO CARE** is a Textual TUI plus a headless `care` CLI for generating,
 running, and evolving reasoning chains written in the
-[CARL format](/carl/getting-started/quick-start/). It is the product on top of a
+[CARL format](/carl/getting-started/overview/). It is the product on top of a
 four-part stack: **MAGE** (generation), **CARL** (the chain format),
 **GigaEvo Memory** (persistence), and **GigaEvo Platform** (evolution).
 

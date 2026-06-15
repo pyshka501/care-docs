@@ -6,7 +6,7 @@ sidebar:
 ---
 
 **MAESTRO CARE** — это TUI на Textual и headless-CLI `care` для генерации, запуска
-и эволюции reasoning-цепочек в [формате CARL](/ru/carl/getting-started/quick-start/).
+и эволюции reasoning-цепочек в [формате CARL](/ru/carl/getting-started/overview/).
 Это продукт поверх стека из четырёх частей: **MAGE** (генерация), **CARL** (формат
 цепочек), **GigaEvo Memory** (хранение) и **GigaEvo Platform** (эволюция).
 

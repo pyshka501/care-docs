@@ -19,7 +19,7 @@ You → MAESTRO CARE → MAGE ──CARL-цепочка──▶ MAESTRO CARE �
 | Часть | Пакет | Этап | Роль |
 | --- | --- | --- | --- |
 | **MAGE** | `mmar-mage` | Генерация | Превращает задачу на естественном языке в CARL-цепочку. |
-| **CARL** | `mmar-carl` | Формат цепочек | Формат, в котором описана каждая цепочка — типизированные шаги, зависимости (DAG) и контекст под каждый шаг. См. [документацию CARL](/ru/carl/getting-started/quick-start/). |
+| **CARL** | `mmar-carl` | Формат цепочек | Формат, в котором описана каждая цепочка — типизированные шаги, зависимости (DAG) и контекст под каждый шаг. См. [документацию CARL](/ru/carl/getting-started/overview/). |
 | **GigaEvo Memory** | `gigaevo-client` | Хранение | Хранит сущности (chain / agent / agent_skill / memory_card), библиотеку, историю запусков. |
 | **GigaEvo Platform** | — | Эволюция | Генетический поиск по цепочкам; принять и продвинуть победителя. |
 
@@ -50,4 +50,4 @@ Memory режим Production автоматически откатывается
 ## Смотрите также
 
 - [Что такое MAESTRO CARE?](/ru/care/getting-started/overview/) — режимы и общая картина.
-- [CARL](/ru/carl/getting-started/quick-start/) — формат цепочек, документирован полностью.
+- [CARL](/ru/carl/getting-started/overview/) — формат цепочек, документирован полностью.

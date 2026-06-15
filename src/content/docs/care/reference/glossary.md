@@ -8,7 +8,7 @@ sidebar:
 | Term | Meaning |
 | --- | --- |
 | **MAESTRO CARE** | Collaborative Agent Reasoning Ecosystem — the TUI + `care` CLI you interact with. |
-| **CARL** | Collaborative Agent Reasoning Library — the format reasoning chains are written in (and the library that runs them). See the [CARL docs](/carl/getting-started/quick-start/). |
+| **CARL** | Collaborative Agent Reasoning Library — the format reasoning chains are written in (and the library that runs them). See the [CARL docs](/carl/getting-started/overview/). |
 | **MAGE** | The generator that turns a task into a CARL chain. |
 | **GigaEvo Memory** | The store for saved entities (chains, agents, skills, run records) — the Library. |
 | **GigaEvo Platform** | The evolution service (genetic search over chains). |
