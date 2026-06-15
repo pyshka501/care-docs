@@ -77,10 +77,15 @@
 	color: #0f1115;
 }
 
-/* Hero mascot — show the whole sprite (don't crop the tail/feet). */
+/* Hero mascot — show the whole sprite (don't crop the tail/feet).
+   Cap the size and center it in its column so the tail/fins keep clear of
+   the hero edge instead of sitting flush against it. */
 .hero img {
 	object-fit: contain;
 	max-height: none;
+	max-width: 300px;
+	height: auto;
+	margin-inline: auto;
 }
 
 /* Crisper inline code in the brand mono face */
