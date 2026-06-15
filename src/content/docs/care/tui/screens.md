@@ -18,7 +18,7 @@ surface, the **Library**, and the **Evolution** screen.
 | Inspection | Library `Enter` | Saved-chain detail + run history + Integration pane. |
 | Edit Agent | Library `e` | Inline edit + save-as-new-version + promote-to-stable. |
 | Execution | Library `r` | Live CARL run + token streaming. |
-| Evolution | `/evolution` | Run + watch a GA over a chain; Pareto front, fitness curve, cost meter, accept. |
+| Evolution | `/evolution` | Run + watch a GA over a chain — tabbed view (Fitness chart · Pareto front · Programs · Versions) with Stop+Archive / Accept-winner controls (see [below](#the-evolution-screen)). |
 | Evolution Dashboard | `/evolution` | List of active + recent runs; Enter opens a run, `c` compares two. |
 | Replay | Runs `Enter` | Step through a saved `ReasoningResult`. |
 | Runs | `/runs` | Local run history; Enter opens the Replay sidecar. |
@@ -53,6 +53,24 @@ surface, the **Library**, and the **Evolution** screen.
 | Save Report | after save-all | Post-mortem table of save-all outcomes. |
 | Tag Editor | Library `T` | Edit tags (bulk) + optional title. |
 | Use It Now | post-save | Copy-paste recipe (python / curl / cli) for the saved chain. |
+
+## The Evolution screen
+
+`/evolution` — or **Library → `v`/`E`** (the Evolution Launch picker) — opens a live
+view of a genetic-algorithm run over a chain. It's organised as tabs:
+
+| Tab | Shows |
+| --- | --- |
+| **Fitness** | A two-axis line chart — **best fitness** and the **current-generation mean** vs. generation — so you can watch progress and spot plateaus. |
+| **Pareto Front** | A table of non-dominated individuals; for runs with ≥ 2 objectives, a 2D scatter sits beneath it. |
+| **Programs** | Valid vs. invalid program counts. |
+| **Versions** | Every generation where best fitness strictly improved — pick one to preview its chain or diff it against the parent. |
+
+Controls along the bottom: **Back**, **Stop + Archive** (`z` — halts the run
+server-side and archives it), and **Accept winner** (promotes the best individual into
+the **stable** channel). `D` diffs the selected version against its parent; `Esc`
+cancels. See [Launching evolution](/care/workflows/production/#evolution--improve-automatically)
+for the ways to start a run.
 
 :::note
 Statuses in the source mark a few surfaces as M1/planned (e.g. the uvx Onboarding

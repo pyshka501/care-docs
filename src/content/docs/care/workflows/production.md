@@ -67,13 +67,27 @@ chain against them. The CLI twin builds + scores datasets headlessly.
 
 ### Evolution — improve automatically
 
+You can launch an evolution run three ways:
+
+1. **Automatically** — in Production, a successful baseline kicks one off (step 5 above).
+2. **From the TUI** — open a saved chain in the [Library](/care/tui/screens/) and press
+   `v` / `E` to set budget / rubric / objectives, then follow it on the
+   [Evolution screen](/care/tui/screens/#the-evolution-screen) (Fitness chart · Pareto
+   front · Versions).
+3. **Headless** — [`care evolve <chain_id> --iterations 8 --wait --accept`](/care/cli/capabilities/).
+
+Watch and steer a run from chat:
+
 ```text
 /evolution <run_id>              # render the run's state inline
 /evolution watch <run_id>        # stream events live
 /evolution accept <run_id> <individual_id>   # promote the winner
 ```
 
-Or headless: [`care evolve <chain_id> --wait --accept`](/care/cli/capabilities/).
+The GA optimises against the chain's **dataset** (the fitness signal), so seed a few
+[dataset entries](#datasets--measure-quality) first. Accepting a winner — via
+`/evolution accept`, the Evolution screen's **Accept winner** button, or `care evolve
+--accept` — promotes the best individual into the **stable** channel.
 
 ### Lifecycle
 

@@ -67,13 +67,26 @@ Baseline-прогон засевает запись №1; добавьте бо�
 
 ### Эволюция — улучшайте автоматически
 
+Запустить эволюционный прогон можно тремя способами:
+
+1. **Автоматически** — в Production успешный baseline запускает прогон (шаг 5 выше).
+2. **Из TUI** — откройте сохранённую цепочку в [Библиотеке](/ru/care/tui/screens/) и нажмите
+   `v` / `E`, чтобы задать бюджет / рубрику / цели, затем следите за прогоном на
+   [экране Эволюции](/ru/care/tui/screens/) (график приспособленности · фронт Парето · версии).
+3. **Headless** — [`care evolve <chain_id> --iterations 8 --wait --accept`](/ru/care/cli/capabilities/).
+
+Наблюдайте и управляйте прогоном из чата:
+
 ```text
 /evolution <run_id>              # render the run's state inline
 /evolution watch <run_id>        # stream events live
 /evolution accept <run_id> <individual_id>   # promote the winner
 ```
 
-Или headless: [`care evolve <chain_id> --wait --accept`](/ru/care/cli/capabilities/).
+ГА оптимизирует относительно **датасета** цепочки (это сигнал приспособленности), поэтому
+сначала засейте несколько записей датасета. Принять победителя можно через
+`/evolution accept`, кнопкой **Accept winner** на экране Эволюции или `care evolve --accept` —
+лучшая особь продвигается в **stable**-канал.
 
 ### Жизненный цикл
 
