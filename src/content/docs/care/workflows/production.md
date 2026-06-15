@@ -89,6 +89,18 @@ The GA optimises against the chain's **dataset** (the fitness signal), so seed a
 `/evolution accept`, the Evolution screen's **Accept winner** button, or `care evolve
 --accept` — promotes the best individual into the **stable** channel.
 
+### Deploy — serve as an HTTP agent
+
+Ship a saved chain to the [agent hub](/care/workflows/deploy/) so it runs as an HTTP
+agent with its own Swagger UI:
+
+```text
+/deploy <ref> [--channel <ch>] [--name <agent>]   # default channel: stable
+```
+
+Needs the `deploy` extra (`pip install "maestro-care[deploy]"`). Full guide:
+[Deploying agents](/care/workflows/deploy/).
+
 ### Lifecycle
 
 ```text

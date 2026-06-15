@@ -30,6 +30,8 @@ sidebar:
 
 | Команда | Что делает |
 | --- | --- |
+| `/deploy <ref> [--channel X] [--name Y]` | Развернуть сохранённую цепочку в [agent hub](/ru/care/workflows/deploy/) как HTTP-агента (канал по умолчанию: `stable`). |
+| `/promote <chain_id> <version>` | Продвинуть версию (или принятого победителя эволюции) в **stable**-канал. |
 | `/upload <chain_id>` | POST цепочки на `CARE_UPLOAD__URL`. |
 | `/forget <chain_id> [--force]` | Мягкое удаление цепочки + её датасета. |
 

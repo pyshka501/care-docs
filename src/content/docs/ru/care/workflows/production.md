@@ -88,6 +88,18 @@ Baseline-прогон засевает запись №1; добавьте бо�
 `/evolution accept`, кнопкой **Accept winner** на экране Эволюции или `care evolve --accept` —
 лучшая особь продвигается в **stable**-канал.
 
+### Развёртывание — обслуживать как HTTP-агента
+
+Отправьте сохранённую цепочку в [agent hub](/ru/care/workflows/deploy/), чтобы она
+работала как HTTP-агент с собственным Swagger UI:
+
+```text
+/deploy <ref> [--channel <ch>] [--name <agent>]   # канал по умолчанию: stable
+```
+
+Нужен extra `deploy` (`pip install "maestro-care[deploy]"`). Полный гайд:
+[Развёртывание агентов](/ru/care/workflows/deploy/).
+
 ### Жизненный цикл
 
 ```text

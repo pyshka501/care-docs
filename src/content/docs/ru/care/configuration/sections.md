@@ -43,6 +43,7 @@ sidebar:
 
 | Секция | Что настраивать |
 | --- | --- |
+| `hub` | `CARE_HUB__*` — [agent hub](/ru/care/workflows/deploy/) для `/deploy` (`base_url`, `port`, `autostart`, `state_file`). |
 | `upload` | `CARE_UPLOAD__URL` — эндпоинт для `/upload`. |
 | `sandbox` | Бэкенд (`local` / `docker` / `e2b` / `firejail`) + лимиты ресурсов для AgentSkills. |
 | `tools` | Реестр `@carl_tool`, встроенные инструменты (web_search…), синтез на лету. |

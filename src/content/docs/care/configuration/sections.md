@@ -42,6 +42,7 @@ needs (written by [`care init`](/care/cli/setup/)).
 
 | Section | What to set |
 | --- | --- |
+| `hub` | `CARE_HUB__*` — the [agent hub](/care/workflows/deploy/) for `/deploy` (`base_url`, `port`, `autostart`, `state_file`). |
 | `upload` | `CARE_UPLOAD__URL` — endpoint for `/upload`. |
 | `sandbox` | Backend (`local` / `docker` / `e2b` / `firejail`) + resource limits for AgentSkills. |
 | `tools` | `@carl_tool` registry, bundled builtins (web_search…), on-the-fly synthesis. |
