@@ -63,3 +63,8 @@ Detailed pages (in the sidebar): [Generate, Run & Replay](/care/cli/generate-run
 [Setup](/care/cli/setup/) · [Discovery & Validation](/care/cli/discovery/) ·
 [Memory & Library](/care/cli/memory/) · [Capabilities & Evolution](/care/cli/capabilities/).
 :::
+
+:::note[Driving `care` from an agent?]
+Install the [care-cli Agent Skill](/care/skill/overview/) — it teaches Claude Code or
+hermes to run every command above, with portable auto-detection of `care`.
+:::

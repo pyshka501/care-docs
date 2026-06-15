@@ -132,6 +132,11 @@ document.addEventListener('astro:page-load', render);
 								items: [{ autogenerate: { directory: 'care/cli' } }],
 							},
 							{
+								label: 'Agent Skill',
+								translations: { ru: 'Скилл агента' },
+								items: [{ autogenerate: { directory: 'care/skill' } }],
+							},
+							{
 								label: 'TUI',
 								translations: { ru: 'TUI' },
 								items: [{ autogenerate: { directory: 'care/tui' } }],

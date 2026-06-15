@@ -61,3 +61,8 @@ sidebar:
 :::note
 Детальные страницы по каждой команде ещё наполняются — см. [мастер-план](https://github.com/pyshka501/care-docs/blob/main/todo.md).
 :::
+
+:::note[Управляете `care` из агента?]
+Установите [Agent Skill care-cli](/ru/care/skill/overview/) — он учит Claude Code или
+hermes запускать все команды выше, с переносимым автоопределением `care`.
+:::
