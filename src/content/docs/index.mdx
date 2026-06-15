@@ -13,6 +13,9 @@ hero:
     - text: The CARL format
       link: carl/getting-started/quick-start/
       variant: minimal
+    - text: Agent Skill
+      link: care/skill/overview/
+      variant: minimal
 ---
 
 import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
@@ -29,6 +32,11 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 		title="CARL → the chain format"
 		href="carl/getting-started/quick-start/"
 		description="The format reasoning chains are written in: typed steps, dependencies, and per-step context. Start here to learn how a chain is structured."
+	/>
+	<LinkCard
+		title="Agent Skill → drive CARE from an agent"
+		href="care/skill/overview/"
+		description="A downloadable agentskills.io skill that lets Claude Code or hermes run the `care` CLI — generate, run, and evolve chains — with portable auto-detection. Start here to install it."
 	/>
 </CardGrid>
 
