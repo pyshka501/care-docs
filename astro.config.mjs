@@ -83,6 +83,17 @@ render();
 document.addEventListener('astro:page-load', render);
 `,
 				},
+				{
+					// Brand wordmark (top-left "MAESTRO CARE") links to the marketing landing site.
+					tag: 'script',
+					attrs: { type: 'module' },
+					content: `
+const LANDING = 'https://glazkoff.github.io/care-landing/';
+const fixTitle = () => document.querySelectorAll('a.site-title').forEach((a) => a.setAttribute('href', LANDING));
+fixTitle();
+document.addEventListener('astro:page-load', fixTitle);
+`,
+				},
 			],
 			// Code blocks follow the site theme: light code on light pages, dark on dark.
 			expressiveCode: { themes: ['github-dark', 'github-light'] },

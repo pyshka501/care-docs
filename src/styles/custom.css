@@ -49,6 +49,8 @@
 	border-radius: 999px;
 	font-weight: 700;
 	border: 2px solid var(--sl-color-accent);
+	/* Roomy horizontal padding so text clears the rounded pill ends. */
+	padding-inline: 1.9rem;
 	transition: background-color 0.2s ease, color 0.2s ease;
 }
 .hero .sl-link-button.primary {
