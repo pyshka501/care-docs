@@ -8,7 +8,7 @@ sidebar:
 | Термин | Значение |
 | --- | --- |
 | **MAESTRO CARE** | Collaborative Agent Reasoning Ecosystem — TUI + CLI `care`, с которым вы работаете. |
-| **CARL** | Collaborative Agent Reasoning Library — движок, который *запускает* цепочки. См. [документацию CARL](/ru/carl/getting-started/quick-start/). |
+| **CARL** | Collaborative Agent Reasoning Library — формат, в котором описываются цепочки рассуждений (и библиотека, которая их исполняет). См. [документацию CARL](/ru/carl/getting-started/quick-start/). |
 | **MAGE** | Генератор, превращающий задачу в CARL-цепочку. |
 | **GigaEvo Memory** | Хранилище сохранённых сущностей (цепочки, агенты, навыки, записи запусков) — Библиотека. |
 | **GigaEvo Platform** | Сервис эволюции (генетический поиск по цепочкам). |

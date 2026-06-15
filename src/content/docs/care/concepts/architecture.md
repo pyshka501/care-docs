@@ -45,7 +45,7 @@ optionally evolve A and accept the best individual back into the stable channel.
 
 MAESTRO CARE imports every upstream module **lazily** — inside the function that
 needs it. So a minimal install still boots the CLI and TUI; a missing piece (e.g.
-the optional `care[carl]` extra, or an unconfigured Memory URL) surfaces as a
+the optional `maestro-care[carl]` extra, or an unconfigured Memory URL) surfaces as a
 friendly hint rather than a crash. Without Memory configured, Production mode
 auto-falls back to [Ad-Hoc](/care/getting-started/overview/).
 

@@ -78,7 +78,7 @@ print(result.get_final_output())
 ```
 
 `chain.execute(context)` runs synchronously. For async / streaming, use
-`await chain.execute_async(context)` — see [async execution](/carl/getting-started/overview/).
+`await chain.execute_async(context)` — see [async execution](/carl/async/overview/).
 
 ## Next steps
 

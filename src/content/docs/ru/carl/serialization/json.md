@@ -46,7 +46,28 @@ s = chain.to_json();   ReasoningChain.from_json(s)
 `sub_chain` (handoff), `agents` (supervisor), `metrics`, `cache.key_fn` и колбэки
 `ReasoningContext`. Переподключите их в коде после загрузки.
 
+## Сериализация результата
+
+Результаты тоже сериализуются туда и обратно — можно сохранить выполнение без
+потерь и перезагрузить его позже (именно это оборачивает
+[`RunRecord`](/ru/carl/care-integration/run-record/)):
+
+```python
+result = chain.execute(context)
+
+result.save("result.json")                 # lossless by default
+loaded = ReasoningResult.load("result.json")
+
+d = result.to_dict(full=True)              # full=True keeps every step's detail
+ReasoningResult.from_dict(d)
+s = result.to_json();  ReasoningResult.from_json(s)
+```
+
+Результаты по отдельным шагам сериализуются индивидуально через
+`StepExecutionResult.to_dict(truncate=False)` / `from_dict` — `truncate` управляет
+тем, обрезаются ли длинные выводы шагов.
+
 ## Смотрите также
 
 - [Миграция: legacy → типизированные шаги](/ru/carl/serialization/migration/)
-- [ReasoningChain](/ru/carl/chains/overview/)
+- [ReasoningChain](/ru/carl/chains/overview/) · [RunRecord](/ru/carl/care-integration/run-record/)

@@ -35,13 +35,14 @@ and `[chat] default_mode = "production"` is `CARE_CHAT__DEFAULT_MODE=production`
 
 ## Sections
 
-`CareConfig` nests eleven sections, each with the env prefix `CARE_<SECTION>__`:
+`CareConfig` nests twelve sections, each with the env prefix `CARE_<SECTION>__`:
 
 | Section | Env prefix | Purpose |
 | --- | --- | --- |
 | `mage` | `CARE_MAGE__*` | MAGE generator (provider, API key, model, mode). |
 | `memory` | `CARE_MEMORY__*` | GigaEvo Memory connection. |
 | `platform` | `CARE_PLATFORM__*` | GigaEvo Platform connection (evolution). |
+| `hub` | `CARE_HUB__*` | Agent hub for `/deploy`. |
 | `upload` | `CARE_UPLOAD__*` | Artifact-upload endpoint (`/upload`). |
 | `sandbox` | `CARE_SANDBOX__*` | AgentSkill sandbox backend + limits. |
 | `tools` | `CARE_TOOLS__*` | `@carl_tool` registry + bundled builtins + synthesis. |

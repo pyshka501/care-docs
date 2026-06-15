@@ -14,11 +14,11 @@ warning. Check with [`care doctor`](/care/cli/setup/).
 
 ## "Install hint" instead of running a chain
 
-CARL execution is the optional `care[carl]` extra. If `care run --execute` (or an
+CARL execution is the optional `maestro-care[carl]` extra. If `care run --execute` (or an
 in-chat run) reports a missing dependency, install it:
 
 ```bash
-uv sync --extra carl     # or: pip install 'care[carl]'
+uv sync --extra carl     # or: pip install 'maestro-care[carl]'
 ```
 
 MAESTRO CARE imports upstreams lazily, so a minimal install still boots — the hint tells

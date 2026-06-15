@@ -68,7 +68,7 @@ MAESTRO CARE автоматически запускает его при пер�
 | `port` | `8080` | Порт, на котором работает autostart (должен совпадать с `base_url`). |
 | `autostart` | `true` | Запускать хаб, когда он не работает. |
 | `state_file` | `~/.care/agent-hub.json` | Где хаб сохраняет развёртывания. |
-| `agent_server_cmd` | `["carl-agent-hub", "serve"]` | Команда, которую CARE запускает для autostart (к ней добавляются `--port` / `--state-file`). |
+| `agent_server_cmd` | `["carl-agent-hub", "serve"]` | Команда, которую MAESTRO CARE запускает для autostart (к ней добавляются `--port` / `--state-file`). |
 | `start_timeout` | `15` | Сколько секунд ждать `/healthz` после autostart. |
 | `timeout` | `30` | Таймаут на запрос для вызовов control-API. |
 

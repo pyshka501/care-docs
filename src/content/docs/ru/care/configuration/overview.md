@@ -35,13 +35,14 @@ CARE_MAGE__MODEL="qwen/qwen3-coder"
 
 ## Секции
 
-`CareConfig` включает одиннадцать секций, каждая с env-префиксом `CARE_<СЕКЦИЯ>__`:
+`CareConfig` включает двенадцать секций, каждая с env-префиксом `CARE_<СЕКЦИЯ>__`:
 
 | Секция | Env-префикс | Назначение |
 | --- | --- | --- |
 | `mage` | `CARE_MAGE__*` | Генератор MAGE (провайдер, API-ключ, модель, режим). |
 | `memory` | `CARE_MEMORY__*` | Подключение к GigaEvo Memory. |
 | `platform` | `CARE_PLATFORM__*` | Подключение к GigaEvo Platform (эволюция). |
+| `hub` | `CARE_HUB__*` | Agent hub для `/deploy`. |
 | `upload` | `CARE_UPLOAD__*` | Эндпоинт загрузки артефактов (`/upload`). |
 | `sandbox` | `CARE_SANDBOX__*` | Бэкенд песочницы AgentSkill + лимиты. |
 | `tools` | `CARE_TOOLS__*` | Реестр `@carl_tool` + встроенные инструменты + синтез. |

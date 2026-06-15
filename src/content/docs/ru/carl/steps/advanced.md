@@ -28,7 +28,7 @@ MCPStepDescription(
 )
 ```
 
-→ Полное руководство: **раздел MCP** (готовится).
+→ Полное руководство: [Обзор MCP](/ru/carl/mcp/overview/).
 
 ## MCP-ресурс — чтение ресурса в память
 
@@ -87,8 +87,9 @@ AgentHandoffStepDescription(
 | Оценка | `EvaluationStepDescription` · `EvaluationStepConfig` | Встроенный контроль качества вывода предыдущего шага; реагирует через `on_fail` (continue / abort / retry-with-feedback). | — |
 
 :::note
-Отдельные разделы для **Orchestration** (supervisor / debate / parallel sampling
-/ handoff / human-in-the-loop), **AgentSkills**, **MCP** и **Evaluation** находятся
-в [дорожной карте](https://github.com/pyshka501/care-docs/blob/main/todo.md) — эта
-страница пока ссылается только на проверенные основы.
+У каждого из них есть отдельный раздел с полными руководствами:
+[Оркестрация](/ru/carl/orchestration/overview/) (supervisor / debate / parallel
+sampling / handoff / human-in-the-loop), [AgentSkills](/ru/carl/skills/overview/),
+[MCP](/ru/carl/mcp/overview/) и [Оценка](/ru/carl/evaluation/metrics/). Эта
+страница — карта с основной информацией.
 :::

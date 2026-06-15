@@ -31,16 +31,43 @@ client = OpenAICompatibleClient(OpenAIClientConfig(
 
 ## Anthropic
 
-`AnthropicClient` — нативный клиент, строящийся из `AnthropicClientConfig`:
+`AnthropicClient` — нативный клиент (строится из `AnthropicClientConfig`), который
+открывает доступ к фичам, специфичным для Anthropic, недоступным через
+OpenAI-совместимый путь.
 
 ```python
 from mmar_carl import AnthropicClient, AnthropicClientConfig
 
 client = AnthropicClient(AnthropicClientConfig(
     api_key="sk-ant-...",
-    model="claude-3-5-sonnet-latest",
+    model="claude-3-7-sonnet-latest",   # default
+    max_tokens=4096,                    # required by Anthropic
+    thinking_budget=2000,               # enable extended thinking (Claude 3.7+)
+    cache_system=True,                  # prompt-cache the system prompt
 ))
 ```
+
+| Поле `AnthropicClientConfig` | По умолчанию | Назначение |
+| --- | --- | --- |
+| `api_key` | — (обязательное) | Ключ Anthropic (`ANTHROPIC_API_KEY` — запасной вариант из SDK). |
+| `model` | `claude-3-7-sonnet-latest` | Идентификатор модели. |
+| `temperature` | `0.7` | 0.0–1.0. |
+| `max_tokens` | `4096` | **Обязательно** для Anthropic (неявного лимита нет). |
+| `timeout` | `120.0` | Секунды. |
+| `base_url` | `None` | Переопределение хоста API (gateway / VPC). |
+| `extra_headers` | `{}` | Дополнительные HTTP-заголовки. |
+| `thinking_budget` | `None` | Бюджет токенов для расширенного мышления. |
+| `cache_system` | `False` | Помечать системные блоки `cache_control: ephemeral` для кэширования промпта. |
+
+### Методы, специфичные для Anthropic
+
+- **`get_response_with_thinking(prompt, *, system_prompt=None, retries=3)`** →
+  `dict` со структурированным трейсом `thinking` + ответом (нужен `thinking_budget`).
+- **`get_response_with_image(...)`** — нативное распознавание изображений (URL или base64).
+- **`get_response_with_tools(...)`** — нативный tool-calling Anthropic. Преобразуйте
+  схемы инструментов в стиле OpenAI через `openai_tools_to_anthropic(tools)`.
+
+Отсутствие SDK или ключа вызывает `AnthropicClientError`.
 
 ## Интерфейс клиента
 

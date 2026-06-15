@@ -61,18 +61,44 @@ context = ReasoningContext(
 | `on_step_complete` | `(StepExecutionResult)` |
 | `on_progress` | `(completed, total)` |
 | `on_llm_chunk` | `(chunk)` или `(chunk, *, step_number, stage)` |
+| `on_step_event` | `(step_number, event_type, payload)` — детальные события жизненного цикла шага. |
+| `on_human_input_requested` | срабатывает, когда [шаг ввода человеком](/ru/carl/orchestration/human-in-the-loop/) приостанавливается в ожидании ввода. |
 
 ## Таймауты
 
 - **На уровне цепочки**: `ReasoningChain(..., timeout=60.0)`.
 - **На уровне шага**: `LLMStepDescription(..., timeout=30.0)` или через `LLMStepConfig.timeout`; tool-шаги используют `ToolStepConfig.timeout` (по умолчанию 30 с).
 
+## Отмена
+
+Отменяйте запуск кооперативно из другой задачи (например, по кнопке «стоп» в UI):
+
+```python
+context.cancel()          # request cancellation
+context.is_cancelled()    # check the flag
+context.reset_cancellation()  # clear it before reusing the context
+```
+
+Отменённый шаг помечается `skipped=True` с `error_message="cancelled by user"`,
+а уже полученные частичные выводы попадают в результат. Шаги, которые ещё не
+начались, пропускаются. `ExecutionCancelledError` — связанное экспортируемое исключение.
+
 ## Пауза и возобновление
 
-`execute_async(context, resume_from=snapshot)` восстанавливает предыдущий
+Для сценария «остановиться и продолжить позже» сторона паузы создаёт снимок:
+
+```python
+context.request_pause()        # ask the run to pause at the next safe point
+context.is_pause_requested()
+await context.wait_for_resume()  # (inside a step) block until resumed
+context.clear_pause()
+```
+
+Затем `execute_async(context, resume_from=snapshot)` восстанавливает предыдущий
 `ContextSnapshot` (история / память / метаданные / состояние отмены) и пропускает шаги,
 уже завершённые в этом снимке — примитив межпроцессного возобновления, используемый CARE.
-Используйте вместе с `ReasoningContext.snapshot()`.
+Используйте вместе с `ReasoningContext.snapshot()`. Для шагов с участием человека
+`context.provide_human_input(value)` передаёт ожидаемый ответ.
 
 ## Смотрите также
 

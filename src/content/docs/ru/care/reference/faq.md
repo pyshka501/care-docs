@@ -14,11 +14,11 @@ Production требует подключения к Memory. Задайте `CARE
 
 ## «Подсказка по установке» вместо запуска цепочки
 
-Исполнение через CARL — это опциональный экстра `care[carl]`. Если `care run --execute` (или
+Исполнение через CARL — это опциональный экстра `maestro-care[carl]`. Если `care run --execute` (или
 запуск в чате) сообщает о недостающей зависимости, установите её:
 
 ```bash
-uv sync --extra carl     # или: pip install 'care[carl]'
+uv sync --extra carl     # или: pip install 'maestro-care[carl]'
 ```
 
 MAESTRO CARE импортирует вышестоящие пакеты лениво, так что минимальная установка всё равно

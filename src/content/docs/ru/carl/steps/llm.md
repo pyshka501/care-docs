@@ -71,6 +71,19 @@ LLMStepDescription(
 )
 ```
 
+Два параметра стоит выделить отдельно:
+
+- **`token_budget_warning`** — выдаёт предупреждение, когда суммарное число токенов
+  шага превышает порог. Срабатывает только с клиентом, который сообщает об
+  использовании токенов (например, `OpenAICompatibleClient`); фактические значения
+  см. в разделе [оценка стоимости](/ru/carl/tracing/cost/).
+- **`use_message_history`** — отправляет структурированный список сообщений
+  `system`/`user`/`assistant` вместо плоского промпта: системный промпт и внешний
+  контекст становятся первым сообщением `system`, предыдущие ходы из
+  `context.messages` включаются в запрос, а ответ шага дописывается обратно в
+  `context.messages`. Требует клиента, реализующего `get_response_with_messages`
+  (например, `OpenAICompatibleClient`).
+
 ## Режимы выполнения
 
 - **`FAST`** (по умолчанию) — один проход LLM.
@@ -87,6 +100,42 @@ LLMStepConfig(
     self_critic_instruction="Reject answers that aren't backed by the data.",
 )
 ```
+
+`self_critic_evaluators` перечисляет оценщиков по порядку; одобрить должны **все**.
+`"llm"` — встроенный LLM-рецензент. Зарегистрируйте собственный (не-LLM или
+кастомный) оценщик через `context.register_self_critic_evaluator(name, evaluator)` —
+унаследуйтесь от `SelfCriticEvaluatorBase` и верните
+`SelfCriticDecision(verdict=..., review_text=...)`.
+
+### Пример
+
+[Пример режимов выполнения](https://github.com/Glazkoff/carl-experiments/blob/main/examples/orchestration/execution_modes_mock_example.py)
+из репозитория (mock-клиент, без API-ключа) запускает цепочку из 3 шагов: проход
+`FAST`, шаг `SELF_CRITIC` со встроенным оценщиком `"llm"` и шаг `SELF_CRITIC`, в
+цепочку оценщиков которого добавлена кастомная проверка на ключевое слово.
+
+```python
+class KeywordGuardEvaluator(SelfCriticEvaluatorBase):
+    def __init__(self, required_keyword: str):
+        self.required_keyword = required_keyword.lower()
+
+    async def evaluate(self, step, candidate, base_prompt, context, llm_client, retries):
+        if self.required_keyword in candidate.lower():
+            return SelfCriticDecision(verdict="APPROVE", review_text="found")
+        return SelfCriticDecision(verdict="DISAPPROVE", review_text="missing keyword")
+
+context.register_self_critic_evaluator("keyword_guard", KeywordGuardEvaluator("mitigation"))
+
+LLMStepConfig(
+    execution_mode=ExecutionMode.SELF_CRITIC,
+    self_critic_evaluators=["llm", "keyword_guard"],  # both must approve
+    self_critic_max_revisions=2,
+)
+```
+
+Телеметрия режима по каждому шагу (`execution_mode`, `llm_calls`, число ревизий
+`rounds`, `quality_warning`) попадает в
+`context.metadata["execution_mode_details"]`.
 
 ## Смотрите также
 

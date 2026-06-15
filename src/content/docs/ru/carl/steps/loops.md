@@ -47,6 +47,41 @@ ToolStepDescription(
 
 Для until-цикла (выполнять, пока флаг не станет истинным) установите `negate_condition=True`.
 
+## Помощники циклов в ChainBuilder
+
+`ChainBuilder` оборачивает ручной API методами `add_until_loop` и `add_while_loop`:
+передайте список шагов тела и `condition_key`, и билдер перенумерует тело и
+прикрепит нужный `LoopConfig` (`add_while_loop` продолжает, пока истинно;
+`add_until_loop` продолжает, пока не станет истинным).
+
+## Пример
+
+[Пример цикла](https://github.com/Glazkoff/carl-experiments/blob/main/examples/orchestration/loop_until_example.py)
+из репозитория (без API-ключа) показывает исследовательский цикл, который продолжает
+искать, пока не наберётся достаточно фактов:
+
+```python
+body = [
+    ToolStepDescription(number=0, title="Search Facts",
+                        config=ToolStepConfig(tool_name="search_facts", input_mapping={})),
+    ToolStepDescription(number=0, title="Evaluate Research",
+                        config=ToolStepConfig(tool_name="evaluate_research", input_mapping={})),
+    ToolStepDescription(number=0, title="Check Done",
+                        config=ToolStepConfig(tool_name="check_done", input_mapping={})),
+]
+
+chain = (
+    ChainBuilder()
+    .add_until_loop(body_steps=body, condition_key="$metadata.step_3", max_iterations=10)
+    .build()
+)
+```
+
+После запуска число итераций по каждому шагу доступно в
+`context.metadata["loop_iteration_history"]`. Пример также охватывает цикл
+«повторять до успеха», ручной API `loop_back_to` / `loop_config` и опустошение
+очереди через `add_while_loop`.
+
 ## Смотрите также
 
 - [Пример цикла](https://github.com/Glazkoff/carl-experiments/blob/main/examples/orchestration/loop_until_example.py) в репозитории.

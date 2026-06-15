@@ -43,6 +43,32 @@ print(estimate.format_table())   # per-step token / USD table
 population × generations × cases) используйте `evolver.estimate_cost(context_factory,
 pricing=...)` — это умножает оценку одной цепочки на размер запуска.
 
+## Пример
+
+[Пример использования токенов](https://github.com/Glazkoff/carl-experiments/blob/main/examples/llm_inference/token_usage_example.py)
+из репозитория (mock-клиент, без API-ключа) проходит три уровня детализации:
+предварительную оценку, **фактическое** использование токенов по шагам после
+запуска и агрегацию по батчу.
+
+```python
+# 1. Pre-flight — no LLM calls made.
+estimate = chain.estimate_cost(ctx, pricing=PRICING)
+print(estimate.format_table())
+
+# 2. Actuals — after execution, read per-step + chain-total usage.
+result = await chain.execute_async(ctx)
+for sr in result.step_results:
+    print(sr.step_number, sr.token_usage)   # {"prompt", "completion", "total"} per step
+print(result.token_usage)                   # chain totals
+print(result.get_profiling_summary())       # peak/history bytes + total time
+```
+
+Фактическое использование требует клиента, который его сообщает (например, через
+`get_response_with_usage`); итоги по цепочке также доступны через свойство
+`result.token_usage_by_step`. Установите
+[`token_budget_warning`](/ru/carl/steps/llm/#конфигурация-llm-на-уровне-шага) в
+`LLMStepConfig` шага, чтобы получать предупреждение, когда шаг превышает бюджет токенов.
+
 ## Смотрите также
 
 - [Визуализация](/ru/carl/tracing/visualization/) — `format_cost_by_model`, таблицы профилирования.

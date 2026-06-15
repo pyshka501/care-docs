@@ -83,6 +83,39 @@ chain = ReasoningChain(steps=steps, replan_policy=policy)
 | `max_visits_per_checkpoint` | — | Ограничение повторных входов в контрольную точку. |
 | `fail_on_budget_exhaustion` | — | Завершить неудачей (вместо продолжения) при исчерпании бюджета. |
 
+## Пример
+
+[Детерминированный пример RE-PLAN](https://github.com/Glazkoff/carl-experiments/blob/main/examples/replan/replan_deterministic_example.py)
+из репозитория (mock-клиент, без API-ключа) запускает цепочку из 3 шагов для
+служебной записки. Шаг 2 на первой попытке выдаёт `NEEDS_REPLAN`; основанный на
+правилах чекер находит эту подстроку, повторяет шаг с обратной связью, и вторая
+попытка завершается успешно.
+
+```python
+from mmar_carl import ReplanPolicy, RuleBasedReplanCheckerConfig, ReplanAction
+
+policy = ReplanPolicy(
+    enabled=True,
+    checkers=[
+        RuleBasedReplanCheckerConfig(
+            name="risk_quality_guard",
+            result_substrings=["NEEDS_REPLAN"],
+            action_on_match=ReplanAction.RETRY_CURRENT_STEP,
+            feedback_on_match=["Add explicit mitigation ownership and concrete risks."],
+        )
+    ],
+)
+
+chain = ReasoningChain(steps=steps, max_workers=1, replan_policy=policy)
+result = chain.execute(context)
+
+for event in result.replan_events:
+    print(event.step_number, event.final_action, event.rollback_target)
+```
+
+`result.replan_events` фиксирует каждое решение RE-PLAN — шаг, выбранное
+действие, подсчёт голосов чекеров (`event.aggregation`) и цель отката, если она есть.
+
 ## Смотрите также
 
 - [Чекеры и агрегация](/ru/carl/replan/checkers/)

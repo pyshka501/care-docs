@@ -22,8 +22,9 @@ execution correct and cheaper than full deep copies.
 
 ## Profiling
 
-The bytes saved by COW (versus deep-copying) are recorded under
-`result.metadata` after a run, so you can see the memory win on wide chains.
+Per-step memory and history sizes are recorded in each `StepExecutionResult.profiling`
+(keys `memory_bytes_after`, `history_bytes_after`, `history_bytes_added`) and aggregated
+by `result.get_profiling_summary()`, so you can see how memory grows across a run.
 
 ## See also
 

@@ -63,6 +63,41 @@ class WordCountMetric(MetricBase):
 в репозитории — это пользовательские метрики, не импорты из библиотеки.
 :::
 
+## Пример
+
+[Пример метрик](https://github.com/Glazkoff/carl-experiments/blob/main/examples/evaluation/metrics_example.py)
+из репозитория работает с mock-клиентом LLM (без API-ключа) и определяет четыре
+пользовательские метрики — `WordCountMetric`, `SentenceLengthMetric`,
+`KeywordCoverageMetric` и `MockLLMJudgeMetric` (асинхронную заглушку с I/O-формой
+для подхода LLM-as-a-judge). Он прикрепляет их на обоих уровнях и считывает оценки
+обратно из результата.
+
+```python
+steps = [
+    LLMStepDescription(
+        number=1, title="Data Overview", aim="Summarise the dataset",
+        metrics=[WordCountMetric(), SentenceLengthMetric()],
+    ),
+    LLMStepDescription(
+        number=2, title="Trend Analysis", aim="Identify revenue trends",
+        dependencies=[1],
+        metrics=[KeywordCoverageMetric(["growth", "revenue"]), MockLLMJudgeMetric()],
+    ),
+]
+
+# Chain-level metrics run on the final step's output.
+chain = ReasoningChain(steps=steps, metrics=[KeywordCoverageMetric(["recommend"])])
+result = await chain.execute_async(context)
+
+for sr in result.step_results:
+    print(sr.step_number, sr.metrics)   # per-step scores → StepExecutionResult.metrics
+print(result.metrics)                   # chain-level scores → ReasoningResult.metrics
+```
+
+Оценки по шагам попадают в `StepExecutionResult.metrics`; оценки на уровне цепочки —
+в `ReasoningResult.metrics`. Метрика, выбросившая исключение, никогда не прерывает
+выполнение — её оценка просто опускается.
+
 ### Метрики с учётом кейса
 
 При оценке [датасета](/ru/carl/evaluation/datasets/) метрика может получать «правильный ответ»

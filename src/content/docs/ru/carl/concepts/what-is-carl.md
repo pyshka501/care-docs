@@ -35,6 +35,14 @@ LLMStepDescription(number=2, title="Анализ затрат",  dependencies=[]
 LLMStepDescription(number=3, title="Прибыльность",   dependencies=[1, 2])
 ```
 
+Шаги 1 и 2 выполняются вместе в первом батче; шаг 3 ждёт оба:
+
+```mermaid
+flowchart TD
+    S1["Step 1: Revenue"] --> S3["Step 3: Profitability"]
+    S2["Step 2: Cost"] --> S3
+```
+
 ## RAG-извлечение контекста
 
 Каждый LLM-шаг может объявить `step_context_queries`. По каждому запросу CARL ищет

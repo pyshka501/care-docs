@@ -15,7 +15,7 @@ Tools are Python functions a chain's tool steps can call.
 
 - **Registry** — register functions with `@carl_tool`; the `tools` config controls
   the registry (`CARE_TOOLS__*`).
-- **Bundled builtins** — MAESTRO CARE ships ready tools (e.g. `web_search`).
+- **Bundled builtins** — MAESTRO CARE ships ready-made tools (e.g. `web_search`).
 - **On-the-fly synthesis** — when a chain needs a tool that isn't registered, MAESTRO CARE
   can synthesise one from a description, plan its inputs, and wire it in.
 

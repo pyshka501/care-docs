@@ -16,6 +16,35 @@ sidebar:
 | [Parallel sampling](/ru/carl/orchestration/parallel-sampling/) | `ParallelSamplingStepDescription` | семплировать N ответов и выбрать лучший голосованием / судьёй (совет LLM). |
 | [Human-in-the-loop](/ru/carl/orchestration/human-in-the-loop/) | `HumanInputStepDescription` | человек должен одобрить или предоставить значение. |
 
+## Типизированные представления result-data
+
+Каждый шаг оркестрации записывает свои детали в `StepExecutionResult.result_data`
+(нестрогий `dict`). Для распространённых паттернов CARL предлагает **типизированные
+представления**, чтобы читать поля, не копаясь в ключах словаря. Аксессоры
+определены на `StepExecutionResult` и возвращают `None`, когда тип шага не совпадает
+(или payload не проходит валидацию), так что они аккуратно сочетаются с
+оператором-моржом:
+
+```python
+for sr in result.step_results:
+    if (debate := sr.as_debate_transcript()):
+        print(debate.verdict)
+        for turn in debate.transcript:          # list[DebateTurn]
+            print(turn.round, turn.role, turn.argument)
+```
+
+| Аксессор | Возвращает | Ключевые поля |
+| --- | --- | --- |
+| `sr.as_skill_output()` | `SkillOutput` | `skill_name`, `execution_mode`, `output_files`, `parsed_output`, `iterations`. |
+| `sr.as_debate_transcript()` | `DebateTranscript` | `verdict`, `transcript` (`list[DebateTurn]` из `round`/`role`/`argument`), `rounds_executed`. |
+| `sr.as_supervisor_decision()` | `SupervisorDecision` | `agent_selected`, `routing_reply`, `sub_result`, `sub_chain_success`, `steps_executed`. |
+| `sr.as_parallel_samples()` | `ParallelSamples` | `n_samples`, `n_successes`, `aggregation`, `candidates`. |
+
+Модели представлений (`SkillOutput`, `DebateTranscript`, `DebateTurn`,
+`SupervisorDecision`, `ParallelSamples`) импортируются из `mmar_carl`. Они
+снисходительны — лишние или будущие ключи сохраняются, а не отвергаются — поэтому
+чтение через них никогда не ломается при изменении на стороне источника.
+
 ## Шина событий
 
 Шаги также могут координироваться **через события** вместо (или вместе с) числовых

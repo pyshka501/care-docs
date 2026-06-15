@@ -32,5 +32,6 @@ Production требует `CARE_MEMORY__BASE_URL`. Без настроенной
 
 ## Дальше
 
+- [Рабочие процессы](/ru/care/workflows/modes/) — Ad-Hoc vs **Production** подробно и сквозные [сценарии](/ru/care/workflows/scenarios/).
 - [Быстрый старт](/ru/care/getting-started/quick-start/) — запуск TUI за пять минут.
 - [Справочник CLI](/ru/care/cli/overview/) — все подкоманды `care`.

@@ -13,7 +13,7 @@ a terminal twin. Run `care <subcommand> --help` for the full flag set on each.
 
 | Command | Purpose |
 | --- | --- |
-| `care init` | One-shot quick-start: write a minimal `.env` (or full `config.toml` with `--toml`). |
+| `care init` | One-shot quick-start: write a minimal `.env`. |
 | `care doctor` | Environment, config, and dependency health report. |
 | `care migrate-secrets` | Move plaintext API keys into the OS keychain. |
 
