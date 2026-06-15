@@ -2,7 +2,7 @@
 title: Quick Start
 description: Install CARL and run your first reasoning chain in five minutes.
 sidebar:
-  order: 1
+  order: 2
 ---
 
 Build and run a two-step reasoning chain in about five minutes.

@@ -176,7 +176,7 @@ document.addEventListener('astro:page-load', fixTitle);
 					},
 					{
 						label: 'CARL',
-						link: '/carl/getting-started/quick-start/',
+						link: '/carl/getting-started/overview/',
 						icon: 'open-book',
 						items: [
 							{

@@ -2,7 +2,7 @@
 title: What is CARL?
 description: The format reasoning chains are written in — typed steps, dependencies, and DAG execution — with mmar-carl as its reference library.
 sidebar:
-  order: 2
+  order: 1
 ---
 
 **CARL** is the format reasoning chains are written in. A chain is a list of typed
