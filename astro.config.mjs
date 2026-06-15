@@ -144,7 +144,7 @@ document.addEventListener('astro:page-load', fixTitle);
 							},
 							{
 								label: 'Agent Skill',
-								translations: { ru: 'Скилл агента' },
+								translations: { ru: 'Агентный навык' },
 								items: [{ autogenerate: { directory: 'care/skill' } }],
 							},
 							{
