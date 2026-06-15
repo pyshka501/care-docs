@@ -76,7 +76,7 @@ MAESTRO CARE автоматически запускает его при пер�
 
 ## Примечания
 
-- `/deploy` — команда чата/TUI; CLI-двойника `care deploy` пока нет.
+- `/deploy` — команда чата/TUI; аналога в CLI (`care deploy`) пока нет.
 - Ей нужна **Memory** (реестр цепочек), как и другим командам Production.
 - Если нужен POST «выстрелил и забыл» во внешний сервис вместо хаба — см.
   [`/upload`](/ru/care/slash-commands/production/).

@@ -47,16 +47,16 @@ CARE_MAGE__MODEL="qwen/qwen3-coder"
 | `tools` | `CARE_TOOLS__*` | Реестр `@carl_tool` + встроенные инструменты + синтез. |
 | `telemetry` | `CARE_TELEMETRY__*` | Opt-in стрим событий (Langfuse, …). |
 | `defaults` | `CARE_DEFAULTS__*` | Значения UI по умолчанию (язык, размер истории). |
-| `chat` | `CARE_CHAT__*` | Чат-поверхность (режим по умолчанию, история ad-hoc, повторные попытки). |
+| `chat` | `CARE_CHAT__*` | Интерфейс чата (режим по умолчанию, история ad-hoc, повторные попытки). |
 | `context` | `CARE_CONTEXT__*` | Инжекция пользовательского контекста (CARE.md + дайджест LTM). |
 | `artifacts` | `CARE_ARTIFACTS__*` | Директория хранения сохранённых артефактов. |
 
 См. [справочник секций](/ru/care/configuration/sections/) для ключевых параметров каждой, или
-[`.env.example`](https://github.com/Glazkoff/care/blob/main/.env.example) для полной
-поверхности.
+[`.env.example`](https://github.com/Glazkoff/care/blob/main/.env.example) для полного
+списка всех параметров.
 
 ## Первый запуск
 
-Без `~/.config/care/config.toml` на диске первый запуск приземляется на экран
+Без `~/.config/care/config.toml` на диске первый запуск открывается на экране
 **Настроек**, чтобы вы могли настроить URL Memory / Platform + учётные данные MAGE.
-Возвращающиеся пользователи сразу попадают в чат-поверхность.
+Возвращающиеся пользователи сразу попадают в чат.

@@ -47,4 +47,4 @@ CI читают сырые списки.
 ## Смотрите также
 
 - [Обзор интеграции с CARE](/ru/carl/care-integration/overview/)
-- Двойник CLI: [`care validate`](/ru/care/cli/discovery/) выполняет preflight файла цепочки.
+- Аналог в CLI: [`care validate`](/ru/care/cli/discovery/) выполняет preflight файла цепочки.

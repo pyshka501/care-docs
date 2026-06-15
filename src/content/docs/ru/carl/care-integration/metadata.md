@@ -30,7 +30,7 @@ meta = chain.get_care_metadata()   # -> CareChainMetadata | None
 
 Передайте **либо** `meta=`, **либо** отдельные kwargs — смешивание вызывает `ValueError`.
 `get_care_metadata()` возвращает `None`, когда у цепочки нет блока `care` (т.е. она не
-была создана CARE-aware инструментом).
+была создана инструментом с поддержкой CARE).
 
 ### Поля CareChainMetadata
 

@@ -1,12 +1,12 @@
 ---
 title: Справочник API
-description: Публичная поверхность mmar_carl — все top-level экспорты, по группам.
+description: Публичный API mmar_carl — все top-level экспорты, по группам.
 sidebar:
   order: 1
 ---
 
 Всё ниже импортируется из top-level пакета `mmar_carl`
-(`from mmar_carl import ...`). Эта страница группирует публичную поверхность;
+(`from mmar_carl import ...`). Эта страница группирует публичный API;
 переходите по ссылкам за полными руководствами.
 
 ## Ядро
