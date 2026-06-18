@@ -134,7 +134,7 @@ document.addEventListener('astro:page-load', render);
 					tag: 'script',
 					attrs: { type: 'module' },
 					content: `
-const LANDING = 'https://glazkoff.github.io/care-landing/';
+const LANDING = 'https://airi-maestro.github.io/care-page/';
 const fixTitle = () => document.querySelectorAll('a.site-title').forEach((a) => a.setAttribute('href', LANDING));
 fixTitle();
 document.addEventListener('astro:page-load', fixTitle);

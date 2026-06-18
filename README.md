@@ -8,7 +8,7 @@ built with [Astro Starlight](https://starlight.astro.build/).
 - **Bilingual**: English (default) + Russian (`/ru`).
 - **Two products, two sidebars**: a splash landing routes to independent CARE and
   CARL doc sets (via `starlight-sidebar-topics`).
-- **Brand**: mirrors [care-landing](https://github.com/Glazkoff/care-landing)
+- **Brand**: mirrors [care-page](https://github.com/AIRI-MAESTRO/care-page)
   (AIRI aesthetic, mascot EVOC, Manrope + JetBrains Mono).
 
 ## Local development
