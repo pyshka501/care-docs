@@ -57,7 +57,7 @@ function remarkMermaid() {
 export default defineConfig({
 	// Production canonical host: the public mirror's GitHub Pages
 	// (AIRI-MAESTRO/care-docs → airi-maestro.github.io/care-docs). The private
-	// preview at pyshka501.github.io/care-docs serves the same `base`, so only
+	// preview at airi-maestro.github.io/care-docs serves the same `base`, so only
 	// canonical/sitemap URLs differ — they intentionally point at production.
 	site: 'https://airi-maestro.github.io',
 	base,
