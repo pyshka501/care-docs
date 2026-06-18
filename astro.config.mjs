@@ -55,7 +55,11 @@ function remarkMermaid() {
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://pyshka501.github.io',
+	// Production canonical host: the public mirror's GitHub Pages
+	// (AIRI-MAESTRO/care-docs → airi-maestro.github.io/care-docs). The private
+	// preview at pyshka501.github.io/care-docs serves the same `base`, so only
+	// canonical/sitemap URLs differ — they intentionally point at production.
+	site: 'https://airi-maestro.github.io',
 	base,
 	markdown: { remarkPlugins: [remarkMermaid], rehypePlugins: [rehypeBaseLinks] },
 	integrations: [
@@ -107,7 +111,7 @@ document.addEventListener('astro:page-load', fixTitle);
 				{
 					icon: 'github',
 					label: 'GitHub',
-					href: 'https://github.com/pyshka501/care-docs',
+					href: 'https://github.com/AIRI-MAESTRO/care-docs',
 				},
 			],
 			// EN is the root locale; RU lives under /ru.

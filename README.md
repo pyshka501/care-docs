@@ -1,5 +1,7 @@
 # care-docs
 
+**Live site:** https://airi-maestro.github.io/care-docs/
+
 Documentation site for **CARE** (TUI + CLI) and **CARL** (reasoning library),
 built with [Astro Starlight](https://starlight.astro.build/).
 

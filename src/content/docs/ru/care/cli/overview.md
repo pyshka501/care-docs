@@ -59,7 +59,7 @@ sidebar:
 | `care help [--markdown]` | Показать туториал + шпаргалку. |
 
 :::note
-Детальные страницы по каждой команде ещё наполняются — см. [мастер-план](https://github.com/pyshka501/care-docs/blob/main/todo.md).
+Детальные страницы по каждой команде ещё наполняются — см. [мастер-план](https://github.com/AIRI-MAESTRO/care-docs/blob/main/todo.md).
 :::
 
 :::note[Управляете `care` из агента?]

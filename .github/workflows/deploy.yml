@@ -1,10 +1,16 @@
-# Build + deploy the docs to GitHub Pages.
+# Build + deploy the docs to GitHub Pages on push to `main`.
 #
-# Prerequisites (one-time):
+# This same workflow runs in BOTH repos:
+#   • pyshka501/care-docs (private)      → pyshka501.github.io/care-docs   (preview)
+#   • AIRI-MAESTRO/care-docs (public)    → airi-maestro.github.io/care-docs (production)
+# The public copy is created by `mirror.yml`: pushing to the private `release`
+# branch force-pushes a full snapshot (including this file) onto the public
+# repo's `main`, which then triggers this workflow there.
+#
+# Prerequisites (one-time, per repo):
 #   1. Repo → Settings → Pages → Build and deployment → Source: "GitHub Actions".
-#   2. For a PROJECT site (pyshka501.github.io/care-docs), set in astro.config.mjs:
-#        site: 'https://pyshka501.github.io', base: '/care-docs'
-#      For a custom domain / Vercel / Netlify, drop `base` and adjust `site`.
+#   2. astro.config.mjs sets `base: '/care-docs'` (project site) and `site` to the
+#      production host (airi-maestro.github.io). For a custom domain, adjust both.
 #   3. GitHub Pages on a PRIVATE repo requires GitHub Pro/Team — otherwise make
 #      the repo public, or deploy to Vercel/Netlify instead.
 name: Deploy to GitHub Pages
