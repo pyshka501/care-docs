@@ -47,12 +47,25 @@ jobs:
       - name: Push squashed snapshot to public mirror
         env:
           MIRROR_TOKEN: ${{ secrets.MIRROR_TOKEN }}
+          YM_ID: ${{ secrets.YANDEX_METRIKA_ID }}
         run: |
           set -euo pipefail
 
           if [ -z "${MIRROR_TOKEN:-}" ]; then
             echo "::error::MIRROR_TOKEN secret is not set. Create a fine-grained PAT on AIRI-MAESTRO/care-docs with Contents: read & write AND Workflows: read & write, then add it as the MIRROR_TOKEN repo secret." >&2
             exit 1
+          fi
+
+          # Bake the Yandex Metrica counter ID into the public snapshot. The ID
+          # lives in THIS (private) repo's YANDEX_METRIKA_ID secret; the public
+          # mirror holds no secrets, so we replace the __YM_COUNTER_ID__
+          # placeholder in astro.config.mjs here, before the public Astro build
+          # runs. The counter ID is not sensitive — it ships in the page HTML.
+          if [ -n "${YM_ID:-}" ]; then
+            sed -i "s/__YM_COUNTER_ID__/${YM_ID}/g" astro.config.mjs
+            echo "Injected Yandex Metrica counter ID into astro.config.mjs for the public mirror."
+          else
+            echo "::warning::YANDEX_METRIKA_ID secret not set — public site will ship without Metrica."
           fi
 
           git config user.name "github-actions[bot]"

@@ -35,6 +35,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Inject Yandex Metrica counter ID
+        # Bakes the counter into astro.config.mjs before the build. The public
+        # mirror has no secrets (mirror.yml already baked the id there), so this
+        # is a no-op for it; it injects only where YANDEX_METRIKA_ID is set.
+        env:
+          YM_ID: ${{ secrets.YANDEX_METRIKA_ID }}
+        run: |
+          if [ -n "${YM_ID:-}" ]; then
+            sed -i "s/__YM_COUNTER_ID__/${YM_ID}/g" astro.config.mjs
+            echo "Injected Yandex Metrica counter ID into astro.config.mjs."
+          else
+            echo "YANDEX_METRIKA_ID secret not set — skipping (counter stays disabled)."
+          fi
       - name: Build with Astro
         uses: withastro/action@v3
         with:

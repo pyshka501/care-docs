@@ -70,6 +70,48 @@ export default defineConfig({
 			// Client-side Mermaid rendering (build-safe; renders `<pre class="mermaid">`).
 			head: [
 				{
+					// Yandex Metrica — the counter id is baked in at release time via the
+					// __YM_COUNTER_ID__ placeholder (mirror.yml bakes the public snapshot;
+					// deploy.yml injects the private preview). The numeric guard makes the
+					// snippet a no-op in local dev where the placeholder is left unreplaced.
+					tag: 'script',
+					content: `
+(function () {
+var YM_ID = "__YM_COUNTER_ID__";
+if (!/^[0-9]+$/.test(YM_ID)) return;
+var id = +YM_ID;
+(function (m, e, t, r, i, k, a) {
+m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments); };
+m[i].l = 1 * new Date();
+for (var j = 0; j < e.scripts.length; j++) { if (e.scripts[j].src === r) return; }
+k = e.createElement(t); a = e.getElementsByTagName(t)[0];
+k.async = 1; k.src = r; a.parentNode.insertBefore(k, a);
+})(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+ym(id, "init", { clickmap: true, trackLinks: true, accurateTrackBounce: true, webvisor: true, trackHash: true });
+window.__ymId = id;
+try {
+  var sp = new URLSearchParams(location.search), q = {}, has = false;
+  sp.forEach(function (v, key) { q[key] = v; has = true; });
+  if (has) ym(id, "params", { query: q });
+} catch (err) {}
+var first = true;
+document.addEventListener("astro:page-load", function () {
+  if (first) { first = false; return; }
+  ym(id, "hit", location.pathname + location.search, { title: document.title });
+});
+document.addEventListener("click", function (e) {
+  var a = e.target && e.target.closest ? e.target.closest("a[href]") : null;
+  if (!a || !a.host || a.host === location.host) return;
+  ym(id, "reachGoal", a.host.indexOf("github.com") > -1 ? "github_click" : "outbound_click", { href: a.href });
+}, true);
+})();
+`,
+				},
+				{
+					tag: 'noscript',
+					content: '<div><img src="https://mc.yandex.ru/watch/__YM_COUNTER_ID__" style="position:absolute;left:-9999px" alt="" /></div>',
+				},
+				{
 					tag: 'script',
 					attrs: { type: 'module' },
 					content: `
