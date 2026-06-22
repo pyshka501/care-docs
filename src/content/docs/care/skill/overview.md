@@ -9,8 +9,8 @@ sidebar:
 a small bundle that teaches an agent (Claude Code, or NousResearch
 [hermes](https://github.com/nousresearch/hermes-agent)) how to drive the headless
 [`care` CLI](/care/cli/overview/) — generate and run CARL chains, browse Memory,
-evolve chains, **visualize and interpret them**, and diagnose the environment — without
-hardcoding any path to CARE. It can even **fix bugs in the library source** (autodebug).
+evolve chains, **interpret and visualize them**, and diagnose the environment — without
+hardcoding any path to CARE.
 
 :::tip[Download]
 **[Download `care-cli.skill`](/care-cli.skill)** — a zip of the skill folder. Install
@@ -29,9 +29,7 @@ care-cli/
     ├── commands.md               # every subcommand & flag
     ├── production-and-tui.md      # Ad-Hoc vs Production, TUI slash-commands
     ├── chain-format.md            # CARL chain JSON: step types, $-references
-    ├── visualize.md              # render a chain (CARL to_mermaid + run overlays)
-    ├── interpret.md              # explain each step's semantics in plain language
-    ├── autodebug.md              # repo map + fix-at-the-source playbook
+    ├── interpret.md              # interpret & visualize a chain (graph + per-step)
     └── integration.md             # embedding into hermes / CI / other hosts
 ```
 
@@ -53,14 +51,18 @@ practical gotchas (`doctor`/`init` have no `--json`; a fresh Memory's `search` i
 is empty — use `memory ls --q`; pass absolute file paths because the launcher may run
 `care` from the workspace).
 
-## Beyond the CLI: visualize · interpret · autodebug
+## Beyond the CLI: interpret & visualize
 
-After a chain is generated, the skill offers more than raw JSON — it proactively
-proposes to **visualize**, **interpret**, run, or **evolve** it:
+After a chain is generated, the skill offers more than raw JSON — its first move is to
+**interpret & visualize** it (and it can also run or evolve it):
 
-- **Visualize** — render the dependency DAG using CARL's own `to_mermaid()` (plus
-  critical-path and token / latency / cost heatmaps when you pass a run). For example,
-  the weather chain:
+- **Interpret & visualize, together** — render the dependency DAG with CARL's own
+  `to_mermaid()` (plus critical-path and token / latency / cost heatmaps when you pass a
+  run) **and** walk every step in plain language: what it does, what it reads via
+  `$`-references, what it produces, and why it depends on what it does. The graph gives
+  the shape, the per-step notes give the meaning — as one explanation. The agent does
+  the interpreting, so it works even with no LLM key or services. For example, the
+  weather chain:
 
   ```mermaid
   flowchart TD
@@ -69,13 +71,8 @@ proposes to **visualize**, **interpret**, run, or **evolve** it:
       S1 --> S2
   ```
 
-- **Interpret** — a plain-language, per-step walkthrough (what each step does, what it
-  reads via `$`-references, what it produces, and why it depends on what it does). The
-  agent explains it, so this works even with no LLM key or services.
-- **Autodebug** — the bundle ships a **repo map** of the whole CARE/CARL stack (what
-  each repository owns, key files, a symptom→repo table) and a reproduce → locate →
-  patch → verify playbook, so the agent can fix a bug in the library *source* — after
-  verifying which install is actually live — instead of only working around it.
+- **Run / evolve** — execute the chain on a sample input (`care run --execute`) or
+  improve it automatically (`care evolve --wait --accept`).
 
 ## Portable by design
 
