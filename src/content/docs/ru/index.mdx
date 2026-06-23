@@ -40,6 +40,22 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 	/>
 </CardGrid>
 
+## Установка скилла агента
+
+Дайте Claude Code, hermes или OpenClaw скилл Maestro одной командой:
+
+```bash
+uvx care-install skill        # спросит агента; или --agent claude | hermes | openclaw | all
+```
+
+Он скачивает и распаковывает скилл в каталог скиллов агента:
+
+- Claude Code → `~/.claude/skills/maestro`
+- hermes → `~/.hermes/skills/maestro`
+- OpenClaw → `~/.openclaw/skills/maestro`
+
+Подробнее: [Agent Skill](care/skill/overview/) · [Установка и использование](care/skill/install/).
+
 ## Как это связано
 
 **MAESTRO** — продукт поверх стека из четырёх частей. Каждая часть отвечает за один этап жизни цепочки.
