@@ -18,10 +18,10 @@ uv run https://raw.githubusercontent.com/pyshka501/care-docs/main/public/install
 ```
 
 Он сам определит Claude Code (`~/.claude/skills`) и hermes (`~/.hermes/skills`) и
-распакует скилл в `<dir>/maestro`. Явный выбор — `-- --target claude|hermes|both`:
+распакует скилл в `<dir>/maestro`. Явный выбор — `--target claude|hermes|both`:
 
 ```bash
-uv run https://raw.githubusercontent.com/pyshka501/care-docs/main/public/install.py -- --target both
+uv run https://raw.githubusercontent.com/pyshka501/care-docs/main/public/install.py --target both
 ```
 
 Нет `uv`? Тот же скрипт работает под обычным Python, либо распакуйте бандл вручную:

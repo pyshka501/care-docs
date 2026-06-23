@@ -19,10 +19,10 @@ uv run https://raw.githubusercontent.com/pyshka501/care-docs/main/public/install
 
 It auto-detects Claude Code (`~/.claude/skills`) and hermes (`~/.hermes/skills`) and
 unpacks the skill into `<dir>/maestro`. Target explicitly with
-`-- --target claude|hermes|both`:
+`--target claude|hermes|both`:
 
 ```bash
-uv run https://raw.githubusercontent.com/pyshka501/care-docs/main/public/install.py -- --target both
+uv run https://raw.githubusercontent.com/pyshka501/care-docs/main/public/install.py --target both
 ```
 
 No `uv`? The same script runs under plain Python, or unzip the bundle by hand:
