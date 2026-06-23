@@ -51,7 +51,7 @@ maestro/
 [Ad-Hoc vs Production](/ru/care/workflows/modes/), честную карту того, что доступно из
 CLI, а что [только в TUI](/ru/care/slash-commands/overview/) (revise / dataset /
 promote / upload / forget), [формат цепочек](/ru/carl/chains/overview/) и практические
-гоча (у `doctor`/`init` нет `--json`; на свежей памяти индекс `search` пуст —
+подводные камни (у `doctor`/`init` нет `--json`; на свежей памяти индекс `search` пуст —
 используйте `memory ls --q`; передавайте абсолютные пути к файлам, т.к. лаунчер может
 запускать `care` из воркспейса).
 
