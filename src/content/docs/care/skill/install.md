@@ -11,27 +11,21 @@ The Maestro skill is a small bundle (`maestro/` — `SKILL.md` + `scripts/` +
 
 ## 1. Install the skill — one command
 
-Download **and** unpack it into your agent's skills directory with `uv`:
-
 ```bash
-uv run https://raw.githubusercontent.com/pyshka501/care-docs/main/public/install.py
+uvx care-install skill
 ```
 
-It auto-detects Claude Code (`~/.claude/skills`) and hermes (`~/.hermes/skills`) and
-unpacks the skill into `<dir>/maestro`. Target explicitly with
-`--target claude|hermes|both`:
+Downloads the bundle and unpacks it into the chosen agent's skills directory. It asks
+which agent, or pick explicitly with
+`--agent claude | hermes | openclaw | all | <skills-dir>`:
 
 ```bash
-uv run https://raw.githubusercontent.com/pyshka501/care-docs/main/public/install.py --target both
+uvx care-install skill --agent all
 ```
 
-No `uv`? The same script runs under plain Python, or unzip the bundle by hand:
+No `uvx`? Unzip the bundle by hand:
 
 ```bash
-# curl + python
-curl -fsSL https://raw.githubusercontent.com/pyshka501/care-docs/main/public/install.py | python3 - --target claude
-
-# fully manual
 curl -fsSLO https://raw.githubusercontent.com/pyshka501/care-docs/main/public/maestro.skill
 unzip maestro.skill -d ~/.claude/skills/     # → ~/.claude/skills/maestro/  (or ~/.hermes/skills/)
 ```

@@ -11,26 +11,20 @@ sidebar:
 
 ## 1. Установка скилла — одной командой
 
-Скачать **и** распаковать в каталог скиллов вашего агента через `uv`:
-
 ```bash
-uv run https://raw.githubusercontent.com/pyshka501/care-docs/main/public/install.py
+uvx care-install skill
 ```
 
-Он сам определит Claude Code (`~/.claude/skills`) и hermes (`~/.hermes/skills`) и
-распакует скилл в `<dir>/maestro`. Явный выбор — `--target claude|hermes|both`:
+Скачивает бандл и распаковывает в каталог скиллов выбранного агента. Спросит, какой
+агент, либо укажите явно — `--agent claude | hermes | openclaw | all | <каталог-скиллов>`:
 
 ```bash
-uv run https://raw.githubusercontent.com/pyshka501/care-docs/main/public/install.py --target both
+uvx care-install skill --agent all
 ```
 
-Нет `uv`? Тот же скрипт работает под обычным Python, либо распакуйте бандл вручную:
+Нет `uvx`? Распакуйте бандл вручную:
 
 ```bash
-# curl + python
-curl -fsSL https://raw.githubusercontent.com/pyshka501/care-docs/main/public/install.py | python3 - --target claude
-
-# полностью вручную
 curl -fsSLO https://raw.githubusercontent.com/pyshka501/care-docs/main/public/maestro.skill
 unzip maestro.skill -d ~/.claude/skills/     # → ~/.claude/skills/maestro/  (или ~/.hermes/skills/)
 ```

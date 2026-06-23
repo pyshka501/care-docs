@@ -14,10 +14,11 @@ path to Maestro.
 
 :::tip[Install in one command]
 ```bash
-uv run https://raw.githubusercontent.com/pyshka501/care-docs/main/public/install.py
+uvx care-install skill
 ```
-Downloads and unpacks the skill for Claude Code or hermes. Full steps:
-[Install & Use](/care/skill/install/). (Direct bundle: [`maestro.skill`](/maestro.skill).)
+Downloads and unpacks the skill into Claude Code / hermes / OpenClaw (pick with
+`--agent`). Full steps: [Install & Use](/care/skill/install/). (Direct bundle:
+[`maestro.skill`](/maestro.skill).)
 :::
 
 ## What's in the bundle

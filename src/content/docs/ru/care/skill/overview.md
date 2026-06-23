@@ -14,10 +14,10 @@ Maestro из headless-команды [`care`](/ru/care/cli/overview/) — ген
 
 :::tip[Установка одной командой]
 ```bash
-uv run https://raw.githubusercontent.com/pyshka501/care-docs/main/public/install.py
+uvx care-install skill
 ```
-Скачивает и распаковывает скилл для Claude Code или hermes. Подробно:
-[Установка и использование](/ru/care/skill/install/). (Прямой бандл:
+Скачивает и распаковывает скилл для Claude Code / hermes / OpenClaw (выбор — `--agent`).
+Подробно: [Установка и использование](/ru/care/skill/install/). (Прямой бандл:
 [`maestro.skill`](/maestro.skill).)
 :::
 
