@@ -1,67 +1,73 @@
 ---
 title: Install & Use
-description: Download the care-cli skill, install it for Claude Code or hermes, make `care` resolvable, and verify.
+description: Install the Maestro agent skill with one command, for Claude Code or hermes; make `care` resolvable; verify.
 sidebar:
   order: 2
 ---
 
-The skill is a zip whose top-level folder is `care-cli/`. "Installing" means dropping
-that folder into your agent's skills directory. It needs a working `care` command —
-the skill *drives* MAESTRO, it doesn't install it.
+The Maestro skill is a small bundle (`maestro/` — `SKILL.md` + `scripts/` +
+`references/`) that teaches Claude Code or hermes to drive Maestro. It needs a working
+`care` command, which it does **not** install (see step 2).
 
-## 1. Get `care` available (once)
+## 1. Install the skill — one command
 
-The simplest path is the published wizard, which also installs a global `care` shim:
+```bash
+uvx care-install skill
+```
+
+Downloads the bundle and unpacks it into the chosen agent's skills directory. It asks
+which agent, or pick explicitly with
+`--agent claude | hermes | openclaw | all | <skills-dir>`:
+
+```bash
+uvx care-install skill --agent all
+```
+
+No `uvx`? Unzip the bundle by hand:
+
+```bash
+curl -fsSLO https://raw.githubusercontent.com/pyshka501/care-docs/main/public/maestro.skill
+unzip maestro.skill -d ~/.claude/skills/     # → ~/.claude/skills/maestro/  (or ~/.hermes/skills/)
+```
+
+In hermes, `/skills` then lists **maestro**; invoke it with `/maestro` (or just
+describe a Maestro task). In Claude Code the skill triggers automatically on Maestro
+tasks.
+
+## 2. Make `care` available (once)
+
+The skill drives the `care` command; set it up once with the published wizard (it also
+installs a global `care` shim):
 
 ```bash
 uvx care-install        # workspace + .env + a `care` shim in ~/.local/bin
 ```
 
-Make sure `~/.local/bin` is on your `PATH` afterward. Alternatives: install globally
-with `uv tool install --editable <maestro-care checkout>`, or point the skill at a
-checkout with `export CARE_HOME=/path/to/maestro-care`. (Zero-install also works —
-the launcher falls back to `uvx --from maestro-care care`.) See the
-[Quick Start](/care/getting-started/quick-start/) for full setup.
-
-## 2. Install the skill
-
-Download **[`care-cli.skill`](/care-cli.skill)**, then unzip it into the right
-directory:
-
-```bash
-# Claude Code
-unzip care-cli.skill -d ~/.claude/skills/          # -> ~/.claude/skills/care-cli/
-
-# hermes (NousResearch) — agentskills.io standard
-unzip care-cli.skill -d ~/.hermes/skills/          # -> ~/.hermes/skills/care-cli/
-```
-
-In hermes, `/skills` then lists **care-cli** and you invoke it with `/care-cli` (or
-just describe a MAESTRO task — the skill's description is written to trigger). In Claude
-Code the skill triggers whenever a task mentions MAESTRO / MAGE / CARL chains / the
-`care` command.
+Ensure `~/.local/bin` is on your `PATH`. Alternatives: `uv tool install --editable
+<checkout>`, or `export CARE_HOME=/path/to/checkout`. Zero-install also works — the
+launcher falls back to `uvx --from maestro-care care`. See the
+[Quick Start](/care/getting-started/quick-start/).
 
 ## 3. Verify
 
 The bundled launcher reports how it resolved `care`, then run a health check:
 
 ```bash
-bash ~/.claude/skills/care-cli/scripts/care.sh --where      # global | checkout | pypi
-bash ~/.claude/skills/care-cli/scripts/care.sh doctor       # env, config, service probes
+bash ~/.claude/skills/maestro/scripts/care.sh --where    # global | checkout | pypi
+bash ~/.claude/skills/maestro/scripts/care.sh doctor     # config + service probes
 ```
 
-`doctor` should show your MAGE endpoint and a reachable Memory service. You're ready —
-ask the agent to "generate a chain for …", "run chain X", or "show MAESTRO memory".
+`doctor` should show your model endpoint and a reachable memory service. You're ready —
+ask your agent to "generate a chain for …", "run chain X", or "show memory".
 
 :::note[File paths]
 When `care` resolves to the global shim (or the `uvx` fallback), it runs from your
-MAESTRO **workspace**, so relative file arguments resolve there. Pass **absolute paths**
-for `--output`, `validate <file>`, `replay <file>`, and `import` globs so behaviour is
-identical however `care` was located.
+Maestro **workspace**, so relative file arguments resolve there. Pass **absolute
+paths** for `--output`, `validate <file>`, `replay <file>`, and `import` globs.
 :::
 
 ## Updating
 
-Re-download `care-cli.skill` and unzip over the existing folder (overwrite). The skill
-and the `care` CLI version independently — update MAESTRO itself with
-`uvx care-install update` (or re-run `uv tool install`).
+Re-run the one-command install — it replaces the folder and keeps the previous copy as
+`maestro.bak`. The skill and the `care` CLI version independently; update Maestro itself
+with `uvx care-install update`.
