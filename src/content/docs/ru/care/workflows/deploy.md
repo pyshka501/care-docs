@@ -67,7 +67,7 @@ MAESTRO автоматически запускает его при первом
 | `base_url` | `http://127.0.0.1:8080` | Control-API хаба, к которому обращается клиент. |
 | `port` | `8080` | Порт, на котором работает autostart (должен совпадать с `base_url`). |
 | `autostart` | `true` | Запускать хаб, когда он не работает. |
-| `state_file` | `~/.care/agent-hub.json` | Где хаб сохраняет развёртывания. |
+| `state_file` | `~/.maestro/agent-hub.json` | Где хаб сохраняет развёртывания. |
 | `agent_server_cmd` | `["carl-agent-hub", "serve"]` | Команда, которую MAESTRO запускает для autostart (к ней добавляются `--port` / `--state-file`). |
 | `start_timeout` | `15` | Сколько секунд ждать `/healthz` после autostart. |
 | `timeout` | `30` | Таймаут на запрос для вызовов control-API. |

@@ -66,7 +66,7 @@ The `[hub]` section (env prefix `CARE_HUB__`):
 | `base_url` | `http://127.0.0.1:8080` | Hub control API the client talks to. |
 | `port` | `8080` | Port autostart serves on (must agree with `base_url`). |
 | `autostart` | `true` | Spawn the hub when it's down. |
-| `state_file` | `~/.care/agent-hub.json` | Where the hub persists deployments. |
+| `state_file` | `~/.maestro/agent-hub.json` | Where the hub persists deployments. |
 | `agent_server_cmd` | `["carl-agent-hub", "serve"]` | Command MAESTRO spawns to autostart (gets `--port` / `--state-file` appended). |
 | `start_timeout` | `15` | Seconds to wait for `/healthz` after autostart. |
 | `timeout` | `30` | Per-request timeout for control-API calls. |
