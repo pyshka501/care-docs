@@ -1,13 +1,14 @@
 ---
 title: Glossary
-description: Key MAESTRO CARE terms in one place.
+description: Key MAESTRO terms in one place.
 sidebar:
   order: 2
 ---
 
 | Term | Meaning |
 | --- | --- |
-| **MAESTRO CARE** | Collaborative Agent Reasoning Ecosystem — the TUI + `care` CLI you interact with. |
+| **MAESTRO** | The whole system — generate, run, and evolve reasoning chains. You use it via the MAESTRO CARE TUI or the `care` CLI. |
+| **MAESTRO CARE** | The Textual TUI — the terminal interface to MAESTRO (the `care` command launches it). |
 | **CARL** | Collaborative Agent Reasoning Library — the format reasoning chains are written in (and the library that runs them). See the [CARL docs](/carl/getting-started/overview/). |
 | **MAGE** | The generator that turns a task into a CARL chain. |
 | **GigaEvo Memory** | The store for saved entities (chains, agents, skills, run records) — the Library. |

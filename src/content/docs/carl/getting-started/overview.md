@@ -12,7 +12,7 @@ reference implementation of the format is the `mmar-carl` Python library
 acyclic graph (DAG), runs everything that can run in parallel, and pulls relevant
 context from your input for each step.
 
-In MAESTRO CARE, MAGE writes chains in this format and the runtime executes them.
+In MAESTRO, MAGE writes chains in this format and the runtime executes them.
 CARL chains can also be authored and run directly from Python.
 
 ## Key features

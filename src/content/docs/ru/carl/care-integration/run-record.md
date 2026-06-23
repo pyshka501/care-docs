@@ -6,7 +6,7 @@ sidebar:
 ---
 
 `RunRecord` собирает всё об одном выполнении — снимок цепочки, вход, (без потерь) результат
-и тайминги — в единую JSON-сериализуемую запись. Именно её CARE хранит как историю прогонов
+и тайминги — в единую JSON-сериализуемую запись. Именно её MAESTRO хранит как историю прогонов
 и именно её читает обратно [`care replay`](/ru/care/cli/generate-run/).
 
 ## Захват прогона
@@ -57,4 +57,4 @@ d = record.to_dict();  RunRecord.from_dict(d)
 ## Смотрите также
 
 - [Сериализация результата](/ru/carl/serialization/json/#result-serialization) — `ReasoningResult` внутри записи.
-- [Обзор интеграции с CARE](/ru/carl/care-integration/overview/)
+- [Обзор интеграции с MAESTRO](/ru/carl/care-integration/overview/)

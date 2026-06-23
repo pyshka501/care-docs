@@ -5,7 +5,7 @@ sidebar:
   order: 4
 ---
 
-*Added in MAESTRO CARE 0.0.3.*
+*Added in MAESTRO 0.0.3.*
 
 `/deploy` ships a saved chain to the **agent hub** — one lightweight local process
 that serves each deployed chain as an HTTP agent, mounted at `/agents/<name>` with
@@ -20,7 +20,7 @@ pip install "maestro-care[deploy]"
 ```
 
 That puts the `carl-agent-hub` CLI on your PATH (it's also bundled in the `[full]`
-extra). MAESTRO CARE autostarts it for you on the first `/deploy`, so you rarely run
+extra). MAESTRO autostarts it for you on the first `/deploy`, so you rarely run
 it by hand.
 
 ## Deploy a chain
@@ -42,7 +42,7 @@ What happens:
 2. **Deploy gate** — a client-side check (the chain loads, uses only template-safe
    tools, and passes the MAGE lint). On failure the issues are listed and **nothing
    is deployed**.
-3. **Hub up** — if the hub is down and `autostart` is on, MAESTRO CARE spawns it and
+3. **Hub up** — if the hub is down and `autostart` is on, MAESTRO spawns it and
    waits for `/healthz`.
 4. **Deploy** — `POST /deployments`; the hub mounts the agent.
 5. You get the **agent URL**, a link to its **Swagger docs**, and a readiness line.
@@ -66,8 +66,8 @@ The `[hub]` section (env prefix `CARE_HUB__`):
 | `base_url` | `http://127.0.0.1:8080` | Hub control API the client talks to. |
 | `port` | `8080` | Port autostart serves on (must agree with `base_url`). |
 | `autostart` | `true` | Spawn the hub when it's down. |
-| `state_file` | `~/.care/agent-hub.json` | Where the hub persists deployments. |
-| `agent_server_cmd` | `["carl-agent-hub", "serve"]` | Command MAESTRO CARE spawns to autostart (gets `--port` / `--state-file` appended). |
+| `state_file` | `~/.maestro/agent-hub.json` | Where the hub persists deployments. |
+| `agent_server_cmd` | `["carl-agent-hub", "serve"]` | Command MAESTRO spawns to autostart (gets `--port` / `--state-file` appended). |
 | `start_timeout` | `15` | Seconds to wait for `/healthz` after autostart. |
 | `timeout` | `30` | Per-request timeout for control-API calls. |
 

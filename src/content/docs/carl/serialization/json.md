@@ -36,7 +36,7 @@ The compatibility contract:
 | Situation | Behaviour |
 | --- | --- |
 | **Read older** | A chain saved at `format_version = N` stays loadable on every CARL that ships `FORMAT_VERSION ≥ N`. |
-| **Read newer** | A newer wire format raises `ChainFormatNewerError(required, this)` — CARE catches it and prompts the user to upgrade. |
+| **Read newer** | A newer wire format raises `ChainFormatNewerError(required, this)` — MAESTRO catches it and prompts the user to upgrade. |
 | **Unknown step type** | Fails loudly rather than silently dropping the step. |
 
 ## Runtime-only fields

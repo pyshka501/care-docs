@@ -98,7 +98,7 @@ context.clear_pause()
 Then `execute_async(context, resume_from=snapshot)` restores a prior
 `ContextSnapshot` (history / memory / metadata / cancel state) and skips steps
 already completed in that snapshot — the cross-process resume primitive used by
-CARE. Pair it with `ReasoningContext.snapshot()`. For human-in-the-loop steps,
+MAESTRO. Pair it with `ReasoningContext.snapshot()`. For human-in-the-loop steps,
 `context.provide_human_input(value)` supplies the awaited answer.
 
 ## See also

@@ -21,7 +21,7 @@ care memory ls --entity-type chain --tag finance --q weather --favourites-only
 | `--entity-type chain\|agent\|agent_skill\|memory_card` | `chain` | Entity type to list. |
 | `--limit N` | `20` | Max rows. |
 | `--channel NAME` | `latest` | Version channel. |
-| `--namespace NS` | — | Restrict to one MAESTRO CARE namespace. |
+| `--namespace NS` | — | Restrict to one MAESTRO namespace. |
 | `--tag T` | — | Filter by tag (repeatable, AND). |
 | `--q TEXT` | — | Case-insensitive substring on name/description. |
 | `--favourites-only` | off | Only favourited entities. |

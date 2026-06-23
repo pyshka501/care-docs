@@ -1,9 +1,9 @@
 ---
-title: MAESTRO CARE
+title: MAESTRO
 description: Generate, run, and evolve reasoning chains — from a polished terminal UI (TUI and CLI).
 template: splash
 hero:
-  tagline: One ecosystem for reasoning agents. Describe a task, and MAESTRO CARE builds, runs, and evolves the chain — right in the terminal.
+  tagline: One ecosystem for reasoning agents. Describe a task, and MAESTRO builds, runs, and evolves the chain — right in the terminal.
   image:
     file: ../../assets/evoc-mascot-square.webp
   actions:
@@ -24,9 +24,9 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
 <CardGrid>
 	<LinkCard
-		title="MAESTRO CARE → the TUI & CLI"
+		title="MAESTRO → the TUI & CLI"
 		href="care/getting-started/overview/"
-		description="The terminal app: a Textual TUI plus a headless `care` CLI that generates, runs, saves, and evolves reasoning chains. Start here to work with agents interactively."
+		description="The system: drive it from the MAESTRO CARE terminal UI (TUI) or the headless `care` CLI to generate, run, save, and evolve reasoning chains. Start here to work with agents interactively."
 	/>
 	<LinkCard
 		title="CARL → the chain format"
@@ -34,15 +34,31 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 		description="The format reasoning chains are written in: typed steps, dependencies, and per-step context. Start here to learn how a chain is structured."
 	/>
 	<LinkCard
-		title="Agent Skill → drive CARE from an agent"
+		title="Agent Skill → drive MAESTRO from an agent"
 		href="care/skill/overview/"
 		description="A downloadable agentskills.io skill that lets Claude Code or hermes run the `care` CLI — generate, run, and evolve chains — with portable auto-detection. Start here to install it."
 	/>
 </CardGrid>
 
+## Install the agent skill
+
+Give Claude Code, hermes, or OpenClaw the Maestro skill in one command:
+
+```bash
+uvx care-install skill        # asks which agent; or --agent claude | hermes | openclaw | all
+```
+
+It downloads and unpacks the skill into the agent's skills directory:
+
+- Claude Code → `~/.claude/skills/maestro`
+- hermes → `~/.hermes/skills/maestro`
+- OpenClaw → `~/.openclaw/skills/maestro`
+
+More: [Agent Skill](care/skill/overview/) · [Install & Use](care/skill/install/).
+
 ## How it fits together
 
-**MAESTRO CARE** is the product on top of a four-part stack. Each part owns one stage of a chain's life.
+**MAESTRO** is the product on top of a four-part stack. Each part owns one stage of a chain's life.
 
 <CardGrid>
 	<Card title="MAGE — generation" icon="seti:python">
@@ -59,4 +75,4 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 	</Card>
 </CardGrid>
 
-In short: **CARL is the format, MAESTRO CARE is the cockpit.** MAGE writes a chain in the CARL format, and MAESTRO CARE runs and evolves it.
+In short: **CARL is the format, MAESTRO is the system that runs it.** MAGE writes a chain in the CARL format; MAESTRO runs and evolves it — from the **MAESTRO CARE** TUI or the `care` CLI.
