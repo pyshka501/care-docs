@@ -64,7 +64,7 @@ export default defineConfig({
 	markdown: { remarkPlugins: [remarkMermaid], rehypePlugins: [rehypeBaseLinks] },
 	integrations: [
 		starlight({
-			title: 'MAESTRO CARE',
+			title: 'MAESTRO',
 			favicon: '/favicon.png',
 			customCss: ['./src/styles/custom.css'],
 			// Client-side Mermaid rendering (build-safe; renders `<pre class="mermaid">`).
@@ -166,7 +166,7 @@ document.addEventListener('astro:page-load', fixTitle);
 				// Two independent products → two separate sidebars.
 				starlightSidebarTopics([
 					{
-						label: 'MAESTRO CARE',
+						label: 'MAESTRO',
 						link: '/care/getting-started/overview/',
 						icon: 'laptop',
 						items: [

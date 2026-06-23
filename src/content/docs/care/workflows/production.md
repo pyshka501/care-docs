@@ -11,7 +11,7 @@ and ship the best version.
 
 ## What happens on a Production prompt
 
-When you type a task in Production mode, MAESTRO CARE runs this sequence automatically:
+When you type a task in Production mode, MAESTRO runs this sequence automatically:
 
 1. **Generate** — MAGE produces a **reproducible** chain (no ReAct loop, no
    answer-synthesis — Production chains must run the same way every time).
@@ -19,10 +19,10 @@ When you type a task in Production mode, MAESTRO CARE runs this sequence automat
    [`/artifacts`](/care/slash-commands/overview/) see it).
 3. **Save** — the chain is saved to Memory under a stable **`chain_id`** with a
    display name. (Duplicate of an existing chain → no re-save.)
-4. **Baseline** — MAESTRO CARE runs **one baseline execution** and persists it as the
+4. **Baseline** — MAESTRO runs **one baseline execution** and persists it as the
    **first dataset entry** for that chain.
 5. **Evolve** — if a [Platform](/care/concepts/architecture/) is wired and the
-   baseline succeeded, MAESTRO CARE **kicks off an evolution run** against the baseline.
+   baseline succeeded, MAESTRO **kicks off an evolution run** against the baseline.
 
 After this, the chain lives in your [Library](/care/tui/screens/) under its
 `chain_id`.

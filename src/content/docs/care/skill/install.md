@@ -7,7 +7,7 @@ sidebar:
 
 The skill is a zip whose top-level folder is `care-cli/`. "Installing" means dropping
 that folder into your agent's skills directory. It needs a working `care` command —
-the skill *drives* CARE, it doesn't install it.
+the skill *drives* MAESTRO, it doesn't install it.
 
 ## 1. Get `care` available (once)
 
@@ -37,8 +37,8 @@ unzip care-cli.skill -d ~/.hermes/skills/          # -> ~/.hermes/skills/care-cl
 ```
 
 In hermes, `/skills` then lists **care-cli** and you invoke it with `/care-cli` (or
-just describe a CARE task — the skill's description is written to trigger). In Claude
-Code the skill triggers whenever a task mentions CARE / MAGE / CARL chains / the
+just describe a MAESTRO task — the skill's description is written to trigger). In Claude
+Code the skill triggers whenever a task mentions MAESTRO / MAGE / CARL chains / the
 `care` command.
 
 ## 3. Verify
@@ -51,11 +51,11 @@ bash ~/.claude/skills/care-cli/scripts/care.sh doctor       # env, config, servi
 ```
 
 `doctor` should show your MAGE endpoint and a reachable Memory service. You're ready —
-ask the agent to "generate a chain for …", "run chain X", or "show CARE memory".
+ask the agent to "generate a chain for …", "run chain X", or "show MAESTRO memory".
 
 :::note[File paths]
 When `care` resolves to the global shim (or the `uvx` fallback), it runs from your
-CARE **workspace**, so relative file arguments resolve there. Pass **absolute paths**
+MAESTRO **workspace**, so relative file arguments resolve there. Pass **absolute paths**
 for `--output`, `validate <file>`, `replay <file>`, and `import` globs so behaviour is
 identical however `care` was located.
 :::
@@ -63,5 +63,5 @@ identical however `care` was located.
 ## Updating
 
 Re-download `care-cli.skill` and unzip over the existing folder (overwrite). The skill
-and the `care` CLI version independently — update CARE itself with
+and the `care` CLI version independently — update MAESTRO itself with
 `uvx care-install update` (or re-run `uv tool install`).

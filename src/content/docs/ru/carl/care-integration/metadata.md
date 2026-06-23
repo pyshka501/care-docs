@@ -1,11 +1,11 @@
 ---
-title: Метаданные CARE
+title: Метаданные MAESTRO
 description: Прикрепите типизированное происхождение к цепочке и повторно инициализируйте контекст из него.
 sidebar:
   order: 4
 ---
 
-CARE проставляет типизированный блок происхождения в `chain.metadata["care"]`, чтобы
+MAESTRO проставляет типизированный блок происхождения в `chain.metadata["care"]`, чтобы
 сохранённая цепочка помнила задачу, для которой была сгенерирована, прикреплённые файлы,
 кто её создал, и её теги. Вы можете читать/писать его двумя методами `ReasoningChain`.
 
@@ -30,7 +30,7 @@ meta = chain.get_care_metadata()   # -> CareChainMetadata | None
 
 Передайте **либо** `meta=`, **либо** отдельные kwargs — смешивание вызывает `ValueError`.
 `get_care_metadata()` возвращает `None`, когда у цепочки нет блока `care` (т.е. она не
-была создана инструментом с поддержкой CARE).
+была создана инструментом с поддержкой MAESTRO).
 
 ### Поля CareChainMetadata
 
@@ -40,7 +40,7 @@ meta = chain.get_care_metadata()   # -> CareChainMetadata | None
 
 ## Повторная инициализация контекста из сохранённой цепочки
 
-`ReasoningContext.from_chain_inputs` строит свежий контекст из метаданных CARE цепочки —
+`ReasoningContext.from_chain_inputs` строит свежий контекст из метаданных MAESTRO цепочки —
 точка входа «перезапустить из библиотеки»:
 
 ```python
@@ -60,4 +60,4 @@ result = await chain.execute_async(context)
 ## Смотрите также
 
 - [Preflight](/ru/carl/care-integration/preflight/) · [RunRecord](/ru/carl/care-integration/run-record/)
-- [JSON-сериализация](/ru/carl/serialization/json/) — метаданные CARE проходят round-trip вместе с цепочкой.
+- [JSON-сериализация](/ru/carl/serialization/json/) — метаданные MAESTRO проходят round-trip вместе с цепочкой.

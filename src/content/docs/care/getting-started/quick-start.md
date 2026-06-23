@@ -1,6 +1,6 @@
 ---
 title: Quick Start
-description: Boot MAESTRO CARE and generate your first chain in the CARL format in five minutes.
+description: Boot MAESTRO and generate your first chain in the CARL format in five minutes.
 sidebar:
   order: 2
 ---
@@ -54,7 +54,7 @@ Type a task in natural language and press <kbd>Enter</kbd>:
 Summarise the key risks in this quarterly report and rank them by severity.
 ```
 
-MAGE generates a chain, MAESTRO CARE runs it on the spot, and the answer prints
+MAGE generates a chain, MAESTRO runs it on the spot, and the answer prints
 inline. First-time users see a one-line offer to type `/tour` for a 5-step walkthrough.
 
 ## Next steps

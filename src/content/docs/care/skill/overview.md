@@ -1,6 +1,6 @@
 ---
 title: Overview
-description: The care-cli Agent Skill — let Claude Code or hermes drive the CARE CLI, with portable auto-detection of `care`.
+description: The care-cli Agent Skill — let Claude Code or hermes drive the MAESTRO CLI, with portable auto-detection of `care`.
 sidebar:
   order: 1
 ---
@@ -10,7 +10,7 @@ a small bundle that teaches an agent (Claude Code, or NousResearch
 [hermes](https://github.com/nousresearch/hermes-agent)) how to drive the headless
 [`care` CLI](/care/cli/overview/) — generate and run CARL chains, browse Memory,
 evolve chains, **visualize and interpret them**, and diagnose the environment — without
-hardcoding any path to CARE. It can even **fix bugs in the library source** (autodebug).
+hardcoding any path to MAESTRO. It can even **fix bugs in the library source** (autodebug).
 
 :::tip[Download]
 **[Download `care-cli.skill`](/care-cli.skill)** — a zip of the skill folder. Install
@@ -72,7 +72,7 @@ proposes to **visualize**, **interpret**, run, or **evolve** it:
 - **Interpret** — a plain-language, per-step walkthrough (what each step does, what it
   reads via `$`-references, what it produces, and why it depends on what it does). The
   agent explains it, so this works even with no LLM key or services.
-- **Autodebug** — the bundle ships a **repo map** of the whole CARE/CARL stack (what
+- **Autodebug** — the bundle ships a **repo map** of the whole MAESTRO/CARL stack (what
   each repository owns, key files, a symptom→repo table) and a reproduce → locate →
   patch → verify playbook, so the agent can fix a bug in the library *source* — after
   verifying which install is actually live — instead of only working around it.

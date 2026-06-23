@@ -1,13 +1,14 @@
 ---
 title: Глоссарий
-description: Ключевые термины MAESTRO CARE в одном месте.
+description: Ключевые термины MAESTRO в одном месте.
 sidebar:
   order: 2
 ---
 
 | Термин | Значение |
 | --- | --- |
-| **MAESTRO CARE** | Collaborative Agent Reasoning Ecosystem — TUI + CLI `care`, с которым вы работаете. |
+| **MAESTRO** | Вся система — генерация, запуск и эволюция reasoning-цепочек. Вы работаете с ней через TUI MAESTRO CARE или CLI `care`. |
+| **MAESTRO CARE** | Textual TUI — терминальный интерфейс к MAESTRO (запускается командой `care`). |
 | **CARL** | Collaborative Agent Reasoning Library — формат, в котором описываются цепочки рассуждений (и библиотека, которая их исполняет). См. [документацию CARL](/ru/carl/getting-started/overview/). |
 | **MAGE** | Генератор, превращающий задачу в CARL-цепочку. |
 | **GigaEvo Memory** | Хранилище сохранённых сущностей (цепочки, агенты, навыки, записи запусков) — Библиотека. |

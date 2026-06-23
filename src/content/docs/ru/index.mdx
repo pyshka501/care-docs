@@ -1,9 +1,9 @@
 ---
-title: MAESTRO CARE
-description: Генерация, запуск и эволюция reasoning-цепочек — из терминального интерфейса (TUI и CLI).
+title: MAESTRO
+description: Генерация, запуск и эволюция reasoning-цепочек — из удобного терминального интерфейса (TUI и CLI).
 template: splash
 hero:
-  tagline: Одна экосистема для reasoning-агентов. Опишите задачу — MAESTRO CARE соберёт, запустит и улучшит цепочку прямо в терминале.
+  tagline: Одна экосистема для reasoning-агентов. Опишите задачу — и MAESTRO соберёт, запустит и улучшит цепочку прямо в терминале.
   image:
     file: ../../../assets/evoc-mascot-square.webp
   actions:
@@ -24,9 +24,9 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
 <CardGrid>
 	<LinkCard
-		title="MAESTRO CARE → TUI и CLI"
+		title="MAESTRO → TUI и CLI"
 		href="care/getting-started/overview/"
-		description="Терминальное приложение: TUI на Textual и headless-CLI `care`, который генерирует, запускает, сохраняет и эволюционирует reasoning-цепочки. Начать отсюда для интерактивной работы с агентами."
+		description="Сама система: управляйте ею из терминального интерфейса MAESTRO CARE (TUI) или из headless-CLI `care`, чтобы генерировать, запускать, сохранять и эволюционировать reasoning-цепочки. Начать отсюда для интерактивной работы с агентами."
 	/>
 	<LinkCard
 		title="CARL → формат цепочек"
@@ -34,7 +34,7 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 		description="Формат, в котором описываются reasoning-цепочки: типизированные шаги, зависимости и контекст под каждый шаг. Начать отсюда, чтобы понять устройство цепочки."
 	/>
 	<LinkCard
-		title="Agent Skill → управляйте CARE из агента"
+		title="Agent Skill → управляйте MAESTRO из агента"
 		href="care/skill/overview/"
 		description="Скачиваемый скилл формата agentskills.io: даёт Claude Code или hermes запускать CLI `care` — генерировать, запускать и эволюционировать цепочки — с переносимым автоопределением. Начать отсюда, чтобы установить."
 	/>
@@ -42,7 +42,7 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
 ## Как это связано
 
-**MAESTRO CARE** — продукт поверх стека из четырёх частей. Каждая часть отвечает за один этап жизни цепочки.
+**MAESTRO** — продукт поверх стека из четырёх частей. Каждая часть отвечает за один этап жизни цепочки.
 
 <CardGrid>
 	<Card title="MAGE — генерация" icon="seti:python">
@@ -59,4 +59,4 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 	</Card>
 </CardGrid>
 
-Если коротко: **CARL — это формат, MAESTRO CARE — кабина пилота.** MAGE описывает цепочку в формате CARL, а MAESTRO CARE запускает и эволюционирует её.
+Если коротко: **CARL — это формат, а MAESTRO — система, которая его запускает.** MAGE описывает цепочку в формате CARL, а MAESTRO запускает и эволюционирует её — из терминального интерфейса **MAESTRO CARE** (TUI) или из CLI `care`.

@@ -1,6 +1,6 @@
 ---
 title: FAQ & Troubleshooting
-description: Common questions and fixes when running MAESTRO CARE.
+description: Common questions and fixes when running MAESTRO.
 sidebar:
   order: 1
 ---
@@ -21,7 +21,7 @@ in-chat run) reports a missing dependency, install it:
 uv sync --extra carl     # or: pip install 'maestro-care[carl]'
 ```
 
-MAESTRO CARE imports upstreams lazily, so a minimal install still boots — the hint tells
+MAESTRO imports upstreams lazily, so a minimal install still boots — the hint tells
 you exactly which extra to add.
 
 ## LLM errors (401 / 403 / 429)

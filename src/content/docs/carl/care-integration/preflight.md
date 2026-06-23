@@ -36,15 +36,15 @@ if not report.all_present:
 | Field / member | Meaning |
 | --- | --- |
 | `required_tools` / `required_mcp_servers` / `required_skills` | Everything the chain references. |
-| `missing_tools` | Tools referenced but **not** registered in the context (MAESTRO CARE's "register before running" list). |
+| `missing_tools` | Tools referenced but **not** registered in the context (MAESTRO's "register before running" list). |
 | `missing_mcp_servers` / `missing_skills` | Reserved (currently always empty — MCP carries its own config; skill resolution is async/network-bound). |
 | `all_present` (property) | `True` when nothing is missing. |
 | `format_text()` | One-line summary when OK, multi-line breakdown otherwise. |
 
-The report is **structured, not narrated** — MAESTRO CARE turns it into a modal; CLIs and
+The report is **structured, not narrated** — MAESTRO turns it into a modal; CLIs and
 CI read the raw lists.
 
 ## See also
 
-- [MAESTRO CARE integration overview](/carl/care-integration/overview/)
+- [MAESTRO integration overview](/carl/care-integration/overview/)
 - The CLI twin: [`care validate`](/care/cli/discovery/) preflights a chain file.
