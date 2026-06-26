@@ -12,13 +12,14 @@ surface, the **Library**, and the **Evolution** screen.
 
 | Screen | How to reach | Purpose |
 | --- | --- | --- |
-| Chat | boot | Natural-language input, mode toggle, slash palette, artifact pill, Production toolbar. |
-| Artifacts | `/artifacts` | Current-chat artifacts (chain / stage / tool / dataset / synth output); save, copy, inspect. |
-| Library | `/library` | Saved chains — sort, filter, tag pool, recency strip, mean cost, bulk import/export. |
+| Chat | boot | Natural-language input, mode toggle, slash palette, artifact pill, header Library link, Production toolbar. |
+| Chain DAG | Chat → **Read full** | Full box-and-arrow graph of a freshly-generated chain + clickable step list + CARL detail pane (see [The chain DAG](/care/tui/dag/)). |
+| Artifacts | `/artifacts` | Current-chat artifacts (chain / stage / tool / dataset / synth output); save, copy, inspect, JSON/DAG toggle (see [below](#the-artifacts-screen)). |
+| Library | `/library` · header link | Saved chains — sortable columns, filter, tag pool, recency strip, mean cost, bulk import/export (see [below](#the-library-screen)). |
 | Inspection | Library `Enter` | Saved-chain detail + run history + Integration pane. |
-| Edit Agent | Library `e` | Inline edit + save-as-new-version + promote-to-stable. |
+| Edit Agent | Library `e` | Manual edit — name / description / tags / task / change summary, save-as-new-version or promote-to-stable (see [below](#the-edit-agent-screen)). |
 | Execution | Library `r` | Live CARL run + token streaming. |
-| Evolution | `/evolution` | Run + watch a GA over a chain — tabbed view (Fitness chart · Pareto front · Programs · Versions) with Stop+Archive / Accept-winner controls (see [below](#the-evolution-screen)). |
+| Evolution | `/evolution` · Library `v`/`E` | Run + watch a GA over a chain (see [The Evolution screen](/care/tui/evolution/)). |
 | Evolution Dashboard | `/evolution` | List of active + recent runs; Enter opens a run, `c` compares two. |
 | Replay | Runs `Enter` | Step through a saved `ReasoningResult`. |
 | Runs | `/runs` | Local run history; Enter opens the Replay sidecar. |
@@ -43,7 +44,7 @@ surface, the **Library**, and the **Evolution** screen.
 | Diff | Library `D` | Side-by-side compare two chains / individual vs parent. |
 | Lineage | Library `l` | Walk a chain's ancestry DAG. |
 | Import / Export | Library `i` / `x` | Import a chain bundle / export entities to a tarball. |
-| Export Chain | Evolution `x` | Export a single chain to disk (JSON / Python). |
+| Export Chain | Evolution `x` | Export a single chain to disk — pick **Markdown / JSON / Python** with a folder **Browse** picker. |
 | Evolution Launch | Library `v` / `E` | Budget / rubric / objectives picker before evolving. |
 | Evolution Compare | Dashboard `c` | Side-by-side fitness curves for two runs. |
 | Human Input | CARL human-input step | Block execution for a human-supplied answer. |
@@ -54,23 +55,41 @@ surface, the **Library**, and the **Evolution** screen.
 | Tag Editor | Library `T` | Edit tags (bulk) + optional title. |
 | Use It Now | post-save | Copy-paste recipe (python / curl / cli) for the saved chain. |
 
-## The Evolution screen
+## The Library screen
 
-`/evolution` — or **Library → `v`/`E`** (the Evolution Launch picker) — opens a live
-view of a genetic-algorithm run over a chain. It's organised as tabs:
+`/library` — or the **Library** link in the Chat header — lists every saved chain. Click
+a column header to sort: **Name**, **Last Run**, and **Runs** (run count) are sortable;
+the sort persists between visits, and favourites stay pinned to the top. Each row carries
+a **recency strip** (last run + a success-rate/N badge) and a **mean cost** column drawn
+from local run history. Press `e` to edit a row inline, `r` to re-run it, `Enter` to
+inspect it; `i`/`x` import or export bundles.
 
-| Tab | Shows |
-| --- | --- |
-| **Fitness** | A two-axis line chart — **best fitness** and the **current-generation mean** vs. generation — so you can watch progress and spot plateaus. |
-| **Pareto Front** | A table of non-dominated individuals; for runs with ≥ 2 objectives, a 2D scatter sits beneath it. |
-| **Programs** | Valid vs. invalid program counts. |
-| **Versions** | Every generation where best fitness strictly improved — pick one to preview its chain or diff it against the parent. |
+## The Edit Agent screen
 
-Controls along the bottom: **Back**, **Stop + Archive** (`z` — halts the run
-server-side and archives it), and **Accept winner** (promotes the best individual into
-the **stable** channel). `D` diffs the selected version against its parent; `Esc`
-cancels. See [Launching evolution](/care/workflows/production/#evolution--improve-automatically)
-for the ways to start a run.
+Library → `e` opens the **manual editing** screen for a saved chain. You can change the
+**display name**, **description**, **tags**, **task description**, and a **change
+summary**; a Content tab also lets you hand-edit the CARL JSON. Validation runs on every
+keystroke. The footer offers **Save** (`Ctrl+S` — writes a **new version**),
+**Promote** (advances the chain into the **stable** channel), and **Back** (`Esc`). The
+Save button shows how many fields changed, and a structural edit auto-fills a change
+summary so the save never blocks silently.
+
+## The Artifacts screen
+
+`/artifacts` is a two-pane browser over everything the current chat session produced
+(chains, stage payloads, tool output, datasets, synth answers). The header shows an
+**artifacts pill** — `[ N · M unsaved ]` — that stays in sync with the chat surface's
+pill: saving a chain (`s`) decrements the unsaved count, dropping one (`d`) shrinks the
+total. `v` toggles the detail pane between raw **JSON** and the **DAG** step graph;
+`Enter` inspects a chain, `c` copies its payload, `S` saves all unsaved, `D` diffs two
+selected rows.
+
+---
+
+The genetic-algorithm view and the full chain DAG each have their own page:
+
+- [The Evolution screen](/care/tui/evolution/) — live fitness chart, Pareto front, versions, and the Stop / Accept-winner controls.
+- [The chain DAG](/care/tui/dag/) — the **Read full** box-and-arrow graph with clickable steps and a CARL detail pane.
 
 :::note
 Statuses in the source mark a few surfaces as M1/planned (e.g. the uvx Onboarding

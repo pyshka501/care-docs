@@ -15,7 +15,10 @@ toggle above it.
   answer prints inline.
 - **Type a [slash command](/care/slash-commands/overview/)** (`/help`, `/library`, …)
   for the non-chat affordances.
-- The **mode toggle** above the prompt switches [Ad-Hoc ↔ Production](/care/getting-started/overview/).
+- The **mode toggle** above the prompt switches [Interactive ↔ Production](/care/workflows/modes/) —
+  Interactive is the default.
+- **Inspect the chain** behind any answer: chat exposes [chain DAG affordances](/care/tui/dag/)
+  to step through the graph, and an **Artifacts pill** collects the files a run produced.
 - First-time users get a one-line offer to type `/tour` for a 5-step walkthrough.
 
 ### How a run unfolds
@@ -47,4 +50,5 @@ you're on.
 
 - [Screens reference](/care/tui/screens/) — every screen + modal and how to reach it.
 - [Slash commands](/care/slash-commands/overview/) — the full `/command` list.
-- [Chat modes](/care/getting-started/overview/) — Ad-Hoc vs Production.
+- [Chat modes](/care/workflows/modes/) — Interactive vs Production.
+- [Chain DAG](/care/tui/dag/) — inspect the graph behind an answer.
