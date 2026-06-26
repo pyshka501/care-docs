@@ -57,3 +57,4 @@ notebook cell and it renders a status banner + tables + Mermaid, no `print()`.
 
 - [Tracing & observability](/carl/tracing/overview/)
 - [Cost estimation](/carl/tracing/cost/)
+- [The chain DAG in MAESTRO CARE](/care/tui/dag/) — the TUI renders this same DAG live as a coloured box-and-arrow graph, with an [ASCII glyph mode](/care/tui/dag/) for plain terminals.

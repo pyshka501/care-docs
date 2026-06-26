@@ -71,4 +71,5 @@ cross-run Pareto chart. In Jupyter, type `result` to render it via `_repr_markdo
 ## See also
 
 - [Evolution overview](/carl/evolution/overview/)
+- [The Evolution dashboard in MAESTRO CARE](/care/tui/evolution/) — the TUI surfaces these same results, plus a budget preview and a live cost meter.
 - Tracing & visualization (next section) for run-level diagnostics.

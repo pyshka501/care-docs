@@ -71,4 +71,5 @@ print(result.to_lineage_mermaid())             # parent→child tree (winner hig
 ## Смотрите также
 
 - [Обзор эволюции](/ru/carl/evolution/overview/)
+- [Панель эволюции в MAESTRO CARE](/ru/care/tui/evolution/) — TUI показывает те же результаты, а также предпросмотр бюджета и счётчик расходов в реальном времени.
 - Трассировка и визуализация (следующий раздел) для диагностики запусков.

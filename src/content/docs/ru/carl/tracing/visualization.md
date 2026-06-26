@@ -57,3 +57,4 @@ ChainVisualizer(result, chain=chain).token_pie().gantt().heatmap(metric="tokens"
 
 - [Трассировка и наблюдаемость](/ru/carl/tracing/overview/)
 - [Оценка стоимости](/ru/carl/tracing/cost/)
+- [DAG цепочки в MAESTRO CARE](/ru/care/tui/dag/) — TUI рисует тот же DAG прямо во время выполнения цветным графом из блоков и стрелок, а для простых терминалов есть [ASCII-режим](/ru/care/tui/dag/).
