@@ -23,11 +23,17 @@ care generate "weather report for SF" --save weather --output weather.json
 | `--output-format json\|python` | Override the export format. |
 | `--json` | Emit the chain as JSON instead of a summary line. |
 
-:::note[Where's `care export`?]
-There's no separate `export` subcommand — export the generated chain with
-`generate --output PATH`, or export a *saved* chain with `run --export PATH`
-(below). Both write `.json` or `.py` (a runnable Python module) based on the
-extension.
+If a `generate` call fails because of authentication or an expired token, the CLI
+now prints a single friendly hint pointing you at `care init` (to re-seed your
+credentials) and `care doctor` (to diagnose the endpoint) — instead of a raw
+traceback.
+
+:::note[Looking for `care export`?]
+For a one-off file, export the generated chain inline with `generate --output PATH`
+or a *saved* chain with `run --export PATH` (below) — both write `.json` or `.py`
+(a runnable Python module) based on the extension. To ship several chains (plus
+their AgentSkills) as one portable tarball, use the dedicated
+[`care export`](/care/cli/export/) command.
 :::
 
 ## `care run <chain_id>`
