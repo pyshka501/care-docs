@@ -42,15 +42,16 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
 ## Install the agent skill
 
-Give Claude Code, hermes, or OpenClaw the Maestro skill in one command:
+Give Claude Code, Codex, hermes, or OpenClaw the Maestro skill in one command:
 
 ```bash
-uvx care-install skill        # asks which agent; or --agent claude | hermes | openclaw | all
+uvx maestro-install skill        # asks which agent; or --agent claude | codex | hermes | openclaw | all
 ```
 
 It downloads and unpacks the skill into the agent's skills directory:
 
 - Claude Code → `~/.claude/skills/maestro`
+- Codex → `~/.codex/skills/maestro`
 - hermes → `~/.hermes/skills/maestro`
 - OpenClaw → `~/.openclaw/skills/maestro`
 

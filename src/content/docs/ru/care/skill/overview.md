@@ -14,11 +14,11 @@ Maestro из headless-команды [`care`](/ru/care/cli/overview/) — ген
 
 :::tip[Установка одной командой]
 ```bash
-uvx care-install skill
+uvx maestro-install skill
 ```
-Скачивает и распаковывает скилл для Claude Code / hermes / OpenClaw (выбор — `--agent`).
-Подробно: [Установка и использование](/ru/care/skill/install/). (Прямой бандл:
-[`maestro.skill`](/maestro.skill).)
+Скачивает и распаковывает скилл для Claude Code / Codex / hermes / OpenClaw (выбор —
+`--agent`). Подробно: [Установка и использование](/ru/care/skill/install/). (Прямой бандл:
+[`maestro.skill`](https://airi-maestro.github.io/care-docs/maestro.skill).)
 :::
 
 ## Что внутри бандла
@@ -82,7 +82,7 @@ promote / upload / forget), [формат цепочек](/ru/carl/chains/overvi
 `scripts/care.sh` находит `care` одинаково в любом окружении, поэтому скилл работает на
 машине разработчика, в CI или внутри hermes без правок:
 
-1. глобальный `care` в `PATH` (его ставит [`uvx care-install`](/ru/care/getting-started/quick-start/)
+1. глобальный `care` в `PATH` (его ставит [`uvx maestro-install`](/ru/care/getting-started/quick-start/)
    в виде шима), иначе
 2. локальный чекаут (через `$CARE_HOME` или типовые пути), иначе
 3. опубликованный пакет напрямую: `uvx --from maestro-care care`.

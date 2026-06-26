@@ -12,22 +12,50 @@ The Maestro skill is a small bundle (`maestro/` — `SKILL.md` + `scripts/` +
 ## 1. Install the skill — one command
 
 ```bash
-uvx care-install skill
+uvx maestro-install skill
 ```
 
-Downloads the bundle and unpacks it into the chosen agent's skills directory. It asks
-which agent, or pick explicitly with
-`--agent claude | hermes | openclaw | all | <skills-dir>`:
+`skill` is a positional subcommand of the published `maestro-install` wizard. It
+downloads the bundle and unpacks it into the chosen agent's skills directory. It asks
+which agent, or pick explicitly with `--agent`:
+
+| `--agent` | Skills directory |
+| --- | --- |
+| `claude` | `~/.claude/skills/` |
+| `codex` | `~/.codex/skills/` |
+| `hermes` | `~/.hermes/skills/` |
+| `openclaw` | `~/.openclaw/skills/` |
+| `all` | every agent above it can find |
+| `<path>` | a custom skills directory |
 
 ```bash
-uvx care-install skill --agent all
+uvx maestro-install skill --agent all
 ```
 
-No `uvx`? Unzip the bundle by hand:
+Omit `--agent` and it asks; with `--fast` it auto-detects installed agents and defaults
+to Claude Code. The bundle's top folder is `maestro/`; an existing `maestro/` is kept as
+`maestro.bak`.
+
+By default the bundle is fetched from
+`https://airi-maestro.github.io/care-docs/maestro.skill`. Override it with `--skill-url`
+or the `$MAESTRO_SKILL_URL` environment variable (for a mirror or a pinned version):
 
 ```bash
-curl -fsSLO https://raw.githubusercontent.com/pyshka501/care-docs/main/public/maestro.skill
-unzip maestro.skill -d ~/.claude/skills/     # → ~/.claude/skills/maestro/  (or ~/.hermes/skills/)
+uvx maestro-install skill --agent claude \
+  --skill-url https://airi-maestro.github.io/care-docs/maestro.skill
+```
+
+:::note[Legacy package]
+The old `care-install` package is stale and lacks the `skill` feature — always use
+`maestro-install`. Force-refresh the installer itself with `uvx --refresh
+maestro-install`.
+:::
+
+**Manual fallback (no wizard).** Download that same URL and unzip it yourself:
+
+```bash
+curl -fsSLO https://airi-maestro.github.io/care-docs/maestro.skill
+unzip maestro.skill -d ~/.claude/skills/     # → ~/.claude/skills/maestro/  (or ~/.codex/skills/, ~/.hermes/skills/)
 ```
 
 In hermes, `/skills` then lists **maestro**; invoke it with `/maestro` (or just
@@ -40,7 +68,7 @@ The skill drives the `care` command; set it up once with the published wizard (i
 installs a global `care` shim):
 
 ```bash
-uvx care-install        # workspace + .env + a `care` shim in ~/.local/bin
+uvx maestro-install        # workspace + .env + a `care` shim in ~/.local/bin
 ```
 
 Ensure `~/.local/bin` is on your `PATH`. Alternatives: `uv tool install --editable
@@ -69,5 +97,5 @@ paths** for `--output`, `validate <file>`, `replay <file>`, and `import` globs.
 ## Updating
 
 Re-run the one-command install — it replaces the folder and keeps the previous copy as
-`maestro.bak`. The skill and the `care` CLI version independently; update Maestro itself
-with `uvx care-install update`.
+`maestro.bak`. The skill and the `care` CLI version independently; reconfigure Maestro
+itself with `uvx maestro-install reconfigure`.
