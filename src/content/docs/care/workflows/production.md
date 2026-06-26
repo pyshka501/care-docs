@@ -71,10 +71,16 @@ You can launch an evolution run three ways:
 
 1. **Automatically** — in Production, a successful baseline kicks one off (step 5 above).
 2. **From the TUI** — open a saved chain in the [Library](/care/tui/screens/) and press
-   `v` / `E` to set budget / rubric / objectives, then follow it on the
-   [Evolution screen](/care/tui/screens/#the-evolution-screen) (Fitness chart · Pareto
-   front · Versions).
+   `v` / `E` to open the **Evolution Launch picker**. It shows a **budget preview**
+   before you commit — the iteration count, rubric, and objectives, with the estimated
+   token/USD cost for the run — so you can size a run before spending on it.
 3. **Headless** — [`care evolve <chain_id> --iterations 8 --wait --accept`](/care/cli/capabilities/).
+
+Once a run is live, follow it on the [Evolution dashboard](/care/tui/evolution/) — the
+list of active and recent runs (`Enter` opens one, `c` compares two). Each run view
+streams the **Fitness** chart, the **Pareto front**, **Programs**, and **Versions**, with
+a running **cost meter** in the header so you always see token/USD spend against the
+budget you set at launch.
 
 Watch and steer a run from chat:
 
@@ -86,8 +92,8 @@ Watch and steer a run from chat:
 
 The GA optimises against the chain's **dataset** (the fitness signal), so seed a few
 [dataset entries](#datasets--measure-quality) first. Accepting a winner — via
-`/evolution accept`, the Evolution screen's **Accept winner** button, or `care evolve
---accept` — promotes the best individual into the **stable** channel.
+`/evolution accept`, the [Evolution dashboard](/care/tui/evolution/)'s **Accept winner**
+button, or `care evolve --accept` — promotes the best individual into the **stable** channel.
 
 ### Deploy — serve as an HTTP agent
 
