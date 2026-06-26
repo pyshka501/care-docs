@@ -32,7 +32,27 @@ care evolve my-chain --wait --accept
 Вывести туториал + шпаргалку по клавишам.
 
 ```bash
-care help --markdown    # markdown вместо стилизованного вывода в терминал
+care help --markdown
+care help --category library
+care help --screen LibraryScreen
+care help --commands
 ```
+
+| Флаг | Назначение |
+| --- | --- |
+| `--markdown` | Вывести Markdown (быстрый справочник из README) вместо стилизованного текста. |
+| `--category global\|library\|generation\|execution\|evolution` | Ограничить список биндингов одной категорией. |
+| `--screen NAME` | Ограничить биндинги одним экраном (например, `LibraryScreen`). |
+| `--commands` | Вывести таблицу соответствия CLI ↔ TUI вместо туториала (см. ниже). |
+
+### `--commands` — таблица соответствия CLI ↔ TUI
+
+`care help --commands` выводит таблицу соответствия подкоманд и команд экранов:
+каждая headless-подкоманда в паре со своим TUI-аналогом (`care run ↔ /run`,
+`care evolve ↔ /evolve` и так далее). Список подкоманд берётся прямо из парсера
+argparse, поэтому он не может разойтись с реальным CLI. После аналогов идут
+команды, которые пока доступны только в TUI: `/upload`, `/tour`, `/settings` и
+`/theme`. Удобно, чтобы проверить, можно ли выполнить нужное действие экрана
+headless-скриптом.
 
 Запустите `care <команда> --help` для полного набора флагов.

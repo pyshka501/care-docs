@@ -14,11 +14,11 @@ path to Maestro.
 
 :::tip[Install in one command]
 ```bash
-uvx care-install skill
+uvx maestro-install skill
 ```
-Downloads and unpacks the skill into Claude Code / hermes / OpenClaw (pick with
+Downloads and unpacks the skill into Claude Code / Codex / hermes / OpenClaw (pick with
 `--agent`). Full steps: [Install & Use](/care/skill/install/). (Direct bundle:
-[`maestro.skill`](/maestro.skill).)
+[`maestro.skill`](https://airi-maestro.github.io/care-docs/maestro.skill).)
 :::
 
 ## What's in the bundle
@@ -83,7 +83,7 @@ After a chain is generated, the skill offers more than raw JSON — its first mo
 The bundled `scripts/care.sh` resolves `care` the same way in any environment, so the
 skill works on a developer machine, in CI, or inside hermes without edits:
 
-1. a global `care` on `PATH` (what [`uvx care-install`](/care/getting-started/quick-start/)
+1. a global `care` on `PATH` (what [`uvx maestro-install`](/care/getting-started/quick-start/)
    installs as a shim), else
 2. a local checkout (via `$CARE_HOME` or common locations), else
 3. the published package directly: `uvx --from maestro-care care`.

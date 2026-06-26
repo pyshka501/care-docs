@@ -33,10 +33,32 @@ needs (written by [`care init`](/care/cli/setup/)).
 
 | Key | Default | Notes |
 | --- | --- | --- |
-| `CARE_CHAT__DEFAULT_MODE` | `ad_hoc` | Startup [mode](/care/getting-started/overview/). |
+| `CARE_CHAT__DEFAULT_MODE` | `interactive` | Startup [mode](/care/getting-started/overview/) — `interactive` or `production`. Legacy `ad_hoc` / `ad-hoc` / `adhoc` (and `prod`) aliases normalise to the canonical id on read. |
 | `CARE_CHAT__AD_HOC_HISTORY_TURNS` | `6` | Follow-up context window (turns). |
 | `CARE_CHAT__AD_HOC_HISTORY_CHARS` | `1200` | Chars per remembered turn. |
 | `CARE_CHAT__GENERATION_MAX_ATTEMPTS` | `3` | MAGE generation retries. |
+
+### Per-stage mode overrides
+
+Each mode runs four configurable pipeline stages — **run**, **save**, **baseline**,
+**evolve** — and each defaults to a per-mode preset. Override any single stage with
+the env pattern `CARE_CHAT__MODE__<MODE>__<STAGE>`, where `<MODE>` is `INTERACTIVE`
+or `PRODUCTION` and `<STAGE>` is `RUN` / `SAVE` / `BASELINE` / `EVOLVE`. The value
+sets that stage's policy:
+
+| Value | Behaviour |
+| --- | --- |
+| `ask` | Gate the stage behind a confirmation prompt first. |
+| `auto` | Run the stage silently. |
+| `skip` | Never run the stage (and skip any stage that depends on it). |
+
+```bash
+# Auto-run in Interactive, but gate Save behind a confirmation in Production
+CARE_CHAT__MODE__INTERACTIVE__RUN=auto
+CARE_CHAT__MODE__PRODUCTION__SAVE=ask
+```
+
+An unset stage defers to the mode preset.
 
 ## The rest
 
@@ -47,9 +69,20 @@ needs (written by [`care init`](/care/cli/setup/)).
 | `sandbox` | Backend (`local` / `docker` / `e2b` / `firejail`) + resource limits for AgentSkills. |
 | `tools` | `@carl_tool` registry, bundled builtins (web_search…), on-the-fly synthesis. |
 | `telemetry` | Opt-in event sink (e.g. Langfuse public/secret keys). |
-| `defaults` | UI defaults — language, history size. |
+| `defaults` | UI defaults — language, history size, [DAG display](#dag-display-defaults). |
 | `context` | User-context injection (CARE.md + long-term-memory digest). |
 | `artifacts` | Saved-artifact store directory. |
+
+### DAG display defaults
+
+How `[defaults]` draws chain DAGs across every surface (chat trail, inspect pane,
+run overlay, DAG modal).
+
+| Key | Default | Notes |
+| --- | --- | --- |
+| `CARE_DEFAULTS__DAG_LAYOUT` | `tb` | Initial DAG modal orientation — `tb` (top-down) or `lr` (left-to-right). Toggle live with `l`. |
+| `CARE_DEFAULTS__DAG_ASCII` | `false` | Draw DAGs with plain ASCII glyphs instead of Unicode box-drawing — for terminals/fonts that can't render the box glyphs, or clean copy-paste. |
+| `CARE_DEFAULTS__DAG_BUS_LANES` | `false` | Route multi-layer "skip" dependencies as left-margin channels instead of terse `◀ N` annotations on the dependent box. |
 
 ## Secrets
 

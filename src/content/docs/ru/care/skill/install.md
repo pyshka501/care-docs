@@ -12,21 +12,51 @@ sidebar:
 ## 1. Установка скилла — одной командой
 
 ```bash
-uvx care-install skill
+uvx maestro-install skill
 ```
 
-Скачивает бандл и распаковывает в каталог скиллов выбранного агента. Спросит, какой
-агент, либо укажите явно — `--agent claude | hermes | openclaw | all | <каталог-скиллов>`:
+`skill` — это позиционная подкоманда опубликованного мастера `maestro-install`. Она
+скачивает бандл и распаковывает в каталог скиллов выбранного агента. Спросит, какой
+агент, либо укажите явно через `--agent`:
+
+| `--agent` | Каталог скиллов |
+| --- | --- |
+| `claude` | `~/.claude/skills/` |
+| `codex` | `~/.codex/skills/` |
+| `hermes` | `~/.hermes/skills/` |
+| `openclaw` | `~/.openclaw/skills/` |
+| `all` | все агенты выше, что найдёт |
+| `<path>` | произвольный каталог скиллов |
 
 ```bash
-uvx care-install skill --agent all
+uvx maestro-install skill --agent all
 ```
 
-Нет `uvx`? Распакуйте бандл вручную:
+Без `--agent` мастер спросит; с `--fast` он сам определяет установленных агентов и по
+умолчанию берёт Claude Code. Верхняя папка бандла — `maestro/`; существующую `maestro/`
+он сохраняет как `maestro.bak`.
+
+По умолчанию бандл берётся с
+`https://airi-maestro.github.io/care-docs/maestro.skill`. Переопределить можно через
+`--skill-url` или переменную окружения `$MAESTRO_SKILL_URL` (зеркало или
+зафиксированная версия):
 
 ```bash
-curl -fsSLO https://raw.githubusercontent.com/pyshka501/care-docs/main/public/maestro.skill
-unzip maestro.skill -d ~/.claude/skills/     # → ~/.claude/skills/maestro/  (или ~/.hermes/skills/)
+uvx maestro-install skill --agent claude \
+  --skill-url https://airi-maestro.github.io/care-docs/maestro.skill
+```
+
+:::note[Устаревший пакет]
+Старый пакет `care-install` устарел и не умеет ставить скилл — всегда используйте
+`maestro-install`. Принудительно обновить сам установщик: `uvx --refresh
+maestro-install`.
+:::
+
+**Запасной путь вручную (без мастера).** Скачайте тот же URL и распакуйте сами:
+
+```bash
+curl -fsSLO https://airi-maestro.github.io/care-docs/maestro.skill
+unzip maestro.skill -d ~/.claude/skills/     # → ~/.claude/skills/maestro/  (или ~/.codex/skills/, ~/.hermes/skills/)
 ```
 
 В hermes команда `/skills` покажет **maestro**, вызов — `/maestro` (или просто опишите
@@ -39,7 +69,7 @@ Maestro.
 ставит глобальный шим `care`):
 
 ```bash
-uvx care-install        # воркспейс + .env + шим `care` в ~/.local/bin
+uvx maestro-install        # воркспейс + .env + шим `care` в ~/.local/bin
 ```
 
 Убедитесь, что `~/.local/bin` в `PATH`. Альтернативы: `uv tool install --editable
@@ -69,5 +99,5 @@ bash ~/.claude/skills/maestro/scripts/care.sh doctor     # конфиг + про
 ## Обновление
 
 Перезапустите установку одной командой — она заменит папку, сохранив прежнюю копию как
-`maestro.bak`. Скилл и CLI `care` версионируются независимо; обновляйте сам Maestro
-через `uvx care-install update`.
+`maestro.bak`. Скилл и CLI `care` версионируются независимо; перенастроить сам Maestro
+можно через `uvx maestro-install reconfigure`.

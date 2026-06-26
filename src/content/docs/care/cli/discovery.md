@@ -41,13 +41,19 @@ care validate chain.json --json
 
 ## `care import <pattern>...`
 
-Validate (dry-run) or import chain JSON files into Memory. Accepts paths or globs
-(`**/*.json` for recursive walks).
+Batch-validate chain JSON files and import them into Memory. Accepts paths or globs
+(`**/*.json` for recursive walks). It is the inverse of [`care export`](/care/cli/export/).
 
 ```bash
-care import "chains/**/*.json"               # dry-run validate
+care import "chains/**/*.json"               # dry-run validate (default)
 care import "chains/**/*.json" --apply        # actually save to Memory
 ```
+
+:::note[Dry-run by default]
+`care import` only previews by default — it validates every match and reports what
+*would* be imported without touching Memory. Add `--apply` to actually save the
+valid chains. Exit code is `0` when every match validates, `1` otherwise.
+:::
 
 | Flag | Default | Purpose |
 | --- | --- | --- |

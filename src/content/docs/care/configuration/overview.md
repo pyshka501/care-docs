@@ -33,6 +33,14 @@ CARE_MAGE__MODEL="qwen/qwen3-coder"
 
 and `[chat] default_mode = "production"` is `CARE_CHAT__DEFAULT_MODE=production`.
 
+:::note[Lenient `default_mode` parsing]
+`chat.default_mode` is parsed leniently: a known legacy alias (`ad_hoc` / `ad-hoc` /
+`adhoc` / `prod`) is normalised to its canonical id, and an unrecognised value is
+dropped so the field's default (`interactive`) applies — either way a warning is
+logged and the rest of the config still loads. A malformed mode never crashes
+startup. Other fields are still validated strictly.
+:::
+
 ## Sections
 
 `CareConfig` nests twelve sections, each with the env prefix `CARE_<SECTION>__`:

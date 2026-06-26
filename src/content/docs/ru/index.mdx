@@ -42,15 +42,16 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
 ## Установка скилла агента
 
-Дайте Claude Code, hermes или OpenClaw скилл Maestro одной командой:
+Дайте Claude Code, Codex, hermes или OpenClaw скилл Maestro одной командой:
 
 ```bash
-uvx care-install skill        # спросит агента; или --agent claude | hermes | openclaw | all
+uvx maestro-install skill        # спросит агента; или --agent claude | codex | hermes | openclaw | all
 ```
 
 Он скачивает и распаковывает скилл в каталог скиллов агента:
 
 - Claude Code → `~/.claude/skills/maestro`
+- Codex → `~/.codex/skills/maestro`
 - hermes → `~/.hermes/skills/maestro`
 - OpenClaw → `~/.openclaw/skills/maestro`
 

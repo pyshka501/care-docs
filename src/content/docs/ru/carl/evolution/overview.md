@@ -77,7 +77,12 @@ estimate = evolver.estimate_cost(
 print(estimate.format_summary())   # smoke + population × generations × cases
 ```
 
+Тот же расчёт лежит в основе предпросмотра бюджета в TUI: [панель эволюции в
+MAESTRO CARE](/ru/care/tui/evolution/) показывает эту оценку и счётчик расходов
+в реальном времени — до запуска и во время него.
+
 ## Смотрите также
 
 - [Мутации и результаты](/ru/carl/evolution/mutation-and-results/)
 - [Оценка](/ru/carl/evaluation/datasets/) — датасет и метрика, по которым evolver выставляет оценки.
+- [Панель эволюции в MAESTRO CARE](/ru/care/tui/evolution/) — запуск генетического поиска с предпросмотром бюджета и счётчиком расходов в реальном времени.

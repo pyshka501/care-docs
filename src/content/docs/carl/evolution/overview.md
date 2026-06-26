@@ -77,7 +77,12 @@ estimate = evolver.estimate_cost(
 print(estimate.format_summary())   # smoke + population × generations × cases
 ```
 
+The same projection drives the budget preview in the TUI: the
+[Evolution dashboard in MAESTRO CARE](/care/tui/evolution/) shows this estimate
+and a live cost meter before and during a run.
+
 ## See also
 
 - [Mutation & results](/carl/evolution/mutation-and-results/)
 - [Evaluation](/carl/evaluation/datasets/) — the dataset + metric the evolver scores on.
+- [The Evolution dashboard in MAESTRO CARE](/care/tui/evolution/) — run a GA with a budget preview and a live cost meter.

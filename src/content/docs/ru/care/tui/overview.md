@@ -14,7 +14,10 @@ sidebar:
   выводится инлайн.
 - **Введите [слэш-команду](/ru/care/slash-commands/overview/)** (`/help`, `/library`, …)
   для операций вне чата.
-- **Переключатель режима** над полем ввода переключает [Ad-Hoc ↔ Production](/ru/care/getting-started/overview/).
+- **Переключатель режима** над полем ввода переключает [Interactive ↔ Production](/ru/care/workflows/modes/) —
+  по умолчанию выбран Interactive.
+- **Загляните в цепочку** за любым ответом: из чата доступны [средства работы с DAG цепочки](/ru/care/tui/dag/),
+  чтобы пройтись по графу, а **плашка Artifacts** собирает файлы, которые создал запуск.
 - Новым пользователям предлагается набрать `/tour` — пятишаговое руководство.
 
 ### Как разворачивается запуск
@@ -45,4 +48,5 @@ sidebar:
 
 - [Справочник экранов](/ru/care/tui/screens/) — каждый экран и модальное окно и как его открыть.
 - [Слэш-команды](/ru/care/slash-commands/overview/) — полный список `/команд`.
-- [Режимы чата](/ru/care/getting-started/overview/) — Ad-Hoc vs Production.
+- [Режимы чата](/ru/care/workflows/modes/) — Interactive vs Production.
+- [DAG цепочки](/ru/care/tui/dag/) — изучите граф за ответом.
