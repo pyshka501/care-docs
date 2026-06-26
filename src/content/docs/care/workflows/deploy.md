@@ -73,13 +73,20 @@ The `[hub]` section (env prefix `CARE_HUB__`):
 
 See [Configuration → sections](/care/configuration/sections/).
 
+## From the CLI
+
+`/deploy` has headless twins: `care deploy`, `care deployments`, and
+`care metrics` mirror these screens from the terminal. One caveat — the CLI does
+**not** autostart the hub, so you must already have one running. See
+[Deploy to the agent hub](/care/cli/deploy/).
+
 ## Notes
 
-- `/deploy` is a chat/TUI command — there is no `care deploy` CLI twin (yet).
 - It needs **Memory** (the chain registry), like the other Production commands.
 - For a fire-and-forget POST to an external service instead of the hub, see
   [`/upload`](/care/slash-commands/production/).
 
 ## See also
 
+- [Deploy to the agent hub](/care/cli/deploy/) — the `care deploy/deployments/metrics` CLI
 - [Production mode](/care/workflows/production/) · [Scenarios](/care/workflows/scenarios/)

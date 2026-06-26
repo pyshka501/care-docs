@@ -52,6 +52,7 @@ Render the tutorial walkthrough + key cheat-sheet.
 care help --markdown
 care help --category library
 care help --screen LibraryScreen
+care help --commands
 ```
 
 | Flag | Purpose |
@@ -59,6 +60,17 @@ care help --screen LibraryScreen
 | `--markdown` | Emit Markdown (README quick-reference) instead of styled text. |
 | `--category global\|library\|generation\|execution\|evolution` | Restrict the bindings listing to one category. |
 | `--screen NAME` | Restrict bindings to one screen (e.g. `LibraryScreen`). |
+| `--commands` | Print the CLI ↔ TUI parity table instead of the tutorial (see below). |
+
+### `--commands` — the CLI ↔ TUI parity table
+
+`care help --commands` prints the subcommand-to-screen-verb parity table: every
+headless subcommand paired with its TUI twin (`care run ↔ /run`,
+`care evolve ↔ /evolve`, and so on). The subcommand list is read live from the
+argparse parser, so it can never drift from the actual CLI. After the twins, it
+lists the TUI-only verbs that have no headless equivalent yet — `/upload`,
+`/tour`, `/settings`, and `/theme`. Use it to confirm whether a screen action you
+rely on can be scripted headlessly.
 
 :::tip
 Almost every command also accepts `--json` for scripting, and Memory-reading

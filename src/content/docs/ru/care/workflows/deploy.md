@@ -74,13 +74,20 @@ MAESTRO автоматически запускает его при первом
 
 См. [Конфигурация → секции](/ru/care/configuration/sections/).
 
+## Из CLI
+
+У `/deploy` есть headless-аналоги: `care deploy`, `care deployments` и
+`care metrics` повторяют эти экраны прямо в терминале. Одна оговорка — CLI
+**не** запускает хаб автоматически, поэтому он уже должен быть запущен. См.
+[Развёртывание в agent hub](/ru/care/cli/deploy/).
+
 ## Примечания
 
-- `/deploy` — команда чата/TUI; аналога в CLI (`care deploy`) пока нет.
 - Ей нужна **Memory** (реестр цепочек), как и другим командам Production.
 - Если нужен POST «выстрелил и забыл» во внешний сервис вместо хаба — см.
   [`/upload`](/ru/care/slash-commands/production/).
 
 ## Смотрите также
 
+- [Развёртывание в agent hub](/ru/care/cli/deploy/) — CLI `care deploy/deployments/metrics`
 - [Режим Production](/ru/care/workflows/production/) · [Сценарии](/ru/care/workflows/scenarios/)
