@@ -1,32 +1,34 @@
 ---
 title: LLM-шаг
-description: Шаги reasoning по типу chain-of-thought — тип шага CARL по умолчанию.
+description: Шаги рассуждения chain-of-thought, тип шага CARL по умолчанию.
 sidebar:
   order: 2
 ---
 
-`LLMStepDescription` — тип шага по умолчанию: шаг reasoning по типу chain-of-thought,
-подкреплённый вызовом LLM.
+`LLMStepDescription` является типом шага по умолчанию. Это шаг рассуждения
+chain-of-thought, за которым стоит один вызов LLM (или несколько в режиме
+`SELF_CRITIC`).
 
 ## Поля
 
 | Поле | Тип | По умолчанию | Назначение |
 | --- | --- | --- | --- |
-| `aim` | `str` | `""` (**обязательное, непустое**) | Основная цель шага. |
-| `reasoning_questions` | `str` | `""` | Ключевые вопросы, на которые должен ответить шаг. |
-| `stage_action` | `str` | `""` | Конкретное действие для выполнения. |
-| `example_reasoning` | `str` | `""` | Пример экспертного рассуждения, которое вы хотите получить. |
-| `step_context_queries` | `list[ContextQuery \| str]` | `[]` | RAG-подобные запросы, извлекающие нужный контекст из `outer_context` в промпт этого шага. |
-| `llm_config` | `LLMStepConfig \| None` | `None` | Переопределение модели / temperature / режима на уровне шага. |
-| `retry_max` | `int \| None` | `None` | Количество попыток для этого шага (`None` = значение по умолчанию из контекста). |
-| `timeout` | `float \| None` | `None` | Таймаут шага в секундах. |
+| `aim` | `str` | `""` (**обязательное, непустое**) | Главная цель шага. |
+| `reasoning_questions` | `str` | `""` | Ключевые вопросы, на которые шаг должен ответить. |
+| `stage_action` | `str` | `""` | Конкретное действие, которое нужно выполнить. |
+| `example_reasoning` | `str` | `""` | Пример экспертного рассуждения, которого вы ждёте. |
+| `step_context_queries` | `list[ContextQuery \| str]` | `[]` | Запросы в духе RAG. Они вытаскивают нужный контекст из `outer_context` в промпт этого шага. |
+| `llm_config` | `LLMStepConfig \| None` | `None` | Переопределение модели, температуры или режима для шага. |
+| `retry_max` | `int \| None` | `None` | Число повторов вызова провайдера (`None` = `context.retry_max`). |
+| `timeout` | `float \| None` | `None` | Таймаут шага в секундах, > 0 (`None` = `timeout` цепочки, если он задан). |
 
-Плюс все [общие поля](/ru/carl/steps/overview/#поля-общие-для-всех-шагов).
+Плюс поля, общие для всех шагов (`number`, `title`, `dependencies`, `cache`,
+`loop_back_to`, …), см. [обзор шагов](/ru/carl/steps/overview/).
 
 :::tip
-`aim`, `reasoning_questions`, `stage_action` и `example_reasoning` принимают
-**список** так же, как и строку — список приводится к блоку `"- item\n- item"`.
-Это делает цепочки, сгенерированные LLM-планировщиком, более устойчивыми.
+`aim`, `reasoning_questions`, `stage_action` и `example_reasoning` принимают не
+только строку, но и **список**. Список превращается в блок `"- item\n- item"`.
+Так цепочки, созданные LLM-планировщиком, остаются загружаемыми.
 :::
 
 ## Базовый пример
@@ -45,20 +47,24 @@ LLMStepDescription(
 )
 ```
 
-## Конфигурация LLM на уровне шага
+## Настройки LLM для шага
 
-Переопределите модель, температуру или другие параметры для одного шага с помощью
-`LLMStepConfig`:
+Модель, температуру или режим выполнения для одного шага можно переопределить
+через `LLMStepConfig`:
 
 | Поле | Тип | По умолчанию | Назначение |
 | --- | --- | --- | --- |
 | `model` | `str \| None` | `None` | Идентификатор модели (например, `anthropic/claude-3.5-sonnet`). |
 | `temperature` | `float \| None` | `None` | 0.0–2.0. |
-| `max_tokens` | `int \| None` | `None` | Ограничение вывода. |
-| `timeout` | `float \| None` | `None` | Таймаут на уровне шага. |
-| `token_budget_warning` | `int \| None` | `None` | Предупреждение при превышении шагом этого количества токенов. |
+| `max_tokens` | `int \| None` | `None` | Ограничение длины ответа. |
+| `timeout` | `float \| None` | `None` | Объявлено, но исполнитель его не применяет. Используйте собственный `timeout` шага. |
+| `token_budget_warning` | `int \| None` | `None` | Предупредить, когда общее число токенов шага достигнет этого значения (> 0). |
 | `execution_mode` | `ExecutionMode` | `FAST` | `FAST` или `SELF_CRITIC`. |
-| `use_message_history` | `bool` | `False` | Отправлять структурированные многоходовые сообщения вместо плоского промпта. |
+| `self_critic_evaluators` | `list[str]` | `["llm"]` | Имена оценщиков для `SELF_CRITIC`. Одобрить должны все. |
+| `self_critic_max_revisions` | `int` | `1` | Максимум раундов перегенерации (≥ 0). |
+| `self_critic_instruction` | `str` | `""` | Дополнительная инструкция для встроенного оценщика `"llm"`. |
+| `self_critic_disapprove_feedback` | `dict[str, str]` | `{}` | Статичный отзыв, который добавляется к заметкам для перегенерации, когда оценщик не одобряет ответ. Ключ = имя оценщика, `"*"` = любой. |
+| `use_message_history` | `bool` | `False` | Отправлять структурированный многоходовой список сообщений вместо плоского промпта. |
 
 ```python
 from mmar_carl import LLMStepDescription, LLMStepConfig
@@ -71,27 +77,58 @@ LLMStepDescription(
 )
 ```
 
-Два параметра стоит выделить отдельно:
+Как выбирается клиент (`context.get_llm_client_for_step`):
 
-- **`token_budget_warning`** — выдаёт предупреждение, когда суммарное число токенов
-  шага превышает порог. Срабатывает только с клиентом, который сообщает об
-  использовании токенов (например, `OpenAICompatibleClient`); фактические значения
-  см. в разделе [оценка стоимости](/ru/carl/tracing/cost/).
-- **`use_message_history`** — отправляет структурированный список сообщений
-  `system`/`user`/`assistant` вместо плоского промпта: системный промпт и внешний
-  контекст становятся первым сообщением `system`, предыдущие ходы из
-  `context.messages` включаются в запрос, а ответ шага дописывается обратно в
-  `context.messages`. Требует клиента, реализующего `get_response_with_messages`
-  (например, `OpenAICompatibleClient`).
+1. `llm_config` шага. Незаданные `model` / `temperature` / `max_tokens` берутся
+   из `default_llm_config` цепочки (`ReasoningChain(default_llm_config=...)`).
+2. Только `default_llm_config` цепочки.
+3. Клиент контекста по умолчанию.
+
+:::caution
+Переопределения `model`, `temperature` и `max_tokens` работают, только если
+клиент контекста является `OpenAICompatibleClient`. CARL строит производный клиент
+с новыми настройками и кэширует его. С любым другим клиентом шаг молча
+выполняется на клиенте по умолчанию.
+:::
+
+Ещё два поля стоит отметить отдельно:
+
+- **`token_budget_warning`** вызывает Python `warnings.warn`, когда общее число
+  токенов шага достигает порога. Срабатывает только с клиентом, который сообщает
+  расход (например, `OpenAICompatibleClient`). См. [учёт стоимости](/ru/carl/tracing/cost/).
+- **`use_message_history`** отправляет структурированный список сообщений
+  `system`/`user`/`assistant` вместо плоского промпта. Системный промпт и внешний
+  контекст становятся первым сообщением `system`. Предыдущие ходы берутся из
+  `context.messages`, а ответ дописывается обратно в `context.messages`. Нужен
+  клиент, реализующий `get_response_with_messages` (например,
+  `OpenAICompatibleClient`). Этот путь важнее `execution_mode`: шаг с
+  `use_message_history=True` делает один вызов без самокритики.
+
+## Что записывает шаг
+
+При успехе `StepExecutionResult` содержит:
+
+- `result`: ответ модели. Запись истории имеет вид `Step N. Title` плюс
+  `Result: ...`.
+- `token_usage`: `{"prompt", "completion", "total"}`, если клиент сообщает
+  расход, иначе `{}`.
+- `model`: `model_name` клиента, если он есть.
+- `prompt`: полностью собранный промпт, только при `context.trace_prompts=True`
+  (по умолчанию выключено, потому что промпт содержит внешний контекст и историю).
+
+Упавший шаг записывает `error_message`, но не расход токенов.
 
 ## Режимы выполнения
 
-- **`FAST`** (по умолчанию) — один проход LLM.
-- **`SELF_CRITIC`** — шаг генерирует ответ, прогоняет его через одного или нескольких
-  оценщиков и перегенерирует до `self_critic_max_revisions` раз, пока оценщики не одобрят.
+- **`FAST`** (по умолчанию): один проход LLM.
+- **`SELF_CRITIC`**: шаг генерирует ответ и отдаёт его оценщикам из
+  `self_critic_evaluators`. Затем он перегенерирует ответ с их отзывами, до
+  `self_critic_max_revisions` раз, пока все не одобрят. Если бюджет кончился без
+  одобрения, шаг всё равно успешен: он возвращает последний вариант и записывает
+  `quality_warning`.
 
 ```python
-from mmar_carl import ExecutionMode
+from mmar_carl import ExecutionMode, LLMStepConfig
 
 LLMStepConfig(
     execution_mode=ExecutionMode.SELF_CRITIC,
@@ -101,20 +138,24 @@ LLMStepConfig(
 )
 ```
 
-`self_critic_evaluators` перечисляет оценщиков по порядку; одобрить должны **все**.
-`"llm"` — встроенный LLM-рецензент. Зарегистрируйте собственный (не-LLM или
-кастомный) оценщик через `context.register_self_critic_evaluator(name, evaluator)` —
-унаследуйтесь от `SelfCriticEvaluatorBase` и верните
-`SelfCriticDecision(verdict=..., review_text=...)`.
+`"llm"` это встроенный LLM-рецензент. Свой оценщик (не на LLM или особый)
+регистрируется через `context.register_self_critic_evaluator(name, evaluator)`.
+Унаследуйте `SelfCriticEvaluatorBase`, реализуйте `async evaluate(...)` и
+верните `SelfCriticDecision(verdict=..., review_text=...)`. Любой вердикт, кроме
+`"APPROVE"`, считается неодобрением. Незарегистрированное имя оценщика роняет шаг.
 
 ### Пример
 
-[Пример режимов выполнения](https://github.com/Glazkoff/carl-experiments/blob/main/examples/orchestration/execution_modes_mock_example.py)
-из репозитория (mock-клиент, без API-ключа) запускает цепочку из 3 шагов: проход
-`FAST`, шаг `SELF_CRITIC` со встроенным оценщиком `"llm"` и шаг `SELF_CRITIC`, в
-цепочку оценщиков которого добавлена кастомная проверка на ключевое слово.
+[Пример режимов выполнения](https://github.com/Glazkoff/carl/blob/main/examples/orchestration/execution_modes_mock_example.py)
+в репозитории (мок-клиент, без API-ключа) запускает цепочку из 3 шагов: проход
+`FAST`, шаг `SELF_CRITIC` со стандартным оценщиком `"llm"` и шаг `SELF_CRITIC`,
+где к оценщикам добавлена своя проверка ключевого слова.
 
 ```python
+from mmar_carl import (
+    ExecutionMode, LLMStepConfig, SelfCriticDecision, SelfCriticEvaluatorBase,
+)
+
 class KeywordGuardEvaluator(SelfCriticEvaluatorBase):
     def __init__(self, required_keyword: str):
         self.required_keyword = required_keyword.lower()
@@ -133,11 +174,19 @@ LLMStepConfig(
 )
 ```
 
-Телеметрия режима по каждому шагу (`execution_mode`, `llm_calls`, число ревизий
-`rounds`, `quality_warning`) попадает в
-`context.metadata["execution_mode_details"]`.
+Телеметрия режима по каждому шагу попадает в
+`context.metadata["execution_mode_details"][str(step_number)]`: `execution_mode`,
+`llm_calls`, а для `SELF_CRITIC` ещё `rounds`, `max_revisions`,
+`evaluator_decisions` и `quality_warning`, если бюджет кончился.
 
-## Смотрите также
+## Известные ограничения
 
-- [Динамические ссылки](/ru/carl/chains/dynamic-references/) — связывание выводов шагов между собой.
-- [Извлечение контекста](/ru/carl/concepts/what-is-carl/#rag-извлечение-контекста) — как работает `step_context_queries`.
+- Legacy `StepDescription`, преобразованный через `to_typed_step()`, сохраняет
+  `llm_config`, но теряет `retry_max` и `timeout`. Если они нужны, создавайте
+  `LLMStepDescription` напрямую.
+
+## См. также
+
+- [Динамические ссылки](/ru/carl/chains/dynamic-references/): как связывать результаты шагов.
+- [Извлечение контекста](/ru/carl/concepts/what-is-carl/): как работают `step_context_queries`.
+- [LLM-клиенты](/ru/carl/llm/clients/) и [пример учёта токенов](https://github.com/Glazkoff/carl/blob/main/examples/llm_inference/token_usage_example.py).
