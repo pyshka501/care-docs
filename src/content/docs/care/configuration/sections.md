@@ -1,90 +1,110 @@
 ---
 title: Section Reference
-description: What each CareConfig section configures, with notable keys.
+description: Notable keys of each CareConfig section with defaults, and which ones the desktop app uses.
 sidebar:
   order: 2
 ---
 
-Notable keys per section. Every key is also a `CARE_<SECTION>__<KEY>` env var. The
-[`.env.example`](https://github.com/Glazkoff/care/blob/main/.env.example) file in the
-repo is the complete, annotated surface.
+Every key is also a `CARE_<SECTION>__<KEY>` environment variable. The full
+annotated list is `.env.example` in the Maestro repository. Defaults below are
+from `care/config.py`.
 
-## `mage` — generator
-
-The MAGE generator that turns a task into a chain. The minimum a fresh checkout
-needs (written by [`care init`](/care/cli/setup/)).
-
-| Key | Notes |
-| --- | --- |
-| `CARE_MAGE__API_KEY` | LLM API key. |
-| `CARE_MAGE__BASE_URL` | OpenAI-compatible base URL (e.g. OpenRouter). |
-| `CARE_MAGE__MODEL` | Model id (e.g. `qwen/qwen3-coder`). |
-| `CARE_MAGE__MODE` | Generation mode. |
-
-## `memory` & `platform`
-
-| Key | Notes |
-| --- | --- |
-| `CARE_MEMORY__BASE_URL` | GigaEvo Memory URL — **required for Production mode**. |
-| `CARE_MEMORY__API_KEY` | When the deployment enforces auth. |
-| `CARE_PLATFORM__BASE_URL` | GigaEvo Platform URL (evolution runs). |
-
-## `chat` — chat surface
+## `mage`: generator
 
 | Key | Default | Notes |
 | --- | --- | --- |
-| `CARE_CHAT__DEFAULT_MODE` | `interactive` | Startup [mode](/care/getting-started/overview/) — `interactive` or `production`. Legacy `ad_hoc` / `ad-hoc` / `adhoc` (and `prod`) aliases normalise to the canonical id on read. |
-| `CARE_CHAT__AD_HOC_HISTORY_TURNS` | `6` | Follow-up context window (turns). |
-| `CARE_CHAT__AD_HOC_HISTORY_CHARS` | `1200` | Chars per remembered turn. |
-| `CARE_CHAT__GENERATION_MAX_ATTEMPTS` | `3` | MAGE generation retries. |
+| `mode` | `deep` | `fast` or `deep`. Applies in the desktop app too. |
+| `api_key`, `base_url`, `model` | unset | Generator endpoint for the CLI, TUI and legacy workbench. **Ignored by the desktop app**, which uses the chat model. |
+| `enable_memory_research` | `true` | Recall related saved chains before planning. |
+| `memory_search_mode` | `bm25` | `bm25`, `vector` or `hybrid`. |
+| `enable_web_research` | `false` | Let generation search the web. |
+| `web_search_provider`, `web_search_api_key` | `tavily`, unset | `tavily`, `serper`, `exa`, `serpapi`, `brave`, `duckduckgo` (no key). |
+| `enable_needs_analysis` | `false` | Extra planning pass for required tools, skills and inputs. |
+| `max_llm_calls`, `max_input_tokens`, `max_output_tokens`, `max_total_tokens`, `max_wall_time_seconds`, `max_cost_usd` | unset | Hard per-generation limits; generation fails before exceeding one. |
+| `enable_topology_selection` | `true` | Let the planner choose non-linear chain shapes. |
+| `simplicity_bias`, `simplicity_max_steps` | `0.2`, `7` | Plan length controls. |
 
-### Per-stage mode overrides
+## `memory`
 
-Each mode runs four configurable pipeline stages — **run**, **save**, **baseline**,
-**evolve** — and each defaults to a per-mode preset. Override any single stage with
-the env pattern `CARE_CHAT__MODE__<MODE>__<STAGE>`, where `<MODE>` is `INTERACTIVE`
-or `PRODUCTION` and `<STAGE>` is `RUN` / `SAVE` / `BASELINE` / `EVOLVE`. The value
-sets that stage's policy:
+| Key | Default | Notes |
+| --- | --- | --- |
+| `base_url` | `http://localhost:8002` | GigaEvo Memory API. For a hosted store include its API prefix. |
+| `api_key` | unset | When the server needs one. |
+| `timeout` | `30` | Seconds. |
+| `read_only` | `false` | Never write: no saved chains, tools, skills or ideas; evolution runs without IdeaL memory. |
+| `retrieval_backend` | `legacy` | `legacy` or `ideal`. With `ideal`, chains, recall and ideas use the IdeaL namespace. |
+| `ideal_namespace` | unset | Required when `retrieval_backend = "ideal"`. |
 
-| Value | Behaviour |
-| --- | --- |
-| `ask` | Gate the stage behind a confirmation prompt first. |
-| `auto` | Run the stage silently. |
-| `skip` | Never run the stage (and skip any stage that depends on it). |
+## `platform`: evolution
 
-```bash
-# Auto-run in Interactive, but gate Save behind a confirmation in Production
-CARE_CHAT__MODE__INTERACTIVE__RUN=auto
-CARE_CHAT__MODE__PRODUCTION__SAVE=ask
-```
+| Key | Default | Notes |
+| --- | --- | --- |
+| `base_url` | `http://localhost:8000` | Platform control API. |
+| `master_base_url` | `http://localhost:8000` | Used when `base_url` still points at a runner on port 8001. |
+| `api_key` | unset | |
+| `mutation_base_url`, `mutation_model`, `mutation_api_key` | OpenRouter URL, a free model, unset | The model the platform uses to propose chain variants. |
+| `validation_base_url`, `validation_model`, `validation_api_key` | OpenRouter URL, a free model, unset | The judge model. |
+| `mutation_max_tokens`, `validation_max_tokens` | `8192`, `2048` | Per-call caps written to the platform's model config. |
 
-An unset stage defers to the mode preset.
+The platform calls these models itself; Maestro does not.
+
+## `sandbox`: skills
+
+| Key | Default | Notes |
+| --- | --- | --- |
+| `kind` | `docker` | `docker` (needs the `docker` extra and a running daemon), `e2b` (cloud microVM; `e2b` extra and key), `firejail` (Linux only), `local` (subprocess, for internal testing only; unsafe). |
+| `cpu_limit` | `2.0` | |
+| `mem_limit` | `1g` | Docker-style: `512m`, `1g`, `2048k`. |
+| `pids_limit` | `256` | |
+| `network_policy` | `skill_declared` | `none`, `skill_declared` (domains declared by the skill), `open`. |
+| `image` | `python:3.12-slim` | Container image. |
+
+## `tools`
+
+| Key | Default | Notes |
+| --- | --- | --- |
+| `path` | `~/.config/care/tools` | Directory of `@carl_tool` files. |
+| `tag_filter`, `name_prefix` | unset, empty | Register only tagged tools; prefix names. |
+| `enable_builtins` | `true` | `web_search`, `fetch_url`, `http_request`, `calculator`, `current_datetime`, and `run_python` when code execution is on. |
+| `web_search_provider`, `web_search_api_key`, `search_provider_keys` | `tavily`, unset, `{}` | DuckDuckGo is the keyless fallback. |
+| `enable_code_exec` | `true` | `run_python` in the Docker sandbox. |
+| `code_exec_timeout` | `60` | Seconds per sandbox call. |
+| `auto_synthesize_tools` | `true` | Write and register a missing tool before a run (needs code execution). |
+| `starm_host`, `starm_ports`, `starm_timeout` | `http://localhost`, `{}`, `120` | STARM solver servers; a solver tool exists only for a task with a port. See [STARM solvers](/care/solvers/starm/). |
+
+## `chat`: TUI modes
+
+| Key | Default | Notes |
+| --- | --- | --- |
+| `default_mode` | `interactive` | `interactive` or `production`. `ad_hoc`, `ad-hoc`, `adhoc` → `interactive`; `prod` → `production`. |
+| `mode.<mode>.<stage>` | unset | Stage policy override, env `CARE_CHAT__MODE__<MODE>__<STAGE>` = `ask`, `auto` or `skip`. See [modes](/care/workflows/modes/). |
+
+## `defaults`
+
+| Key | Default | Notes |
+| --- | --- | --- |
+| `language` | `en` | Language chains answer in (CLI/TUI execution). |
+| `ui_language` | `ru` | TUI language. The desktop app follows its own language setting. |
+| `dag_layout` | `tb` | TUI DAG modal: `tb` or `lr`. |
+| `dag_ascii`, `dag_bus_lanes` | `false` | TUI DAG drawing options. |
+| `max_history_entries` | `50` | |
+| `reduced_motion` | `false` | Disable TUI animations. |
+
+## `context`
+
+| Key | Default | Notes |
+| --- | --- | --- |
+| `enabled` | `true` | Read `CARE.md` standing context. |
+| `global_path`, `project_filename` | `~/.config/care/CARE.md`, `CARE.md` | Global and per-project files. |
+| `max_chars` | `8000` | Cap on merged context. |
+| `auto_learn_facts` | `false` | Write learned facts into the global `CARE.md` (one extra model call per turn). |
+| `ltm_enabled`, `ltm_dir`, `ltm_autosave` | `true`, `~/.config/care/ltm`, `true` | CARL long-term memory. |
 
 ## The rest
 
-| Section | What to set |
+| Section | Keys |
 | --- | --- |
-| `hub` | `CARE_HUB__*` — the [agent hub](/care/workflows/deploy/) for `/deploy` (`base_url`, `port`, `autostart`, `state_file`). |
-| `upload` | `CARE_UPLOAD__URL` — endpoint for `/upload`. |
-| `sandbox` | Backend (`local` / `docker` / `e2b` / `firejail`) + resource limits for AgentSkills. |
-| `tools` | `@carl_tool` registry, bundled builtins (web_search…), on-the-fly synthesis. |
-| `telemetry` | Opt-in event sink (e.g. Langfuse public/secret keys). |
-| `defaults` | UI defaults — language, history size, [DAG display](#dag-display-defaults). |
-| `context` | User-context injection (CARE.md + long-term-memory digest). |
-| `artifacts` | Saved-artifact store directory. |
-
-### DAG display defaults
-
-How `[defaults]` draws chain DAGs across every surface (chat trail, inspect pane,
-run overlay, DAG modal).
-
-| Key | Default | Notes |
-| --- | --- | --- |
-| `CARE_DEFAULTS__DAG_LAYOUT` | `tb` | Initial DAG modal orientation — `tb` (top-down) or `lr` (left-to-right). Toggle live with `l`. |
-| `CARE_DEFAULTS__DAG_ASCII` | `false` | Draw DAGs with plain ASCII glyphs instead of Unicode box-drawing — for terminals/fonts that can't render the box glyphs, or clean copy-paste. |
-| `CARE_DEFAULTS__DAG_BUS_LANES` | `false` | Route multi-layer "skip" dependencies as left-margin channels instead of terse `◀ N` annotations on the dependent box. |
-
-## Secrets
-
-Keep API keys out of plaintext TOML with
-[`care migrate-secrets`](/care/cli/setup/) — it moves them into the OS keychain.
+| `hub` | `base_url` (`http://127.0.0.1:8080`), `port` (`8080`), `autostart` (`true`), `state_file` (`~/.care/agent-hub.json`), `agent_server_cmd`, `start_timeout`, `timeout`. See [Deploying agents](/care/workflows/deploy/). |
+| `upload` | `url` (empty disables `/upload`), `api_key`, `auth_header` (`Authorization`), `timeout`. |
+| `telemetry` | `enabled` (`false`), `backend` (`null` or `langfuse`), `host`, `public_key`, `secret_key`. |
+| `artifacts` | `dir`: where files produced by chains are copied (default `~/.care/artifacts`). |

@@ -19,7 +19,7 @@ Memory, generation and execution layers. Run `maestro <subcommand> --help` for t
 full flag set of each one.
 
 ```bash
-maestro --version        # prints e.g. "maestro 0.1.8"
+maestro --version        # prints e.g. "maestro 0.5.0"
 maestro doctor           # check the environment
 maestro generate "weather report for SF" --save weather
 ```

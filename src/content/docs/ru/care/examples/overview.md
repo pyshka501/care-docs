@@ -1,54 +1,56 @@
 ---
 title: Примеры
-description: Встроенные примеры цепочек и сквозной рабочий процесс MAESTRO.
+description: Примеры цепочек из поставки Maestro и как ими пользоваться из приложения и CLI.
 sidebar:
   order: 1
 ---
 
-MAESTRO поставляется с несколькими готовыми цепочками, которые можно валидировать, импортировать и запускать.
+В репозитории Maestro есть примеры цепочек в `examples/`, у каждого свой
+`README.md`.
 
-## Встроенные цепочки
+| Пример | Что показывает | `maestro validate` |
+| --- | --- | --- |
+| `weather` | Один шаг `mcp` (MCP-сервер погоды из `mcp_servers.toml`) и один шаг `llm`, который пересказывает результат. | ok (1 MCP-сервер) |
+| `financier` | Читает квартальный отчёт из PDF навыком, извлекает показатели шагом `structured_output` по JSON Schema. В `skills/` лежит пример навыка. | сообщает о недостающем инструменте `pdf_extractor`, пока вы его не добавите |
+| `summarizer` | Цепочка из одного шага `llm`, читающего `$outer_context`, с набором `eval.jsonl` из 8 примеров; используется как исходная цепочка для эволюции. README на русском. | ok |
+| `asciicast` | Сценарий нажатий и каталог с исходными данными для записи демо CLI. | — |
 
-| Пример | Что демонстрирует |
-| --- | --- |
-| **weather** | Агент погоды, подключённый к **MCP**-серверу (`mcp_servers.toml` + `chain.json`). |
-| **financier** | Цепочка финансового анализа (`chain.json`) — многошаговый агент рассуждений над финансовыми данными. |
+Столбец `validate` — то, что вывела команда
+`maestro validate examples/<name>/chain.json` на базе релиза.
 
-Каждый пример находится в директории `examples/` в [репозитории care](https://github.com/Glazkoff/care)
-с `README.md`.
-
-## Запуск файла цепочки
-
-Любой `chain.json` следует одному потоку — валидировать, импортировать, запустить:
-
-```bash
-care validate examples/financier/chain.json      # preflight
-care import examples/financier/chain.json --apply # в Memory
-care run <chain_id> --execute --task "Analyse Q3 results"
-```
-
-Или пропустить Memory и просто провести preflight + экспорт:
+## Проверка, импорт, запуск (CLI)
 
 ```bash
-care run <chain_id> --export chain.py             # экспорт в запускаемый модуль
+maestro validate examples/weather/chain.json          # разбор + preflight
+maestro import examples/weather/chain.json --apply    # сохранить в Memory
+maestro run <chain_id> --execute --task "Weather in Paris"
 ```
 
-## Сквозной рабочий процесс
+`maestro run <chain_id> --export chain.py` дополнительно пишет полученную
+цепочку как модуль Python (`.json` — как JSON).
 
-Канонический цикл MAESTRO от начала до конца:
+## Пример в приложении
 
-1. **Генерация** — введите задачу в [чате](/ru/care/tui/overview/) (или `care generate "<task>"`).
-2. **Запуск** — Ad-Hoc запускает инлайн; Production сохраняет в [Библиотеку](/ru/care/tui/screens/).
-3. **Перезапуск** — откройте сохранённую цепочку из Библиотеки и запустите на новых входных данных.
-4. **Эволюция** — `care evolve <chain_id> --wait --accept` (или экран Эволюции) для
-   улучшения, затем продвиньте победителя.
+Импортируйте цепочку через CLI, как выше, затем откройте её в
+**Библиотека → Цепочки** и нажмите **Запустить**. Или приложите `chain.json`
+к чату и попросите агента проверить и запустить её. Агент подготовит именно
+этот файл и спросит подтверждение перед запуском.
+
+Для эволюции у примера `summarizer` есть готовый набор данных
+(`eval.jsonl`). Набор можно и сгенерировать в приложении, см.
+[Данные для эволюции](/ru/care/workflows/data-generation/).
 
 ## Запись демо
 
-`examples/asciicast/recording_script.md` содержит скрипт нажатий клавиш для записи
-asciicast сессии MAESTRO.
+```bash
+scripts/record_demo.sh
+```
 
-## Смотрите также
+Список нажатий по актам — `examples/asciicast/recording_script.md`. Запись
+сохраняется в `docs/asciicasts/care-tour.cast`.
 
-- [CLI: генерация / запуск](/ru/care/cli/generate-run/) · [TUI](/ru/care/tui/overview/)
-- [Книга рецептов CARL](/ru/carl/cookbook/overview/) — примеры цепочек на уровне библиотеки.
+## См. также
+
+- [Сценарии](/ru/care/workflows/scenarios/): сквозные сценарии.
+- [CLI: генерация и запуск](/ru/care/cli/generate-run/).
+- [Кулинарная книга CARL](/ru/carl/cookbook/overview/): примеры цепочек на уровне библиотеки.

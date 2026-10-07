@@ -1,54 +1,56 @@
 ---
 title: Examples
-description: Bundled example chains and the end-to-end MAESTRO workflow.
+description: Example chains shipped with Maestro and how to use them from the desktop app and the CLI.
 sidebar:
   order: 1
 ---
 
-MAESTRO ships a couple of ready-made chains you can validate, import, and run.
+The Maestro repository has example chains under `examples/`, each with a
+`README.md`.
 
-## Bundled chains
+| Example | What it shows | `maestro validate` |
+| --- | --- | --- |
+| `weather` | One `mcp` step (a weather MCP server from `mcp_servers.toml`) and one `llm` step that summarises it. | ok (1 MCP server) |
+| `financier` | Reads a quarterly statement from a PDF with a skill, extracts figures with a `structured_output` step and a JSON Schema. Includes a sample skill under `skills/`. | reports a missing tool `pdf_extractor` until you provide it |
+| `summarizer` | A one-step `llm` chain that reads `$outer_context`, with an 8-case `eval.jsonl`, used as an evolution seed. The README is in Russian. | ok |
+| `asciicast` | A keystroke script and a seed directory for recording a CLI demo. | — |
 
-| Example | What it shows |
-| --- | --- |
-| **weather** | A weather agent wired to an **MCP** server (`mcp_servers.toml` + `chain.json`). |
-| **financier** | A financial-analysis chain (`chain.json`) — a multi-step reasoning agent over financial input. |
+The `validate` column is what `maestro validate examples/<name>/chain.json`
+printed at the release base.
 
-Each lives under `examples/` in the [care repo](https://github.com/Glazkoff/care)
-with a `README.md`.
-
-## Run a chain file
-
-Any `chain.json` follows the same flow — validate, import, run:
-
-```bash
-care validate examples/financier/chain.json      # preflight
-care import examples/financier/chain.json --apply # into Memory
-care run <chain_id> --execute --task "Analyse Q3 results"
-```
-
-Or skip Memory and just preflight + export:
+## Validate, import, run (CLI)
 
 ```bash
-care run <chain_id> --export chain.py             # export to a runnable module
+maestro validate examples/weather/chain.json          # parse + preflight
+maestro import examples/weather/chain.json --apply    # save to Memory
+maestro run <chain_id> --execute --task "Weather in Paris"
 ```
 
-## The end-to-end workflow
+`maestro run <chain_id> --export chain.py` also writes the fetched chain as a
+Python module (`.json` for JSON).
 
-The canonical MAESTRO loop, start to finish:
+## Use an example in the desktop app
 
-1. **Generate** — type a task in the [chat surface](/care/tui/overview/) (or `care generate "<task>"`).
-2. **Run** — Ad-Hoc runs inline; Production saves to the [Library](/care/tui/screens/).
-3. **Re-run** — reopen a saved chain from the Library and run it on new input.
-4. **Evolve** — `care evolve <chain_id> --wait --accept` (or the Evolution screen) to
-   improve it, then promote the winner.
+Import the chain with the CLI as above, then open it from
+**Library → Chains** and press **Run**. Or attach the `chain.json` to a chat
+and ask the agent to validate and run it; the agent stages the exact file and
+asks for confirmation before running.
+
+For evolution, the `summarizer` example has a ready dataset (`eval.jsonl`).
+You can also generate a dataset in the app; see
+[Evolution data](/care/workflows/data-generation/).
 
 ## Recording a demo
 
-`examples/asciicast/recording_script.md` has a keystroke script for recording an
-asciicast of a MAESTRO session.
+```bash
+scripts/record_demo.sh
+```
+
+The per-act keystroke list is `examples/asciicast/recording_script.md`. The
+recording is written to `docs/asciicasts/care-tour.cast`.
 
 ## See also
 
-- [CLI: generate / run](/care/cli/generate-run/) · [TUI](/care/tui/overview/)
-- [CARL cookbook](/carl/cookbook/overview/) — library-level chain examples.
+- [Scenarios](/care/workflows/scenarios/) for end-to-end walkthroughs.
+- [CLI: generate and run](/care/cli/generate-run/).
+- [CARL cookbook](/carl/cookbook/overview/) for library-level chain examples.

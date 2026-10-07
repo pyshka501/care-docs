@@ -1,109 +1,89 @@
 ---
-title: Chat surfaces & stage policy
-description: The three chat surfaces — Interactive, Production, Ad-Hoc — what each does on every prompt, and how per-stage policy and env overrides shape them.
+title: Interactive and Production modes
+description: The two TUI modes — Interactive (formerly Ad-Hoc) and Production — their stage policies, env overrides, and how the desktop app covers the same ground.
 sidebar:
   order: 1
 ---
 
-The toggle above the prompt (or `/mode`) picks how MAESTRO treats every message.
-There are three surfaces, but only two are real modes — **Interactive** (the
-default) and **Production**. **Ad-Hoc** is the legacy name and normalises to
-Interactive on read.
+The Textual TUI (`maestro tui`) has two modes. **Interactive** is the default.
+It replaces the former **Ad-Hoc** mode: the old name `ad_hoc` is still
+accepted and is read as `interactive`.
+
+The desktop app has no modes. There the chat agent does what you ask
+(generate, run, save, evolve) and paid steps ask for one confirmation. See
+[The desktop app](/care/app/overview/).
 
 | | **Interactive** (default) | **Production** |
 | --- | --- | --- |
-| On each prompt | Generate a chain, run it **on the spot**, answer inline. | Generate a **reproducible** chain, then auto save → baseline → (optionally) evolve. |
-| Save / baseline / evolve | **Your call** — driven by the chain-action buttons (Save to library, Evolve). | **Automatic** — the pipeline runs them for you. |
-| Follow-up prompt | **Reuses the chain** for context; a new prompt can generate afresh. | Treated as [`/revise`](/care/slash-commands/overview/) — a new version of the same chain. |
-| Saved? | Only when you press **Save**. | Saved to Memory under a stable `chain_id` + a baseline dataset entry. |
-| Needs Memory? | No. | **Yes** (`CARE_MEMORY__BASE_URL`). |
+| On each prompt | Generate a chain, **ask before running it**, show the answer. | Generate a reproducible chain, ask once, then save it, run a baseline and start evolution. |
+| Follow-up prompt | A new generation. The agent may loop on its own answer (up to `CARE_CHAT__LOOP_MAX_ITER`, default 5). | Revises the saved chain into a new version. `/new` starts a new chain. |
+| Save / evolve | **Save** and **Evolve** buttons; nothing is saved automatically. | Automatic. |
+| Needs Memory | No. | **Yes.** Without Memory the TUI falls back to Interactive with a warning. |
+| Needs Platform | Only for Evolve. | Optional. Without it, save and baseline still happen; evolution is skipped. |
+
+Switch with the toggle above the prompt or `/mode`. The startup mode comes
+from `CARE_CHAT__DEFAULT_MODE`.
 
 ## Interactive
 
-The default surface. Type a task → MAGE generates → CARL runs → the answer
-prints. Nothing is persisted unless you choose to: the **Save to library** and
-**Evolve** chain-action buttons put you in control of what survives the session.
-Follow-up prompts reuse the same chain so the conversation has context; start a
-fresh chain whenever you want.
-
-Use it for: quick answers, exploration, iterating on a chain before you commit it.
+Type a task: the generator builds a chain, the TUI asks before running it,
+then shows the answer. Nothing is persisted until you press **Save** (save to
+the library) or **Evolve** (opens the evolution launch picker). Use it to try
+tasks and iterate on a chain before keeping it.
 
 ## Production
 
-The durable path — for agents you'll keep, measure, and improve. Every prompt
-produces one **reproducible** chain that is then **automatically** saved,
-baselined, and (if Platform is wired) evolved. Once a chain exists, your next
-plain messages are treated as `/revise` edits — a new version under the same
-`chain_id`, not a new chain. Details and the full lifecycle are on the
-[Production mode](/care/workflows/production/) page.
-
-Use it for: agents you want to save, build a dataset for, evolve, and promote.
-
-:::note
-Production requires `CARE_MEMORY__BASE_URL` (and `CARE_MEMORY__API_KEY` if the
-deployment enforces auth). Set the startup surface with `CARE_CHAT__DEFAULT_MODE`.
-:::
-
-## Ad-Hoc (legacy)
-
-`ad_hoc` (and the spellings `ad-hoc` / `adhoc`) is the old name for the
-fast, run-on-the-spot path. It is kept only for back-compat: on read it is
-**normalised to `interactive`**, so anything that still passes `ad_hoc` lands on
-the Interactive surface with no change in behaviour.
-
----
+Each prompt produces one reproducible chain that is then saved to Memory under
+a stable `chain_id`, run once as a **baseline** (recorded as the first dataset
+entry), and handed to evolution when a platform is configured. Your next plain
+prompt revises that chain. Details: [Production mode](/care/workflows/production/).
 
 ## Stage policy
 
-Both surfaces are built from the same pipeline. Two stages — **generate** and
-**preview** — are always automatic. The other four are configurable, each with
-one of three policies:
+Both modes run one pipeline: generate → run → save → baseline → evolve.
+Generation is always automatic. The other four stages each have a policy:
 
 | Policy | Behaviour |
 | --- | --- |
-| `auto` | Do it silently. |
-| `ask` | Show a confirm gate first. |
-| `skip` | Never do it (and skip stages that depend on it). |
+| `auto` | Do it without asking. |
+| `ask` | Show a confirmation first. |
+| `skip` | Never do it (stages that depend on it are skipped too). |
 
-The four configurable stages and their per-surface presets:
+Defaults:
 
 | Stage | Interactive | Production |
 | --- | --- | --- |
 | `run` | `ask` | `ask` |
-| `save` | `skip` (button-driven) | `auto` |
-| `baseline` | `skip` (button-driven) | `auto` |
-| `evolve` | `skip` (button-driven) | `auto` |
+| `save` | `skip` (Save button) | `auto` |
+| `baseline` | `skip` | `auto` |
+| `evolve` | `skip` (Evolve button) | `auto` |
 
-In Interactive, `save` / `baseline` / `evolve` are `skip` at the pipeline level
-because they're driven by the chain-action **buttons**, not by modal gates.
-
-## Env overrides
-
-Set the boot-time surface, then override any stage policy without editing
-`config.toml`. Env vars nest with the `__` delimiter through every level.
+## Environment overrides
 
 ```bash
-# Boot-time surface: interactive | production (legacy aliases accepted)
+# Startup mode: interactive | production
 export CARE_CHAT__DEFAULT_MODE=production
 
 # Per-stage policy: CARE_CHAT__MODE__<MODE>__<STAGE> = ask | auto | skip
-export CARE_CHAT__MODE__INTERACTIVE__RUN=auto      # run Interactive chains without a gate
-export CARE_CHAT__MODE__PRODUCTION__SAVE=ask       # confirm before saving in Production
+export CARE_CHAT__MODE__INTERACTIVE__RUN=auto    # run without asking in Interactive
+export CARE_CHAT__MODE__PRODUCTION__SAVE=ask     # confirm before saving in Production
 ```
 
 `<MODE>` is `INTERACTIVE` or `PRODUCTION`; `<STAGE>` is `RUN`, `SAVE`,
-`BASELINE`, or `EVOLVE`. An unset stage defers to the preset above.
+`BASELINE` or `EVOLVE`. An unset stage uses the default above.
 
-:::note[Soft parsing]
-A malformed or legacy `default_mode` never crashes the config load. Known
-aliases (`ad_hoc`, `ad-hoc`, `adhoc` → `interactive`; `prod` → `production`) are
-normalised; anything unrecognised is dropped, the field falls back to its default
-(`interactive`), and a warning is logged.
+:::note[Lenient parsing]
+`default_mode` never crashes the config load. `ad_hoc`, `ad-hoc` and `adhoc`
+are read as `interactive`, `prod` as `production`. Anything else is dropped
+with a logged warning and the default (`interactive`) applies.
 :::
+
+The settings `CARE_CHAT__AD_HOC_HISTORY_TURNS` (default 6) and
+`CARE_CHAT__AD_HOC_HISTORY_CHARS` (default 1200) keep their old spelling. They
+set how much of the earlier conversation an Interactive follow-up sees.
 
 ## See also
 
-- [Configuration sections](/care/configuration/sections/) — the full `chat` config surface.
-- [The MAESTRO CARE TUI](/care/tui/overview/) — the buttons and `/mode` toggle in context.
 - [Production mode](/care/workflows/production/) · [Scenarios](/care/workflows/scenarios/)
-- [`/mode`](/care/slash-commands/overview/) — switch from the keyboard.
+- [The TUI](/care/tui/overview/) · [`/mode`](/care/slash-commands/overview/)
+- [Configuration sections](/care/configuration/sections/)

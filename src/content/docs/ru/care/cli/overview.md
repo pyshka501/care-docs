@@ -18,7 +18,7 @@ sidebar:
 список флагов каждой команды: `maestro <подкоманда> --help`.
 
 ```bash
-maestro --version        # например, "maestro 0.1.8"
+maestro --version        # например, "maestro 0.5.0"
 maestro doctor           # проверить окружение
 maestro generate "weather report for SF" --save weather
 ```
