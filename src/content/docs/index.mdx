@@ -1,42 +1,51 @@
 ---
 title: MAESTRO
-description: Generate, run, and evolve reasoning chains — from a polished terminal UI (TUI and CLI).
+description: Describe a task, and Maestro builds, runs and evolves a reasoning chain for it. Release 0.5.0.
 template: splash
 hero:
-  tagline: One ecosystem for reasoning agents. Describe a task, and MAESTRO builds, runs, and evolves the chain — right in the terminal.
+  tagline: Describe a task in the Maestro app. Maestro generates a reasoning chain, runs it on your data, keeps it in the Library and evolves it with ideas from IdeaL.
   image:
     file: ../../assets/evoc-mascot-square.webp
   actions:
     - text: Get started
       link: care/getting-started/overview/
       variant: primary
-    - text: The CARL format
+    - text: CARL 0.5.0
       link: carl/getting-started/overview/
       variant: minimal
-    - text: Agent Skill
-      link: care/skill/overview/
+    - text: IdeaL
+      link: ideal/getting-started/overview/
       variant: minimal
 ---
 
 import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
+:::note[Release 0.5.0]
+These docs describe release 0.5.0: Maestro with the Library, Activity and fewer confirmations, STARM solver tools, CARL 0.5.0 with code, Codex and Claude Code steps, and the IdeaL idea lake. See the [Maestro release notes](care/reference/release-0-5-0/) and the [CARL changelog](carl/reference/changelog/).
+:::
+
 ## Choose your path
 
 <CardGrid>
 	<LinkCard
-		title="MAESTRO → the TUI & CLI"
+		title="Maestro → the app"
 		href="care/getting-started/overview/"
-		description="The system: drive it from the MAESTRO CARE terminal UI (TUI) or the headless `care` CLI to generate, run, save, and evolve reasoning chains. Start here to work with agents interactively."
+		description="The desktop app: describe a task in a session, get a chain, run it, save it to the Library and evolve it. The `care` CLI and the terminal UI are here too."
 	/>
 	<LinkCard
-		title="CARL → the chain format"
+		title="CARL → the chain format and runtime"
 		href="carl/getting-started/overview/"
-		description="The format reasoning chains are written in: typed steps, dependencies, and per-step context. Start here to learn how a chain is structured."
+		description="How a chain is written and executed: typed steps (LLM, tools, code, Codex, Claude Code, map, wait and more), dependencies, run controls."
 	/>
 	<LinkCard
-		title="Agent Skill → drive MAESTRO from an agent"
+		title="IdeaL → the idea lake"
+		href="ideal/getting-started/overview/"
+		description="A store of concrete ideas for improving chains. Evolution draws ideas from it and reports which ones helped."
+	/>
+	<LinkCard
+		title="Agent Skill → Maestro from your agent"
 		href="care/skill/overview/"
-		description="A downloadable agentskills.io skill that lets Claude Code or hermes run the `care` CLI — generate, run, and evolve chains — with portable auto-detection. Start here to install it."
+		description="Let Claude Code, Codex, hermes or OpenClaw drive Maestro: generate, run and evolve chains from the agent."
 	/>
 </CardGrid>
 
@@ -59,21 +68,22 @@ More: [Agent Skill](care/skill/overview/) · [Install & Use](care/skill/install/
 
 ## How it fits together
 
-**MAESTRO** is the product on top of a four-part stack. Each part owns one stage of a chain's life.
-
 <CardGrid>
+	<Card title="Maestro — the product" icon="laptop">
+		The desktop app and the `care` CLI. One session drives generation, runs, repair and evolution.
+	</Card>
 	<Card title="MAGE — generation" icon="seti:python">
-		Turns a natural-language task into a CARL chain.
+		Turns a task in plain language into a CARL chain and checks that it can run.
 	</Card>
-	<Card title="CARL — the chain format" icon="open-book">
-		The format every chain is written in: steps, dependencies, and context queries.
+	<Card title="CARL — format and runtime" icon="open-book">
+		Executes the chain as a typed DAG with parallel steps.
 	</Card>
-	<Card title="GigaEvo Memory — persistence" icon="document">
-		Stores chains, agents, skills, and run history.
+	<Card title="Memory and IdeaL — what Maestro remembers" icon="document">
+		The Library keeps chains, datasets, tools and skills; IdeaL keeps ideas for evolution.
 	</Card>
-	<Card title="GigaEvo Platform — evolution" icon="random">
-		Runs a genetic search over chains and promotes the winners.
+	<Card title="Evolution platform" icon="random">
+		Mutates a chain on a dataset, keeps the best version and reports which ideas worked.
 	</Card>
 </CardGrid>
 
-In short: **CARL is the format, MAESTRO is the system that runs it.** MAGE writes a chain in the CARL format; MAESTRO runs and evolves it — from the **MAESTRO CARE** TUI or the `care` CLI.
+In short: **CARL is the format, Maestro is the system that writes, runs and improves chains in it.**

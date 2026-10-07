@@ -2,12 +2,14 @@
 
 **Live site:** https://airi-maestro.github.io/care-docs/
 
-Documentation site for **CARE** (TUI + CLI) and **CARL** (reasoning library),
+Documentation site for **Maestro** (desktop app, `care` CLI and TUI), **CARL**
+(chain format and runtime) and **IdeaL** (idea lake). Content describes release **0.5.0**;
+
 built with [Astro Starlight](https://starlight.astro.build/).
 
 - **Bilingual**: English (default) + Russian (`/ru`).
-- **Two products, two sidebars**: a splash landing routes to independent CARE and
-  CARL doc sets (via `starlight-sidebar-topics`).
+- **Three topics, three sidebars**: a splash landing routes to the Maestro, CARL
+  and IdeaL doc sets (via `starlight-sidebar-topics`).
 - **Brand**: mirrors [care-page](https://github.com/AIRI-MAESTRO/care-page)
   (AIRI aesthetic, mascot EVOC, Manrope + JetBrains Mono).
 
@@ -27,13 +29,15 @@ Node 22.12+ (Astro 6 requirement; see `.nvmrc`).
 ```
 src/
 ├── content/docs/          # all pages
-│   ├── index.mdx          # EN splash landing (care/carl chooser)
-│   ├── care/              # EN — CARE topic (TUI + CLI)
-│   ├── carl/              # EN — CARL topic (library)
-│   └── ru/                # RU mirror (index + care/ + carl/)
+│   ├── index.mdx          # EN splash landing (topic chooser)
+│   ├── care/              # EN — Maestro topic (app, CLI, TUI, solvers)
+│   ├── carl/              # EN — CARL topic (format + runtime)
+│   ├── ideal/             # EN — IdeaL topic (idea lake)
+│   └── ru/                # RU mirror (same paths)
 ├── styles/custom.css      # brand tokens (colors, fonts)
 └── assets/                # EVOC mascot + emotes
 public/favicon.png         # AIRI crystal favicon
+public/maestro.skill       # agent skill bundle served to `uvx maestro-install skill`
 astro.config.mjs           # Starlight + i18n + topics config
 ```
 
