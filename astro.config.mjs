@@ -176,6 +176,11 @@ document.addEventListener('astro:page-load', fixTitle);
 								items: [{ autogenerate: { directory: 'care/getting-started' } }],
 							},
 							{
+								label: 'Desktop App',
+								translations: { ru: 'Приложение' },
+								items: [{ autogenerate: { directory: 'care/app' } }],
+							},
+							{
 								label: 'Concepts',
 								translations: { ru: 'Концепции' },
 								items: [{ autogenerate: { directory: 'care/concepts' } }],
@@ -213,6 +218,11 @@ document.addEventListener('astro:page-load', fixTitle);
 								label: 'Capabilities',
 								translations: { ru: 'Возможности' },
 								items: [{ autogenerate: { directory: 'care/capabilities' } }],
+							},
+							{
+								label: 'Solvers',
+								translations: { ru: 'Решатели' },
+								items: [{ autogenerate: { directory: 'care/solvers' } }],
 							},
 							{
 								label: 'Examples',
@@ -330,6 +340,33 @@ document.addEventListener('astro:page-load', fixTitle);
 								label: 'Reference',
 								translations: { ru: 'Справочник' },
 								items: [{ autogenerate: { directory: 'carl/reference' } }],
+							},
+						],
+					},
+					{
+						label: 'IdeaL',
+						link: '/ideal/getting-started/overview/',
+						icon: 'star',
+						items: [
+							{
+								label: 'Getting Started',
+								translations: { ru: 'Начало работы' },
+								items: [{ autogenerate: { directory: 'ideal/getting-started' } }],
+							},
+							{
+								label: 'Concepts',
+								translations: { ru: 'Концепции' },
+								items: [{ autogenerate: { directory: 'ideal/concepts' } }],
+							},
+							{
+								label: 'In Maestro',
+								translations: { ru: 'В Maestro' },
+								items: [{ autogenerate: { directory: 'ideal/maestro' } }],
+							},
+							{
+								label: 'API & Operations',
+								translations: { ru: 'API и эксплуатация' },
+								items: [{ autogenerate: { directory: 'ideal/api' } }],
 							},
 						],
 					},
