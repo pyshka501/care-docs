@@ -31,8 +31,10 @@ context.memory_list(namespace="results")   # -> list of keys
 через [`$memory.namespace.key`](/ru/carl/chains/dynamic-references/).
 
 :::caution
-При [параллельном выполнении](/ru/carl/async/overview/) каждый шаг получает copy-on-write-представление
-памяти — записи видны только **последующим** батчам, но не параллельным «братьям». См. [copy-on-write](/ru/carl/memory/cow/).
+При [параллельном выполнении](/ru/carl/async/overview/) каждый шаг получает
+copy-on-write-представление памяти. Записи видны только **следующим**
+батчам, но не параллельным соседям. Если соседи пишут один ключ, побеждает
+шаг, объявленный позже. См. [copy-on-write](/ru/carl/memory/cow/).
 :::
 
 ## Управление историей

@@ -34,6 +34,10 @@ context = ReasoningContext(
 - Pairs **not** in the schema pass through unchecked — you only validate what you
   declare.
 - `type_spec` can be a single type or a tuple of types (a union).
+- Writes made inside parallel steps are checked again when the batch is
+  merged back. A violating value is dropped and the step that wrote it is
+  marked failed (see [copy-on-write](/carl/memory/cow/#how-writes-are-merged)).
+- The schema is not saved with the chain; pass it again after loading.
 
 This pairs well with the pre-execution check that warns when a step reads a
 `$memory.*` key no prior step writes — together they catch most memory wiring

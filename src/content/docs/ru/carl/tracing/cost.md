@@ -28,6 +28,9 @@ print(estimate.format_table())
 
 Возвращает `CostEstimate` (со `StepCostEstimate` для каждого шага). Модели, отсутствующие
 в `pricing`, отображаются отдельно, чтобы вы знали, что не учтено.
+Шаги, которые вызывают модель несколько раз, считаются по правилу: шаг
+`agent` даёт `max_iterations` вызовов (верхняя граница), шаг `command_plan`
+один вызов.
 
 ## Чтение результата
 
@@ -45,7 +48,7 @@ pricing=...)` — это умножает оценку одной цепочки
 
 ## Пример
 
-[Пример использования токенов](https://github.com/Glazkoff/carl-experiments/blob/main/examples/llm_inference/token_usage_example.py)
+[Пример использования токенов](https://github.com/Glazkoff/carl/blob/main/examples/llm_inference/token_usage_example.py)
 из репозитория (mock-клиент, без API-ключа) проходит три уровня детализации:
 предварительную оценку, **фактическое** использование токенов по шагам после
 запуска и агрегацию по батчу.
@@ -66,7 +69,7 @@ print(result.get_profiling_summary())       # peak/history bytes + total time
 Фактическое использование требует клиента, который его сообщает (например, через
 `get_response_with_usage`); итоги по цепочке также доступны через свойство
 `result.token_usage_by_step`. Установите
-[`token_budget_warning`](/ru/carl/steps/llm/#конфигурация-llm-на-уровне-шага) в
+[`token_budget_warning`](/ru/carl/steps/llm/#настройки-llm-для-шага) в
 `LLMStepConfig` шага, чтобы получать предупреждение, когда шаг превышает бюджет токенов.
 
 ## Смотрите также

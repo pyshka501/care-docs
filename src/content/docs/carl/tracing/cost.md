@@ -27,7 +27,9 @@ print(estimate.format_table())
 | `char_per_token` | `int` | `4` | Heuristic for input token counting. |
 
 It returns a `CostEstimate` (with a `StepCostEstimate` per step). Models missing
-from `pricing` are reported so you know what's uncounted.
+from `pricing` are reported so you know what's uncounted. Steps that call a
+model several times are counted by rule: an `agent` step counts
+`max_iterations` calls (an upper bound), a `command_plan` step one call.
 
 ## Reading it
 
@@ -45,7 +47,7 @@ pricing=...)` instead — it multiplies a single chain estimate by the run size.
 
 ## Example
 
-The repo's [token-usage example](https://github.com/Glazkoff/carl-experiments/blob/main/examples/llm_inference/token_usage_example.py)
+The repo's [token-usage example](https://github.com/Glazkoff/carl/blob/main/examples/llm_inference/token_usage_example.py)
 (mock client, no API key) walks three granularities: a pre-flight estimate, the
 **actual** per-step token usage after a run, and aggregation across a batch.
 

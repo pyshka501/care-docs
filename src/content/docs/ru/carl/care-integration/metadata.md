@@ -1,63 +1,76 @@
 ---
-title: Метаданные MAESTRO
-description: Прикрепите типизированное происхождение к цепочке и повторно инициализируйте контекст из него.
+title: Метаданные цепочки
+description: Блок metadata["care"] — задача, файлы, теги и контракт входа Maestro — и повторная подготовка контекста из него.
 sidebar:
   order: 4
 ---
 
-MAESTRO проставляет типизированный блок происхождения в `chain.metadata["care"]`, чтобы
-сохранённая цепочка помнила задачу, для которой была сгенерирована, прикреплённые файлы,
-кто её создал, и её теги. Вы можете читать/писать его двумя методами `ReasoningChain`.
+У цепочки есть свободный словарь `metadata`, он сохраняется вместе с JSON.
+Maestro хранит свои данные под ключом `care` (`CARE_METADATA_NAMESPACE`):
+задачу, для которой цепочка создана, прикреплённые файлы, отображаемое имя,
+теги и контракт входа.
 
-## Запись и чтение
+## Типизированный доступ
 
 ```python
 from mmar_carl import CareChainMetadata, CareContextFile
 
-# kwargs form (handy in code / tests)
 chain.set_care_metadata(
     task_description="Summarise the quarterly report",
     context_files=[CareContextFile(path="report.pdf", size_bytes=20480)],
     display_name="Quarterly summariser",
     tags=["finance", "summary"],
 )
-
-# or hand over a ready model (CARE's usual path)
-chain.set_care_metadata(meta=CareChainMetadata(task_description="..."))
+# или: chain.set_care_metadata(meta=CareChainMetadata(task_description="..."))
 
 meta = chain.get_care_metadata()   # -> CareChainMetadata | None
 ```
 
-Передайте **либо** `meta=`, **либо** отдельные kwargs — смешивание вызывает `ValueError`.
-`get_care_metadata()` возвращает `None`, когда у цепочки нет блока `care` (т.е. она не
-была создана инструментом с поддержкой MAESTRO).
+Передайте либо `meta=`, либо именованные поля. Смешивание даёт `ValueError`.
+`get_care_metadata()` возвращает `None`, если блока `care` нет.
 
-### Поля CareChainMetadata
+Поля `CareChainMetadata`: `task_description`, `context_files`
+(`CareContextFile{path, sha256, size_bytes}`), `generated_by`,
+`mage_metadata`, `display_name`, `description`, `tags`.
 
-`task_description`, `context_files` (список `CareContextFile{path, size_bytes}`),
-`generated_by`, `mage_metadata` (dict), `display_name`, `description`, `tags`.
-Ключ пространства имён — `CARE_METADATA_NAMESPACE` (`"care"`).
+:::caution
+`set_care_metadata()` **заменяет** весь блок `care` типизированными полями.
+Ключи, которых нет в `CareChainMetadata`, пропадают, в том числе
+`runtime_input_schema` Maestro. Непереданные именованные поля тоже
+сбрасываются (проверено на 0.5.0). Чтобы поменять одно значение в цепочке из
+Maestro, правьте `chain.metadata["care"]` напрямую.
+:::
 
-## Повторная инициализация контекста из сохранённой цепочки
+## Контракт входа Maestro
 
-`ReasoningContext.from_chain_inputs` строит свежий контекст из метаданных MAESTRO цепочки —
-точка входа «перезапустить из библиотеки»:
+Цепочки, которые Maestro сгенерировал или сохранил, содержат JSON Schema
+(Draft 2020-12, схема объекта) в `metadata["care"]["runtime_input_schema"]`.
+Перед запуском Maestro проверяет по ней вход пользователя и передаёт результат
+как `ReasoningContext.runtime_input`. Шаги читают поля через
+`$outer_context.<field>`. Сам CARL этот ключ не читает. Это соглашение хоста,
+которое путешествует вместе с цепочкой. См.
+[обзор интеграции](/ru/carl/care-integration/overview/#как-maestro-запускает-цепочку).
+
+## Подготовить контекст из сохранённой цепочки
+
+`ReasoningContext.from_chain_inputs` строит контекст из блока `care`. Это
+точка входа «перезапустить из библиотеки» для CLI и TUI:
 
 ```python
 context = ReasoningContext.from_chain_inputs(
     chain,
     api=client,
-    outer_context=None,             # falls back to the saved task_description
-    load_files_from_metadata=True,  # re-read the attached context_files
+    outer_context=None,             # тогда берётся сохранённый task_description
+    load_files_from_metadata=True,  # заново прочитать context_files
 )
 result = await chain.execute_async(context)
 ```
 
-Передайте `files={...}`, чтобы переопределить содержимое файлов, или `outer_context=`,
-чтобы переопределить вход; любые дополнительные `**kwargs` (например, `language=`,
-`system_prompt=`) пробрасываются дальше.
+`files={...}` переопределяет содержимое файлов, `outer_context=` — вход.
+Остальные именованные аргументы (`language=`, `system_prompt=`,
+`runtime_input=`, …) уходят в конструктор `ReasoningContext`.
 
-## Смотрите также
+## См. также
 
 - [Preflight](/ru/carl/care-integration/preflight/) · [RunRecord](/ru/carl/care-integration/run-record/)
-- [JSON-сериализация](/ru/carl/serialization/json/) — метаданные MAESTRO проходят round-trip вместе с цепочкой.
+- [JSON-сериализация](/ru/carl/serialization/json/) — `metadata` сохраняется вместе с цепочкой.

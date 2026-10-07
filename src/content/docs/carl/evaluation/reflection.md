@@ -24,6 +24,8 @@ print(reflection)
 | `language` | `Language \| None` | `None` | Defaults to the context language. |
 | `options` | `ReflectionOptions \| None` | `None` | Controls what goes into the prompt. |
 
+It makes one LLM call through the context's client.
+
 It raises `RuntimeError` if no run has happened yet.
 
 ## Options
@@ -39,6 +41,13 @@ chain.reflect(
 )
 ```
 
+`ReflectionOptions` fields (all `include_*` default to `True`):
+`include_chain_structure`, `include_step_definitions`,
+`include_execution_metrics`, `include_dependency_analysis`,
+`include_metric_scores`, `extra_feedback`, `max_output_preview_chars` (500),
+`max_result_preview_chars` (300), `language`, `dataset_report` (a
+`DatasetEvaluationReport` to include).
+
 When `include_metric_scores=True` (default), any [metric](/carl/evaluation/metrics/)
 scores are fed into the prompt as concrete quality signals — e.g. a low
 `keyword_coverage` on a step nudges the model to suggest better
@@ -53,4 +62,4 @@ worst-scoring cases so you reflect on the failures that matter.
 ## See also
 
 - [Metrics](/carl/evaluation/metrics/) · [Datasets & evaluation](/carl/evaluation/datasets/)
-- [Reflection example](https://github.com/Glazkoff/carl-experiments/blob/main/examples/evaluation/reflection_example.py) in the repo.
+- [Reflection example](https://github.com/Glazkoff/carl/blob/main/examples/evaluation/reflection_example.py) in the repo.

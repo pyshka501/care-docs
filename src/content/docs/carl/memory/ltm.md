@@ -34,13 +34,25 @@ From a step, read an LTM value with the [`$ltm.key`](/carl/chains/dynamic-refere
 reference. Programmatically:
 
 ```python
-context.ltm_retrieve("preferred_tone")              # exact-key lookup (None if absent)
-context.recall("past decisions about pricing", top_k=5)  # similarity search
+context.ltm_retrieve("preferred_tone")   # exact-key lookup (None if absent)
+context.recall("pricing", top_k=5)       # search, see below
 ```
 
-`LTMBase` defines `store`, `retrieve`, `delete`, `search`, and `clear` — all
-session-scoped via the `session_id` keyword (defaults to the context's
-`session_id`).
+`LTMBase` defines `store`, `retrieve`, `delete`, `keys`, `search` and
+`clear`, all scoped by a `session_id` keyword. Two contexts with the same
+`session_id` share one LTM scope.
+
+`search()` / `recall()` is a **substring scan** in the built-in backends: an
+entry matches when its JSON-serialised value contains the query (score `1.0`)
+or contains it ignoring case (score `0.5`). It is not semantic search.
+Override `search()` in your own `LTMBase` subclass to plug in a vector store.
+
+```python
+ctx = ReasoningContext(outer_context="...", api=client,
+                       long_term_memory=InMemoryLTM(), session_id="u1")
+ctx.long_term_memory.store("tone", "formal", session_id="u1")
+ctx.recall("FORM")   # [{"key": "tone", "value": "formal", "score": 0.5}]
+```
 
 :::note
 `recall()` raises if no `long_term_memory` is configured; `ltm_retrieve()` simply

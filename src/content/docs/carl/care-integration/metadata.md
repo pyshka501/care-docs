@@ -1,47 +1,60 @@
 ---
-title: MAESTRO Metadata
-description: Attach typed provenance to a chain, and re-prime a context from it.
+title: Chain Metadata
+description: The metadata["care"] block — task, files, tags and Maestro's input contract — and re-priming a context from it.
 sidebar:
   order: 4
 ---
 
-MAESTRO stamps a typed provenance block onto `chain.metadata["care"]` so a saved chain
-remembers the task it was generated for, the files attached, who made it, and its
-tags. You can read/write it with two `ReasoningChain` methods.
+A chain carries a free-form `metadata` dict that round-trips with the JSON.
+Maestro keeps its data under the `care` key (`CARE_METADATA_NAMESPACE`):
+the task the chain was generated for, attached files, a display name, tags,
+and the chain's input contract.
 
-## Write & read
+## Typed access
 
 ```python
 from mmar_carl import CareChainMetadata, CareContextFile
 
-# kwargs form (handy in code / tests)
 chain.set_care_metadata(
     task_description="Summarise the quarterly report",
     context_files=[CareContextFile(path="report.pdf", size_bytes=20480)],
     display_name="Quarterly summariser",
     tags=["finance", "summary"],
 )
-
-# or hand over a ready model (CARE's usual path)
-chain.set_care_metadata(meta=CareChainMetadata(task_description="..."))
+# or: chain.set_care_metadata(meta=CareChainMetadata(task_description="..."))
 
 meta = chain.get_care_metadata()   # -> CareChainMetadata | None
 ```
 
-Pass **either** `meta=` **or** the individual kwargs — mixing raises `ValueError`.
-`get_care_metadata()` returns `None` when the chain has no `care` block (i.e. it
-wasn't created by a MAESTRO-aware tool).
+Pass either `meta=` or keyword fields; mixing them raises `ValueError`.
+`get_care_metadata()` returns `None` when the chain has no `care` block.
 
-### CareChainMetadata fields
+`CareChainMetadata` fields: `task_description`, `context_files`
+(`CareContextFile{path, sha256, size_bytes}`), `generated_by`,
+`mage_metadata`, `display_name`, `description`, `tags`.
 
-`task_description`, `context_files` (list of `CareContextFile{path, size_bytes}`),
-`generated_by`, `mage_metadata` (dict), `display_name`, `description`, `tags`.
-The namespace key is `CARE_METADATA_NAMESPACE` (`"care"`).
+:::caution
+`set_care_metadata()` **replaces** the whole `care` block with the typed
+fields. Keys that `CareChainMetadata` does not model are lost, including
+Maestro's `runtime_input_schema`; keyword fields you don't pass are reset too
+(checked on 0.5.0). To change one value in a chain that came from Maestro,
+edit `chain.metadata["care"]` directly.
+:::
+
+## Maestro's input contract
+
+Chains generated or saved by Maestro carry a JSON Schema (Draft 2020-12, an
+object schema) at `metadata["care"]["runtime_input_schema"]`. Before a run
+Maestro validates the user's input against it and passes the result as
+`ReasoningContext.runtime_input`; steps read fields with
+`$outer_context.<field>`. CARL itself does not read this key; it is a host
+convention that travels with the chain. See the
+[integration overview](/carl/care-integration/overview/#how-maestro-runs-a-chain).
 
 ## Re-prime a context from a saved chain
 
-`ReasoningContext.from_chain_inputs` builds a fresh context from a chain's MAESTRO
-metadata — the "re-run from the library" entry point:
+`ReasoningContext.from_chain_inputs` builds a context from a chain's `care`
+block, the "re-run from the library" entry point used by the CLI and TUI:
 
 ```python
 context = ReasoningContext.from_chain_inputs(
@@ -53,10 +66,11 @@ context = ReasoningContext.from_chain_inputs(
 result = await chain.execute_async(context)
 ```
 
-Pass `files={...}` to override file contents, or `outer_context=` to override the
-input; any extra `**kwargs` (e.g. `language=`, `system_prompt=`) pass through.
+Pass `files={...}` to override file contents, or `outer_context=` to override
+the input. Extra keyword arguments (`language=`, `system_prompt=`,
+`runtime_input=`, …) go to the `ReasoningContext` constructor.
 
 ## See also
 
 - [Preflight](/carl/care-integration/preflight/) · [RunRecord](/carl/care-integration/run-record/)
-- [JSON serialization](/carl/serialization/json/) — MAESTRO metadata round-trips with the chain.
+- [JSON serialization](/carl/serialization/json/) — `metadata` round-trips with the chain.

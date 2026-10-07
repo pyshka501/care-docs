@@ -80,12 +80,22 @@ A checker's verdict requests one of these `ReplanAction` values:
 | --- | --- | --- |
 | `max_replans_per_chain` | `3` | Total replan actions per run. |
 | `max_replans_per_step` | `2` | Replans attributable to one step. |
-| `max_visits_per_checkpoint` | — | Cap re-entries of a checkpoint. |
-| `fail_on_budget_exhaustion` | — | Fail (vs continue) when the budget runs out. |
+| `max_visits_per_checkpoint` | `3` | Cap re-entries of a checkpoint. |
+| `max_same_rollback_target_repeats` | `2` | Cap repeated rollbacks to the same target. |
+| `fail_on_budget_exhaustion` | `True` | Fail (vs continue) when the budget runs out. |
+
+`ReplanTriggerConfig` fields: `evaluate_after_step` (`True`),
+`evaluate_after_failure` (`True`), `checkpoint_only` (`False`),
+`step_numbers`, `step_types`.
+
+:::note
+With [`fail_fast=True`](/carl/chains/run-controls/) a final step failure
+stops the run before RE-PLAN can retry or roll back.
+:::
 
 ## Example
 
-The repo's [deterministic RE-PLAN example](https://github.com/Glazkoff/carl-experiments/blob/main/examples/replan/replan_deterministic_example.py)
+The repo's [deterministic RE-PLAN example](https://github.com/Glazkoff/carl/blob/main/examples/replan/replan_deterministic_example.py)
 (mock client, no API key) runs a 3-step memo chain. Step 2 emits `NEEDS_REPLAN`
 on its first attempt; a rule-based checker matches that substring, retries the
 step with feedback, and the second attempt succeeds.
@@ -118,4 +128,4 @@ action, the checker vote tally (`event.aggregation`), and any rollback target.
 ## See also
 
 - [Checkers & aggregation](/carl/replan/checkers/)
-- [RE-PLAN examples](https://github.com/Glazkoff/carl-experiments/tree/main/examples/replan) in the repo (deterministic / LLM / voting / checkpoint / budget).
+- [RE-PLAN examples](https://github.com/Glazkoff/carl/tree/main/examples/replan) in the repo (deterministic / LLM / voting / checkpoint / budget).

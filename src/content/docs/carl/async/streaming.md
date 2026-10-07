@@ -20,8 +20,8 @@ async for item in chain.stream_async(context):
         print(f"chain success={item.success}")
 ```
 
-For a 3-step chain that takes ~24 s end-to-end, step 1's output becomes
-inspectable around t≈7 s instead of at t≈24 s.
+In a sequential chain, step 1's output is available as soon as step 1
+finishes, not when the whole chain does.
 
 ## Things to know
 
@@ -42,4 +42,4 @@ completed steps.
 ## See also
 
 - [Async execution](/carl/async/overview/) — parallelism, callbacks, timeouts.
-- [Streaming example](https://github.com/Glazkoff/carl-experiments/blob/main/examples/llm_inference/openrouter_example.py) in the repo.
+- [OpenRouter example](https://github.com/Glazkoff/carl/blob/main/examples/llm_inference/openrouter_example.py) in the repo (needs an API key).

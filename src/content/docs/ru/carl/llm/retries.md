@@ -42,8 +42,14 @@ client = OpenAICompatibleClient(OpenAIClientConfig(
 постоянные, поэтому повтор просто тратит бюджет. Они прерываются немедленно.
 :::
 
-Политика подключается через `OpenAIClientConfig.retry_policy` и управляет
-методами с поддержкой повторных попыток (`get_response_with_retries`, `get_response_with_usage`, …).
+Повторяются только статусы из `retry_on_status`. Любой другой HTTP-статус
+сразу прерывает вызов. Ошибки без статуса (обрыв соединения, таймаут)
+считаются временными и повторяются.
+
+Политика задаётся через `OpenAIClientConfig.retry_policy` и действует на
+`OpenAICompatibleClient.get_response_with_retries` и
+`get_response_with_usage`. Без политики эти методы ведут себя по-старому, как
+описано выше. У `AnthropicClientConfig` нет `retry_policy`.
 
 ## Смотрите также
 

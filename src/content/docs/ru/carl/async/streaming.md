@@ -20,8 +20,8 @@ async for item in chain.stream_async(context):
         print(f"chain success={item.success}")
 ```
 
-Для 3-шаговой цепочки длительностью ~24 с вывод шага 1 становится доступен около t≈7 с,
-а не t≈24 с.
+В последовательной цепочке вывод шага 1 доступен сразу, как только шаг 1
+закончился, а не после всей цепочки.
 
 ## Что важно знать
 
@@ -34,10 +34,10 @@ async for item in chain.stream_async(context):
 ## Стриминг токенов
 
 Для стриминга *внутри* шага (токен за токеном) установите колбэк `on_llm_chunk` в
-контексте — см. [колбэки](/ru/carl/async/overview/#мониторинговые-колбэки). Два варианта
+контексте — см. [колбэки](/ru/carl/async/overview/#колбэки-наблюдения). Два варианта
 работают вместе: `on_llm_chunk` стримит токены внутри шага; `stream_async` стримит завершённые шаги.
 
 ## Смотрите также
 
 - [Асинхронное выполнение](/ru/carl/async/overview/) — параллелизм, колбэки, таймауты.
-- [Пример стриминга](https://github.com/Glazkoff/carl-experiments/blob/main/examples/llm_inference/openrouter_example.py) в репозитории.
+- [Пример с OpenRouter](https://github.com/Glazkoff/carl/blob/main/examples/llm_inference/openrouter_example.py) в репозитории (нужен API-ключ).
