@@ -5,8 +5,8 @@ sidebar:
   order: 6.7
 ---
 
-Это терминальные аналоги экранов **agent hub**: `care deploy`,
-`care deployments` и `care metrics` повторяют команды TUI `/deploy`,
+Это терминальные аналоги экранов **agent hub**: `maestro deploy`,
+`maestro deployments` и `maestro metrics` повторяют команды TUI `/deploy`,
 `/deployments` и `/metrics`. Развёрнутая цепочка обслуживается в хабе как
 HTTP-агент с собственным Swagger UI.
 
@@ -18,14 +18,14 @@ TUI поднимает agent hub за вас при первом `/deploy`. CLI 
 [Развёртывании агентов](/ru/care/workflows/deploy/).
 :::
 
-## `care deploy <chain_id>`
+## `maestro deploy <chain_id>`
 
 Разворачивает сохранённую цепочку в agent hub как HTTP-агента. Команда
 генерирует `api_key`; затем хаб сам забирает цепочку по `entity_id` на указанном
 канале и проверяет, что она загружается (отказ выводится здесь же).
 
 ```bash
-care deploy weather-risk --name weather-risk --channel stable
+maestro deploy weather-risk --name weather-risk --channel stable
 ```
 
 | Флаг | По умолчанию | Назначение |
@@ -37,30 +37,30 @@ care deploy weather-risk --name weather-risk --channel stable
 При успехе выводятся имя развёрнутого агента, его **URL** и ссылка на страницу
 `/docs` (Swagger). Флага **`--json` у этой команды нет**.
 
-## `care deployments`
+## `maestro deployments`
 
 Список агентов, которые сейчас есть в хабе: для каждого развёртывания — индикатор
 готовности, URL, версия и число запусков.
 
 ```bash
-care deployments
-care deployments --json
+maestro deployments
+maestro deployments --json
 ```
 
 | Флаг | По умолчанию | Назначение |
 | --- | --- | --- |
 | `--json` | выкл. | Выводить JSON вместо списка с индикаторами. |
 
-## `care metrics [name]`
+## `maestro metrics [name]`
 
 Метрики использования / стоимости. Передайте **имя** агента, чтобы прочитать его
 `/metrics`; опустите его, чтобы получить сводку по числу запусков всех
 развёртываний.
 
 ```bash
-care metrics weather-risk        # метрики одного агента
-care metrics                     # сводка по запускам всего хаба
-care metrics --json
+maestro metrics weather-risk        # метрики одного агента
+maestro metrics                     # сводка по запускам всего хаба
+maestro metrics --json
 ```
 
 | Флаг | По умолчанию | Назначение |
@@ -77,15 +77,15 @@ care metrics --json
 
 ```bash
 # 1. Развернуть цепочку (хаб уже должен быть запущен)
-care deploy weather-risk --channel stable
+maestro deploy weather-risk --channel stable
 # → deployed: weather-risk  →  http://127.0.0.1:8080/agents/weather-risk  (docs: …/docs)
 
 # 2. Посмотреть, что есть в хабе
-care deployments
+maestro deployments
 # → ● weather-risk  http://127.0.0.1:8080/agents/weather-risk  v1  runs=0
 
 # 3. Прочитать метрики использования
-care metrics weather-risk
+maestro metrics weather-risk
 ```
 
 :::note

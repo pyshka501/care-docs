@@ -1,11 +1,11 @@
 ---
 title: Screens Reference
-description: Every MAESTRO CARE screen and modal — how to reach it and what it does.
+description: Every Maestro TUI screen and modal — how to reach it and what it does.
 sidebar:
   order: 2
 ---
 
-MAESTRO CARE ships a screen per lifecycle stage. The three you'll use most are the chat
+The Maestro TUI has a screen per lifecycle stage. The three you'll use most are the chat
 surface, the **Library**, and the **Evolution** screen.
 
 ## Primary screens
@@ -13,7 +13,7 @@ surface, the **Library**, and the **Evolution** screen.
 | Screen | How to reach | Purpose |
 | --- | --- | --- |
 | Chat | boot | Natural-language input, mode toggle, slash palette, artifact pill, header Library link, Production toolbar. |
-| Chain DAG | Chat → **Read full** | Full box-and-arrow graph of a freshly-generated chain + clickable step list + CARL detail pane (see [The chain DAG](/care/tui/dag/)). |
+| Chain DAG | Chat → **View chain** | Full box-and-arrow graph of a freshly-generated chain + clickable step list + CARL detail pane (see [The chain DAG](/care/tui/dag/)). |
 | Artifacts | `/artifacts` | Current-chat artifacts (chain / stage / tool / dataset / synth output); save, copy, inspect, JSON/DAG toggle (see [below](#the-artifacts-screen)). |
 | Library | `/library` · header link | Saved chains — sortable columns, filter, tag pool, recency strip, mean cost, bulk import/export (see [below](#the-library-screen)). |
 | Inspection | Library `Enter` | Saved-chain detail + run history + Integration pane. |
@@ -30,7 +30,7 @@ surface, the **Library**, and the **Evolution** screen.
 | Sandbox Trust | `/sandbox` | Audit + revoke trusted AgentSkills (SHA-pinned trust store). |
 | Profile | `/profile` | List credential profiles under `~/.config/care/profiles/`. |
 | Settings | `/settings` | Edit MAGE / Memory / Platform creds + theme + advanced knobs. |
-| Help | `/help` · `?` | Tutorial + every binding (filtered by active screen). |
+| Help | `?` | Tutorial + every binding (filtered by active screen). In chat, `/help` prints the modes and commands inline instead. |
 | Welcome | boot | Boot splash; routes to Chat (returning) or Settings (first-run). |
 | Task List | `Ctrl+B` | In-flight workers panel. |
 
@@ -89,9 +89,15 @@ selected rows.
 The genetic-algorithm view and the full chain DAG each have their own page:
 
 - [The Evolution screen](/care/tui/evolution/) — live fitness chart, Pareto front, versions, and the Stop / Accept-winner controls.
-- [The chain DAG](/care/tui/dag/) — the **Read full** box-and-arrow graph with clickable steps and a CARL detail pane.
+- [The chain DAG](/care/tui/dag/) — the **View chain** box-and-arrow graph with clickable steps and a CARL detail pane.
 
-:::note
-Statuses in the source mark a few surfaces as M1/planned (e.g. the uvx Onboarding
-wizard). Press `?` in any screen for its live, canonical bindings.
-:::
+## Fallback and legacy screens
+
+| Screen | When you see it |
+| --- | --- |
+| Demo | Boot fallback on first run or a config error, so the app still shows something. |
+| Query | The old "+ New agent" task form. Still reachable, no longer the main path. |
+| Generation | The old live generation progress screen, replaced by progress lines in chat. |
+
+An Onboarding wizard screen is planned and not shipped. Press `?` in any screen for
+its live bindings.

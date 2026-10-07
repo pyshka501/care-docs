@@ -5,8 +5,8 @@ sidebar:
   order: 6.7
 ---
 
-These are the terminal twins of the **agent hub** screens — `care deploy`,
-`care deployments`, and `care metrics` mirror the TUI's `/deploy`,
+These are the terminal twins of the **agent hub** screens — `maestro deploy`,
+`maestro deployments`, and `maestro metrics` mirror the TUI's `/deploy`,
 `/deployments`, and `/metrics`. A deployed chain is served as an HTTP agent on
 the hub, with its own Swagger UI.
 
@@ -19,14 +19,14 @@ already have a hub running, otherwise every command here fails with
 autostart inside the TUI.
 :::
 
-## `care deploy <chain_id>`
+## `maestro deploy <chain_id>`
 
 Deploy a saved chain to the agent hub as an HTTP agent. The command mints an
 `api_key`; the hub then fetches the chain by `entity_id` on the given channel
 and validates that it loads (a rejection surfaces here).
 
 ```bash
-care deploy weather-risk --name weather-risk --channel stable
+maestro deploy weather-risk --name weather-risk --channel stable
 ```
 
 | Flag | Default | Purpose |
@@ -38,29 +38,29 @@ care deploy weather-risk --name weather-risk --channel stable
 On success it prints the deployed agent's name, its **URL**, and a link to its
 `/docs` (Swagger) page. There is **no `--json`** for this command.
 
-## `care deployments`
+## `maestro deployments`
 
 List the agents currently on the hub — a readiness badge, URL, version, and run
 count per deployment.
 
 ```bash
-care deployments
-care deployments --json
+maestro deployments
+maestro deployments --json
 ```
 
 | Flag | Default | Purpose |
 | --- | --- | --- |
 | `--json` | off | Emit JSON instead of the badge list. |
 
-## `care metrics [name]`
+## `maestro metrics [name]`
 
 Usage / cost metrics. Pass an agent **name** to read that agent's `/metrics`;
 omit it to summarise run counts across all deployments.
 
 ```bash
-care metrics weather-risk        # one agent's metrics
-care metrics                     # run-count summary across the hub
-care metrics --json
+maestro metrics weather-risk        # one agent's metrics
+maestro metrics                     # run-count summary across the hub
+maestro metrics --json
 ```
 
 | Flag | Default | Purpose |
@@ -76,15 +76,15 @@ Deploy a chain on the stable channel, confirm it landed, then read its metrics:
 
 ```bash
 # 1. Deploy the chain (hub must already be running)
-care deploy weather-risk --channel stable
+maestro deploy weather-risk --channel stable
 # → deployed: weather-risk  →  http://127.0.0.1:8080/agents/weather-risk  (docs: …/docs)
 
 # 2. List what's on the hub
-care deployments
+maestro deployments
 # → ● weather-risk  http://127.0.0.1:8080/agents/weather-risk  v1  runs=0
 
 # 3. Read its usage metrics
-care metrics weather-risk
+maestro metrics weather-risk
 ```
 
 :::note

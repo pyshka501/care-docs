@@ -1,103 +1,109 @@
 ---
 title: Установка и использование
-description: Установите скилл Maestro одной командой — для Claude Code или hermes; сделайте `care` доступным; проверьте.
+description: Установите переносимый навык Maestro одной командой для Claude Code, Codex, hermes или OpenClaw, сделайте CLI доступным и проверьте.
 sidebar:
   order: 2
 ---
 
-Скилл Maestro — небольшой бандл (`maestro/` — `SKILL.md` + `scripts/` +
-`references/`), который учит Claude Code или hermes управлять Maestro. Ему нужна
-рабочая команда `care`, которую он сам **не** устанавливает (см. шаг 2).
+Переносимый навык Maestro — небольшой бандл (`maestro/` с `SKILL.md`, `scripts/` и
+`references/`), который учит внешнего агента работать с Maestro. Ему нужен рабочий
+CLI Maestro, который навык сам **не** ставит (см. шаг 2). Навык агента внутри
+приложения поставляется вместе с приложением, ставить его не нужно.
 
-## 1. Установка скилла — одной командой
+## 1. Установка навыка
 
 ```bash
 uvx maestro-install skill
 ```
 
-`skill` — это позиционная подкоманда опубликованного мастера `maestro-install`. Она
-скачивает бандл и распаковывает в каталог скиллов выбранного агента. Спросит, какой
-агент, либо укажите явно через `--agent`:
+`skill` — действие опубликованного мастера `maestro-install`. Оно скачивает бандл и
+распаковывает его в каталог навыков выбранного агента. Мастер спросит, какого
+агента выбрать, или укажите его через `--agent`:
 
-| `--agent` | Каталог скиллов |
+| `--agent` | Каталог навыков |
 | --- | --- |
 | `claude` | `~/.claude/skills/` |
 | `codex` | `~/.codex/skills/` |
 | `hermes` | `~/.hermes/skills/` |
 | `openclaw` | `~/.openclaw/skills/` |
-| `all` | все агенты выше, что найдёт |
-| `<path>` | произвольный каталог скиллов |
+| `all` | все четыре каталога выше |
+| `<path>` | свой каталог навыков |
 
 ```bash
 uvx maestro-install skill --agent all
 ```
 
-Без `--agent` мастер спросит; с `--fast` он сам определяет установленных агентов и по
-умолчанию берёт Claude Code. Верхняя папка бандла — `maestro/`; существующую `maestro/`
-он сохраняет как `maestro.bak`.
+С `--fast` (или `--non-interactive`) мастер ничего не спрашивает: ставит навык всем
+агентам, у которых есть домашний каталог, а если таких нет — в Claude Code. Верхняя
+папка бандла — `maestro/`. Существующая `maestro/` сохраняется как `maestro.bak`.
 
-По умолчанию бандл берётся с
-`https://airi-maestro.github.io/care-docs/maestro.skill`. Переопределить можно через
-`--skill-url` или переменную окружения `$MAESTRO_SKILL_URL` (зеркало или
-зафиксированная версия):
+По умолчанию бандл скачивается с
+`https://airi-maestro.github.io/care-docs/maestro.skill`. Другой адрес задаётся
+через `--skill-url` или `$MAESTRO_SKILL_URL` (зеркало, форк, локальная сборка):
 
 ```bash
 uvx maestro-install skill --agent claude \
   --skill-url https://airi-maestro.github.io/care-docs/maestro.skill
 ```
 
-:::note[Устаревший пакет]
-Старый пакет `care-install` устарел и не умеет ставить скилл — всегда используйте
-`maestro-install`. Принудительно обновить сам установщик: `uvx --refresh
-maestro-install`.
+:::note[Старый пакет]
+В старом пакете `care-install` действия `skill` нет, используйте `maestro-install`.
+Обновить сам мастер: `uvx --refresh maestro-install`.
 :::
 
-**Запасной путь вручную (без мастера).** Скачайте тот же URL и распакуйте сами:
+**Вручную.** Скачайте тот же адрес и распакуйте сами:
 
 ```bash
 curl -fsSLO https://airi-maestro.github.io/care-docs/maestro.skill
-unzip maestro.skill -d ~/.claude/skills/     # → ~/.claude/skills/maestro/  (или ~/.codex/skills/, ~/.hermes/skills/)
+unzip maestro.skill -d ~/.claude/skills/     # → ~/.claude/skills/maestro/
 ```
 
-В hermes команда `/skills` покажет **maestro**, вызов — `/maestro` (или просто опишите
-задачу про Maestro). В Claude Code скилл срабатывает автоматически на задачах про
-Maestro.
+В hermes команда `/skills` покажет **maestro**. Вызов — `/maestro` или просто
+описание задачи для Maestro. В Claude Code навык срабатывает на задачах Maestro сам.
 
-## 2. Сделайте `care` доступным (один раз)
+:::caution[Совпадение имён]
+Навык определяется полем `name` во frontmatter, а не именем папки. Копия в
+`maestro.bak/` тоже объявляет `name: maestro`. Если агент загружает все папки из
+каталога навыков, после проверки новой версии удалите или перенесите копию.
+:::
 
-Скилл управляет командой `care`; настройте её один раз опубликованным мастером (он же
-ставит глобальный шим `care`):
+## 2. Сделать CLI доступным (один раз)
+
+Навык вызывает команду `maestro`. Настройте Maestro один раз мастером, он же
+поставит глобальный shim `maestro`:
 
 ```bash
-uvx maestro-install        # воркспейс + .env + шим `care` в ~/.local/bin
+uvx maestro-install        # рабочая папка + .env + shim `maestro` в ~/.local/bin
 ```
 
-Убедитесь, что `~/.local/bin` в `PATH`. Альтернативы: `uv tool install --editable
-<чекаут>` или `export CARE_HOME=/путь/к/чекауту`. Работает и без установки — лаунчер
-откатывается на `uvx --from maestro-care care`. См.
-[Быстрый старт](/ru/care/getting-started/quick-start/).
+Проверьте, что `~/.local/bin` есть в `PATH`. Другие варианты:
+`uv tool install --editable <checkout>` или `export CARE_HOME=/path/to/checkout`.
+Работает и без установки: запускатель откатывается к
+`uvx --from maestro-care maestro`. См. [Быстрый старт](/ru/care/getting-started/quick-start/).
 
-## 3. Проверьте
+## 3. Проверка
 
-Лаунчер сообщает, как он нашёл `care`, затем — health-check:
+Запускатель из бандла показывает, как он нашёл CLI. Затем проверьте окружение:
 
 ```bash
 bash ~/.claude/skills/maestro/scripts/care.sh --where    # global | checkout | pypi
-bash ~/.claude/skills/maestro/scripts/care.sh doctor     # конфиг + пробы сервисов
+bash ~/.claude/skills/maestro/scripts/care.sh doctor     # конфиг и проверки сервисов
 ```
 
-`doctor` должен показать ваш эндпоинт модели и доступную память. Готово — просите
-агента «сгенерируй цепочку для …», «запусти цепочку X», «покажи память».
+`doctor` должен показать endpoint модели и доступную Memory. После этого попросите
+агента «сгенерируй цепочку для …», «запусти цепочку X» или «покажи память».
 
 :::note[Пути к файлам]
-Когда `care` резолвится в глобальный шим (или фолбэк `uvx`), он запускается из
-**воркспейса** Maestro, поэтому относительные пути считаются относительно него.
-Передавайте **абсолютные пути** для `--output`, `validate <file>`, `replay <file>` и
-`import`-глобов.
+Когда CLI найден через глобальный shim или `uvx`, он работает из вашей **рабочей
+папки** Maestro, и относительные пути считаются от неё. Передавайте **абсолютные
+пути** в `--output`, `--export`, `run --file`, `validate`, `replay`, шаблоны
+`import` и `dataset export`.
 :::
 
 ## Обновление
 
-Перезапустите установку одной командой — она заменит папку, сохранив прежнюю копию как
-`maestro.bak`. Скилл и CLI `care` версионируются независимо; перенастроить сам Maestro
-можно через `uvx maestro-install reconfigure`.
+Повторите `uvx maestro-install skill`: папка заменится, прежняя копия останется как
+`maestro.bak`. Навык и CLI версионируются отдельно. В бандле релиза 0.5.0 в начале
+`SKILL.md` написано `Skill revision: cli/0.5.0`. Сам Maestro обновляется через
+`uvx maestro-install update`, перенастраивается через
+`uvx maestro-install reconfigure`.

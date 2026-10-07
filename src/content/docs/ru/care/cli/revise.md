@@ -5,20 +5,20 @@ sidebar:
   order: 2.5
 ---
 
-`care revise` — это ИИ-двойник команды [`care generate`](/ru/care/cli/generate-run/):
+`maestro revise` — это ИИ-двойник команды [`maestro generate`](/ru/care/cli/generate-run/):
 вместо того чтобы строить цепочку с нуля, она передаёт MAGE *уже сохранённую*
 цепочку и просит внести минимальную точечную правку, описанную обычными словами.
 В TUI ей соответствует команда `/revise`.
 
-## `care revise <chain_id> <change>…`
+## `maestro revise <chain_id> <change>…`
 
 MAGE планирует наименьшую правку, которая выполняет вашу инструкцию. **По
 умолчанию команда лишь показывает этот план** — ничего не сохраняется. Чтобы
 записать результат как **новую версию** той же цепочки, добавьте `--yes`.
 
 ```bash
-care revise weather "use Celsius and add a 3-day forecast"
-care revise weather "use Celsius and add a 3-day forecast" --yes
+maestro revise weather "use Celsius and add a 3-day forecast"
+maestro revise weather "use Celsius and add a 3-day forecast" --yes
 ```
 
 | Флаг | По умолчанию | Назначение |
@@ -31,7 +31,7 @@ care revise weather "use Celsius and add a 3-day forecast" --yes
 
 При подтверждении флагом `--yes` новая версия **наследует имя исходной цепочки**
 и записывает `change_summary="revise: <инструкция>"`, поэтому правка наглядно
-видна в [`care lineage`](/ru/care/cli/memory/) и в истории цепочки.
+видна в [`maestro lineage`](/ru/care/cli/memory/) и в истории цепочки.
 
 :::note[Сначала предпросмотр]
 Без `--yes` вы увидите запланированную правку и строку

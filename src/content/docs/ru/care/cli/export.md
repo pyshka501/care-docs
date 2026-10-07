@@ -5,19 +5,19 @@ sidebar:
   order: 4.5
 ---
 
-`care export` собирает сохранённые цепочки — и, при необходимости, нужные им
+`maestro export` собирает сохранённые цепочки — и, при необходимости, нужные им
 AgentSkills — в один переносимый tar-архив, который можно скопировать на другую
-машину. `care import` делает обратное: читает JSON цепочек и (с флагом
+машину. `maestro import` делает обратное: читает JSON цепочек и (с флагом
 `--apply`) сохраняет их в локальный Memory. Обе команды по умолчанию работают с
 каналом `latest`. Эта пара — терминальный аналог действия **export bundle** в
 Библиотеке.
 
-## `care export <output> <entity_id>...`
+## `maestro export <output> <entity_id>...`
 
 Собирает одну или несколько цепочек в архив (например, `bundle.tar.gz`).
 
 ```bash
-care export bundle.tar.gz weather-report risk-digest \
+maestro export bundle.tar.gz weather-report risk-digest \
   --skill web-search --channel latest
 ```
 
@@ -43,13 +43,13 @@ skipped (fetch failed): typo-chain-id
 ```
 
 :::note[Без `--json`]
-`care export` выводит только сводку для человека — вывода `--json` нет. При
+`maestro export` выводит только сводку для человека — вывода `--json` нет. При
 ошибке сборки команда завершается с кодом `1`.
 :::
 
-## `care import <PATTERN>...`
+## `maestro import <PATTERN>...`
 
-`care import` — обратная команда к `care export`: она проверяет JSON-файлы
+`maestro import` — обратная команда к `maestro export`: она проверяет JSON-файлы
 цепочек (поддерживаются glob-шаблоны) и, с флагом `--apply`, сохраняет их в
 Memory. **По умолчанию это режим dry-run (только предпросмотр)** — пока вы не
 укажете `--apply`, ничего не записывается. Полный список флагов — на странице
@@ -70,7 +70,7 @@ Memory. **По умолчанию это режим dry-run (только пре
 На исходной машине экспортируйте две цепочки и общий для них навык:
 
 ```bash
-care export bundle.tar.gz weather-report risk-digest --skill web-search
+maestro export bundle.tar.gz weather-report risk-digest --skill web-search
 # exported 2 chain(s) + 1 skill(s) → bundle.tar.gz (40817 bytes)
 ```
 
@@ -79,11 +79,11 @@ care export bundle.tar.gz weather-report risk-digest --skill web-search
 
 ```bash
 tar xzf bundle.tar.gz
-care import "*.json"            # предпросмотр (dry-run), ничего не пишет
-care import "*.json" --apply    # сохранить цепочки в локальный Memory
+maestro import "*.json"            # предпросмотр (dry-run), ничего не пишет
+maestro import "*.json" --apply    # сохранить цепочки в локальный Memory
 ```
 
 ## См. также
 
-- [Обнаружение и валидация](/ru/care/cli/discovery/) — флаги `care import` и валидация цепочек.
+- [Обнаружение и валидация](/ru/care/cli/discovery/) — флаги `maestro import` и валидация цепочек.
 - [Memory и Библиотека](/ru/care/cli/memory/) — просмотр и курирование того, что вы импортировали.

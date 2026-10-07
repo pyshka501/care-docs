@@ -1,94 +1,127 @@
 ---
 title: CLI Overview
-description: The headless `care` command-line interface — every subcommand at a glance.
+description: The Maestro command line — every subcommand at a glance, and the two names it answers to.
 sidebar:
   order: 1
 ---
 
-`care` (no subcommand) launches the TUI. The headless subcommands share the same
-`CareConfig` and data layers the TUI uses — every screen's primary affordance has
-a terminal twin. Run `care <subcommand> --help` for the full flag set on each.
+Maestro ships one command-line program with two names:
+
+- **`maestro`** — the main name. `uvx maestro-install` puts a `maestro` shim on your
+  `PATH`.
+- **`care`** — the same program under the package's old name, kept for scripts that
+  already call it. Every example below works with either name.
+
+`maestro` with **no subcommand opens the desktop app** (the same as `maestro app`).
+Never call it bare from a script or CI job: it opens a window and blocks until you
+close it. The headless subcommands share the app's config (`CareConfig`) and the same
+Memory, generation and execution layers. Run `maestro <subcommand> --help` for the
+full flag set of each one.
+
+```bash
+maestro --version        # prints e.g. "maestro 0.1.8"
+maestro doctor           # check the environment
+maestro generate "weather report for SF" --save weather
+```
+
+## Interfaces
+
+| Command | Purpose |
+| --- | --- |
+| `maestro` / `maestro app` | Open the desktop app (the primary interface). |
+| `maestro tui` | Open the Textual terminal UI (supported secondary interface). |
+| `maestro web` | Serve the local browser interface on `127.0.0.1:8787`. |
+
+Details: [Launching interfaces](/care/cli/app/).
 
 ## Setup
 
 | Command | Purpose |
 | --- | --- |
-| `care init` | One-shot quick-start: write a minimal `.env`. |
-| `care doctor` | Environment, config, and dependency health report. |
-| `care migrate-secrets` | Move plaintext API keys into the OS keychain. |
+| `maestro init` | Quick start: write a minimal `.env` with model credentials. |
+| `maestro doctor` | Environment, config, extras and service probes (incl. STARM solver servers). |
+| `maestro migrate-secrets` | Move plaintext API keys from `config.toml` into the OS keychain. |
 
-## Discovery & validation
-
-| Command | Purpose |
-| --- | --- |
-| `care catalog` | List installed AgentSkills, MCP servers, tools, capability cards. |
-| `care validate <chain.json>` | Parse + preflight a CARL chain. |
-| `care import <pattern>...` | Batch-validate (dry-run) or import chain JSON files. |
-| `care export <output> <chain_id>...` | Bundle chains (+skills) to a tarball; `import` is the inverse. |
-
-## Generate / run / replay
+## Discovery and validation
 
 | Command | Purpose |
 | --- | --- |
-| `care generate "<task>"` | One-shot MAGE generation. |
-| `care run <chain_id>` | Fetch a saved chain, preflight, and optionally execute via CARL. |
-| `care revise <chain_id> "<edit>"` | AI-edit a saved chain into a new version (`/revise` twin). |
-| `care replay <run.json>` | Step through a saved `ReasoningResult` / `RunRecord`. |
+| `maestro catalog` | List installed AgentSkills, MCP servers, tools and memory cards. |
+| `maestro validate <chain.json>` | Parse and preflight a chain file. |
+| `maestro import <pattern>...` | Validate chain JSON files; `--apply` saves them to Memory. |
+| `maestro export <output> <chain_id>...` | Bundle chains (and skills) into a tarball. |
 
-## Memory browse
-
-| Command | Purpose |
-| --- | --- |
-| `care memory ls` | List saved entities. |
-| `care memory show <id>` | Drill down on a single entity. |
-| `care memory history <chain_id>` | List recorded runs for a chain. |
-| `care search "<query>"` | BM25 / vector / hybrid search across saved entities. |
-| `care diff <left> <right>` | Side-by-side chain compare. |
-| `care lineage <chain_id>` | Walk the ancestry DAG. |
-| `care favourite <id>` | Star / unstar a library entity. |
-
-## Versions & long-term memory
+## Generate, edit, run, replay
 
 | Command | Purpose |
 | --- | --- |
-| `care versions <chain_id>` | List versions & channels for an entity. |
-| `care rollback <chain_id>` | Restore an earlier version onto a channel. |
-| `care promote <chain_id>` | Promote a version to a stable channel. |
-| `care forget <id>` | Soft-delete (tombstone) an entity. |
-| `care remember "<text>"` | Write a long-term memory note. |
-| `care notes` | Print the long-term memory digest. |
+| `maestro generate "<task>"` | Generate a chain from a task description. |
+| `maestro revise <chain_id> "<edit>"` | Edit a saved chain in plain language into a new version. |
+| `maestro compose <id> <id>...` | Glue saved chains into one new chain (sequential or parallel). |
+| `maestro run <chain_id>` | Fetch a saved chain, preflight it, optionally execute it. |
+| `maestro replay <run.json>` | Step through a saved `ReasoningResult` / `RunRecord`. |
 
-## Marketplace & evolution
-
-| Command | Purpose |
-| --- | --- |
-| `care marketplace "<query>"` | Search shared `agent_skill` listings. |
-| `care evolve <chain_id>` | Submit + watch + accept an evolution run. |
-
-## Deploy & datasets
+## Memory and library
 
 | Command | Purpose |
 | --- | --- |
-| `care deploy <chain_id>` | Deploy a chain to the agent-hub over HTTP. |
-| `care deployments` | List active agent-hub deployments. |
-| `care metrics <deployment>` | Usage metrics for a deployment. |
-| `care dataset <chain_id> ...` | Manage & run a chain's eval dataset (list/add/run/export). |
+| `maestro memory ls` | List saved entities. |
+| `maestro memory show <id>` | Print one entity. |
+| `maestro memory history <chain_id>` | List recorded runs of a chain. |
+| `maestro search "<query>"` | BM25 / vector / hybrid search over saved entities. |
+| `maestro diff <left> <right>` | Compare two saved chains. |
+| `maestro lineage <chain_id>` | Walk a chain's ancestry. |
+| `maestro favourite <id>` | Star or unstar an entity. |
 
-## UX
+## Versions and long-term memory
 
 | Command | Purpose |
 | --- | --- |
-| `care help [--markdown] [--commands]` | Render the tutorial + cheat-sheet, or the CLI ↔ TUI parity table. |
+| `maestro versions <id>` | Version history and which channels point where. |
+| `maestro rollback <id> --to <version>` | Repoint a channel at a version (a pin, nothing is deleted). |
+| `maestro promote <id>` | Copy one channel pointer to another (default `latest` → `stable`). |
+| `maestro forget <id>` | Soft-delete an entity (preview unless `--force`). |
+| `maestro remember "<text>"` | Save a note to long-term memory. |
+| `maestro notes` | Print the long-term memory digest. |
 
-:::tip
-Detailed pages (in the sidebar): [Generate, Run & Replay](/care/cli/generate-run/) ·
-[Setup](/care/cli/setup/) · [Discovery & Validation](/care/cli/discovery/) ·
-[Revise](/care/cli/revise/) · [Export & Import](/care/cli/export/) ·
-[Memory & Library](/care/cli/memory/) · [Datasets](/care/cli/dataset/) ·
-[Deploy & Metrics](/care/cli/deploy/) · [Capabilities & Evolution](/care/cli/capabilities/).
+## Marketplace and evolution
+
+| Command | Purpose |
+| --- | --- |
+| `maestro marketplace "<query>"` | Search shared `agent_skill` listings. |
+| `maestro evolve <chain_id>` | Submit an evolution run, optionally watch it and accept the winner. |
+
+## Datasets and deployment
+
+| Command | Purpose |
+| --- | --- |
+| `maestro dataset list\|add\|run\|export` | Manage and score a chain's eval dataset. |
+| `maestro deploy <chain_id>` | Deploy a chain to the agent hub as an HTTP agent. |
+| `maestro deployments` | List agents on the hub. |
+| `maestro metrics [name]` | Usage and cost metrics of deployed agents. |
+
+## Help
+
+| Command | Purpose |
+| --- | --- |
+| `maestro help [--markdown] [--commands]` | Tutorial and key cheat sheet, or the CLI ↔ TUI parity table. |
+
+:::note[Not in the CLI]
+There are no `setup`, `discovery`, `capabilities` or `benchmark` subcommands. The
+pages with those names in this section group related commands. Benchmark and
+dataset generation, IdeaL idea work and the tools workshop live in the desktop app.
 :::
 
-:::note[Driving `care` from an agent?]
-Install the [care-cli Agent Skill](/care/skill/overview/) — it teaches Claude Code or
-hermes to run every command above, with portable auto-detection of `care`.
+:::tip
+Detailed pages: [Launching interfaces](/care/cli/app/) ·
+[Generate, Run & Replay](/care/cli/generate-run/) · [Revise](/care/cli/revise/) ·
+[Compose](/care/cli/compose/) · [Setup](/care/cli/setup/) ·
+[Discovery & Validation](/care/cli/discovery/) · [Export & Import](/care/cli/export/) ·
+[Memory & Library](/care/cli/memory/) · [Datasets](/care/cli/dataset/) ·
+[Deploy & Metrics](/care/cli/deploy/) · [Marketplace, Evolution & Help](/care/cli/capabilities/).
+:::
+
+:::note[Driving the CLI from an agent?]
+Install the [Maestro agent skill](/care/skill/overview/). It teaches Claude Code,
+Codex, hermes or OpenClaw to run these commands and finds the program on its own.
 :::

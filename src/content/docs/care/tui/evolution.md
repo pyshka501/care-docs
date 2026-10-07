@@ -1,17 +1,17 @@
 ---
 title: Evolution dashboard
-description: Watch, compare, and accept genetic-algorithm runs from inside MAESTRO CARE.
+description: Watch, compare, and accept genetic-algorithm runs from inside the Maestro TUI.
 sidebar:
   order: 4
 ---
 
-`/evolution` opens MAESTRO CARE's **evolution dashboard** — an inbox of every
+`/evolution` opens the TUI's **evolution dashboard** — an inbox of every
 genetic-algorithm run your account can see on the Platform. From a row you open a
 **run screen** that streams the search live: fitness curves, the Pareto front,
 program-validity trends, and the per-generation fitness ladder. When a run lands a
 winner you accept it straight back into the **stable** channel.
 
-This is the visual twin of [`care evolve`](/care/cli/overview/). The dashboard
+This is the visual twin of [`maestro evolve`](/care/cli/overview/). The dashboard
 watches and compares runs; the CLI launches them headless. For the algorithm
 itself — mutation, scoring, generations — see the concept page
 [Evolution overview](/carl/evolution/overview/).
