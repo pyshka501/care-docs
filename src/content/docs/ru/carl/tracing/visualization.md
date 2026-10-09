@@ -31,8 +31,9 @@ print(chain.to_mermaid_heatmap(result, metric="tokens"))  # "tokens" | "latency"
 ```
 
 :::note
-Mermaid использует `<br/>` (не `\n`) как перенос строки внутри меток узлов — каждый
-метод CARL `to_mermaid_*` уже использует `<br/>`.
+Переносы строк в метках узлов отличаются: `to_mermaid_heatmap` использует
+`<br/>`, а `to_mermaid` и `to_mermaid_critical_path` пишут буквальный `\n`.
+Некоторые рендереры Mermaid показывают `\n` как текст.
 :::
 
 ## ChainVisualizer — компоновка нескольких представлений
@@ -45,7 +46,11 @@ from mmar_carl import ChainVisualizer
 ChainVisualizer(result, chain=chain).token_pie().gantt().heatmap(metric="tokens").print()
 ```
 
-Также принимает `evolution_result=` для включения графиков эволюции.
+Виды: `token_pie`, `prompt_completion`, `profiling_table`, `gantt`, `dag`,
+`critical_path`, `heatmap`, `score_evolution`, `spend_vs_quality`. В конце
+вызовите `print()` или `render()`. `view_titles` перечисляет накопленные виды,
+`clear()` очищает буфер. Передайте `evolution_result=`, чтобы работали виды
+эволюции.
 
 ## Jupyter
 
@@ -57,4 +62,4 @@ ChainVisualizer(result, chain=chain).token_pie().gantt().heatmap(metric="tokens"
 
 - [Трассировка и наблюдаемость](/ru/carl/tracing/overview/)
 - [Оценка стоимости](/ru/carl/tracing/cost/)
-- [DAG цепочки в MAESTRO CARE](/ru/care/tui/dag/) — TUI рисует тот же DAG прямо во время выполнения цветным графом из блоков и стрелок, а для простых терминалов есть [ASCII-режим](/ru/care/tui/dag/).
+- [DAG цепочки в TUI](/ru/care/tui/dag/) — тот же DAG, отрисованный в терминале во время прогона.

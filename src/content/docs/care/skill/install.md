@@ -1,23 +1,24 @@
 ---
 title: Install & Use
-description: Install the Maestro agent skill with one command, for Claude Code or hermes; make `care` resolvable; verify.
+description: Install the portable Maestro agent skill with one command for Claude Code, Codex, hermes or OpenClaw; make the CLI resolvable; verify.
 sidebar:
   order: 2
 ---
 
-The Maestro skill is a small bundle (`maestro/` — `SKILL.md` + `scripts/` +
-`references/`) that teaches Claude Code or hermes to drive Maestro. It needs a working
-`care` command, which it does **not** install (see step 2).
+The portable Maestro skill is a small bundle (`maestro/` with `SKILL.md`, `scripts/`
+and `references/`) that teaches an external agent to drive Maestro. It needs a working
+Maestro CLI, which it does **not** install (see step 2). The skill used by the agent
+inside the desktop app ships with the app and needs no installation.
 
-## 1. Install the skill — one command
+## 1. Install the skill
 
 ```bash
 uvx maestro-install skill
 ```
 
-`skill` is a positional subcommand of the published `maestro-install` wizard. It
-downloads the bundle and unpacks it into the chosen agent's skills directory. It asks
-which agent, or pick explicitly with `--agent`:
+`skill` is an action of the published `maestro-install` wizard. It downloads the
+bundle and unpacks it into the chosen agent's skills directory. It asks which agent,
+or pick one with `--agent`:
 
 | `--agent` | Skills directory |
 | --- | --- |
@@ -25,20 +26,20 @@ which agent, or pick explicitly with `--agent`:
 | `codex` | `~/.codex/skills/` |
 | `hermes` | `~/.hermes/skills/` |
 | `openclaw` | `~/.openclaw/skills/` |
-| `all` | every agent above it can find |
+| `all` | all four directories above |
 | `<path>` | a custom skills directory |
 
 ```bash
 uvx maestro-install skill --agent all
 ```
 
-Omit `--agent` and it asks; with `--fast` it auto-detects installed agents and defaults
-to Claude Code. The bundle's top folder is `maestro/`; an existing `maestro/` is kept as
-`maestro.bak`.
+With `--fast` (or `--non-interactive`) it does not ask: it installs into every agent
+whose home directory exists, or into Claude Code when none does. The bundle's top
+folder is `maestro/`; an existing `maestro/` is kept as `maestro.bak`.
 
 By default the bundle is fetched from
-`https://airi-maestro.github.io/care-docs/maestro.skill`. Override it with `--skill-url`
-or the `$MAESTRO_SKILL_URL` environment variable (for a mirror or a pinned version):
+`https://airi-maestro.github.io/care-docs/maestro.skill`. Override it with
+`--skill-url` or `$MAESTRO_SKILL_URL` (a mirror, a fork or a local build):
 
 ```bash
 uvx maestro-install skill --agent claude \
@@ -46,56 +47,63 @@ uvx maestro-install skill --agent claude \
 ```
 
 :::note[Legacy package]
-The old `care-install` package is stale and lacks the `skill` feature — always use
-`maestro-install`. Force-refresh the installer itself with `uvx --refresh
-maestro-install`.
+The old `care-install` package lacks the `skill` action; use `maestro-install`.
+Refresh the installer itself with `uvx --refresh maestro-install`.
 :::
 
-**Manual fallback (no wizard).** Download that same URL and unzip it yourself:
+**Manual fallback.** Download the same URL and unzip it yourself:
 
 ```bash
 curl -fsSLO https://airi-maestro.github.io/care-docs/maestro.skill
-unzip maestro.skill -d ~/.claude/skills/     # → ~/.claude/skills/maestro/  (or ~/.codex/skills/, ~/.hermes/skills/)
+unzip maestro.skill -d ~/.claude/skills/     # → ~/.claude/skills/maestro/
 ```
 
-In hermes, `/skills` then lists **maestro**; invoke it with `/maestro` (or just
-describe a Maestro task). In Claude Code the skill triggers automatically on Maestro
-tasks.
+In hermes, `/skills` then lists **maestro**; invoke it with `/maestro` or just
+describe a Maestro task. In Claude Code the skill triggers on Maestro tasks.
 
-## 2. Make `care` available (once)
+:::caution[Name collisions]
+Skills are identified by the `name` in their frontmatter, not by the folder. A copy
+in `maestro.bak/` also declares `name: maestro`; if your agent loads every folder in
+the skills directory, delete or move the backup after checking the new version.
+:::
 
-The skill drives the `care` command; set it up once with the published wizard (it also
-installs a global `care` shim):
+## 2. Make the CLI available (once)
+
+The skill drives the `maestro` command. Set Maestro up once with the wizard; it also
+installs a global `maestro` shim:
 
 ```bash
-uvx maestro-install        # workspace + .env + a `care` shim in ~/.local/bin
+uvx maestro-install        # workspace + .env + a `maestro` shim in ~/.local/bin
 ```
 
-Ensure `~/.local/bin` is on your `PATH`. Alternatives: `uv tool install --editable
-<checkout>`, or `export CARE_HOME=/path/to/checkout`. Zero-install also works — the
-launcher falls back to `uvx --from maestro-care care`. See the
+Make sure `~/.local/bin` is on your `PATH`. Alternatives: `uv tool install --editable
+<checkout>`, or `export CARE_HOME=/path/to/checkout`. Zero-install also works: the
+launcher falls back to `uvx --from maestro-care maestro`. See the
 [Quick Start](/care/getting-started/quick-start/).
 
 ## 3. Verify
 
-The bundled launcher reports how it resolved `care`, then run a health check:
+The bundled launcher reports how it resolved the CLI; then run a health check:
 
 ```bash
 bash ~/.claude/skills/maestro/scripts/care.sh --where    # global | checkout | pypi
 bash ~/.claude/skills/maestro/scripts/care.sh doctor     # config + service probes
 ```
 
-`doctor` should show your model endpoint and a reachable memory service. You're ready —
-ask your agent to "generate a chain for …", "run chain X", or "show memory".
+`doctor` should show your model endpoint and a reachable Memory. Then ask your agent
+to "generate a chain for …", "run chain X" or "show memory".
 
 :::note[File paths]
-When `care` resolves to the global shim (or the `uvx` fallback), it runs from your
+When the CLI resolves to the global shim or the `uvx` fallback, it runs from your
 Maestro **workspace**, so relative file arguments resolve there. Pass **absolute
-paths** for `--output`, `validate <file>`, `replay <file>`, and `import` globs.
+paths** for `--output`, `--export`, `run --file`, `validate`, `replay`, `import`
+globs and `dataset export`.
 :::
 
 ## Updating
 
-Re-run the one-command install — it replaces the folder and keeps the previous copy as
-`maestro.bak`. The skill and the `care` CLI version independently; reconfigure Maestro
-itself with `uvx maestro-install reconfigure`.
+Re-run `uvx maestro-install skill`; it replaces the folder and keeps the previous copy
+as `maestro.bak`. The skill and the CLI are versioned separately; the bundle for
+release 0.5.0 says `Skill revision: cli/0.5.0` near the top of `SKILL.md`. Update
+Maestro itself with `uvx maestro-install update` and reconfigure it with
+`uvx maestro-install reconfigure`.

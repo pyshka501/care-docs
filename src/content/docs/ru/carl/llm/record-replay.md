@@ -40,14 +40,48 @@ await chain.execute_async(ctx)   # reads from the cassette, ~instant
 
 ## Как работает сопоставление
 
-Ключ кассеты — `sha256(method + prompt/messages + model + temperature)`. Если запрос
-просит ключ, которого нет в кассете, `PlayingLLMClient` вызывает `CassetteMissError`
-(с превью промпта) — так дрейфующий промпт падает громко, вместо тихого вызова реального API.
+Ключ кассеты это SHA-256 от вызова: имя метода, промпт или сообщения,
+system/user промпт, инструменты, модель и температура (поля со значением
+`None` не учитываются). Вместе с каждой записью хранится расход токенов, и он
+тоже воспроизводится. Поэтому отчёты о токенах и стоимости работают офлайн.
+
+Если прогон запрашивает ключ, которого нет в кассете, `PlayingLLMClient`
+бросает `CassetteMissError` с началом промпта. Внутри цепочки это выглядит как
+упавший шаг, у которого `error_message` начинается с
+`Cassette miss for method=...`. Изменившийся промпт падает громко, а не уходит
+в настоящий API.
 
 | Клиент | Конструктор |
 | --- | --- |
-| `RecordingLLMClient` | `(real_client, cassette_path, overwrite=False)` |
-| `PlayingLLMClient` | `(cassette_path, model=None, temperature=None)` |
+| `RecordingLLMClient` | `(real_client, cassette_path, *, overwrite=False)` |
+| `PlayingLLMClient` | `(cassette_path, *, model=None, temperature=None)` |
+
+## Попробовать офлайн
+
+Запишите ответы заглушки вместо платного клиента, затем воспроизведите:
+
+```python
+import asyncio, os, tempfile
+from mmar_carl import (LLMClientBase, LLMStepDescription, ReasoningChain, ReasoningContext,
+                       RecordingLLMClient, PlayingLLMClient)
+
+class StubLLM(LLMClientBase):
+    async def get_response(self, prompt): return "recorded answer"
+    async def get_response_with_retries(self, prompt, retries=3): return "recorded answer"
+
+chain = ReasoningChain(steps=[LLMStepDescription(number=1, title="Answer", aim="Answer briefly.")])
+path = os.path.join(tempfile.mkdtemp(), "cassette.jsonl")
+
+async def main():
+    rec = RecordingLLMClient(StubLLM(), path, overwrite=True)
+    await chain.execute_async(ReasoningContext(outer_context="q", api=rec))
+    replay = await chain.execute_async(ReasoningContext(outer_context="q", api=PlayingLLMClient(path)))
+    print(replay.get_final_output())     # recorded answer
+    drifted = await chain.execute_async(ReasoningContext(outer_context="other", api=PlayingLLMClient(path)))
+    print(drifted.success)               # False: cassette miss
+
+asyncio.run(main())
+```
 
 ## Смотрите также
 

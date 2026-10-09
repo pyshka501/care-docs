@@ -1,92 +1,125 @@
 ---
 title: Overview
-description: The Maestro agent skill — install it so Claude Code or hermes can drive Maestro, with portable auto-detection of `care`.
+description: The Maestro agent skills — the portable CLI skill for Claude Code, Codex, hermes and OpenClaw, and the native skill inside the desktop app.
 sidebar:
   order: 1
 ---
 
-**maestro** is an [agentskills.io](https://agentskills.io)-format **Agent Skill**: a
-small bundle that teaches an agent (Claude Code, or NousResearch
-[hermes](https://github.com/nousresearch/hermes-agent)) to drive Maestro from the
-headless [`care` command](/care/cli/overview/) — generate and run chains, browse
-memory, evolve chains, and **interpret & visualize** them — without hardcoding any
+Maestro ships two agent skills with the same name, `maestro`, for two different
+hosts:
+
+| Skill | Where it runs | Drives Maestro through |
+| --- | --- | --- |
+| **Portable CLI skill** | Claude Code, Codex, hermes, OpenClaw, CI | The `maestro` command line |
+| **Native app skill** | The agent inside the Maestro desktop app | The app's own Maestro tools |
+
+## The portable CLI skill
+
+An [agentskills.io](https://agentskills.io)-format bundle that teaches an external
+agent to drive Maestro from the [command line](/care/cli/overview/): generate, revise,
+compose and run chains, browse and version Memory, build datasets, evolve, deploy,
+configure STARM solvers, and **interpret & visualize** chains, without hardcoding any
 path to Maestro.
 
 :::tip[Install in one command]
 ```bash
 uvx maestro-install skill
 ```
-Downloads and unpacks the skill into Claude Code / Codex / hermes / OpenClaw (pick with
-`--agent`). Full steps: [Install & Use](/care/skill/install/). (Direct bundle:
-[`maestro.skill`](https://airi-maestro.github.io/care-docs/maestro.skill).)
+Unpacks the skill for Claude Code, Codex, hermes or OpenClaw (pick with `--agent`).
+Full steps: [Install & Use](/care/skill/install/). Direct bundle:
+[`maestro.skill`](https://airi-maestro.github.io/care-docs/maestro.skill).
 :::
 
-## What's in the bundle
+### What's in the bundle
 
 ```
 maestro/
-├── SKILL.md                      # when-to-trigger + the full command map & workflows
+├── SKILL.md                      # when to trigger, command map, workflows, IdeaL, STARM
 ├── scripts/
-│   ├── care.sh                   # portable launcher that locates `care`
+│   ├── care.sh                   # portable launcher that locates the CLI
 │   └── viz_chain.py              # chain JSON → Mermaid graph + steps table
 └── references/
-    ├── commands.md               # every subcommand & flag
-    ├── production-and-tui.md      # Ad-Hoc vs Production, TUI slash-commands
-    ├── chain-format.md            # chain JSON: step types, $-references
-    ├── interpret.md              # interpret & visualize a chain (graph + per-step)
-    └── integration.md             # embedding into hermes / CI / other hosts
+    ├── commands.md               # every subcommand and flag (release 0.5.0)
+    ├── production-and-tui.md     # Interactive vs Production, TUI slash commands
+    ├── chain-format.md           # chain JSON: step types, references
+    ├── interpret.md              # interpret & visualize a chain
+    └── integration.md            # embedding into hermes / CI / other hosts
 ```
 
-## What it lets the agent do
+### What it lets the agent do
 
-| Area | Skill drives |
+| Area | Commands |
 | --- | --- |
-| **Generate / run** | `care generate "<task>"`, preflight or `run --execute` with `--input`, `replay`, export to `.json`/`.py` |
-| **Memory & library** | `memory ls/show/history`, `search`, `diff`, `lineage`, `favourite` |
-| **Validate / import** | `validate <chain.json>`, `import '<glob>' [--apply]` |
-| **Evolution** | `catalog`, `marketplace`, `evolve … --wait --accept` |
-| **Setup / diagnostics** | `doctor`, `init`, `migrate-secrets` |
+| **Generate / edit / run** | `generate`, `revise`, `compose`, `run` (preflight or `--execute` with `--input` / `--file`), `replay`, export to `.json` / `.py` |
+| **Memory & versions** | `memory ls/show/history`, `search`, `diff`, `lineage`, `favourite`, `versions`, `promote`, `rollback`, `forget`, `remember`, `notes` |
+| **Validate / move** | `validate`, `import [--apply]`, `export` bundles |
+| **Measure & improve** | `dataset add/list/run/export`, `evolve … --wait --accept`, `catalog`, `marketplace` |
+| **Ship** | `deploy`, `deployments`, `metrics` |
+| **Setup / diagnostics** | `doctor` (incl. STARM probes), `init`, `migrate-secrets` |
 
-It also carries the knowledge that makes those commands reliable: the
-[Ad-Hoc vs Production](/care/workflows/modes/) distinction, an honest map of what is
-CLI-reachable vs [TUI-only](/care/slash-commands/overview/) (revise / dataset /
-promote / upload / forget), the [chain format](/carl/chains/overview/), and practical
-gotchas (`doctor`/`init` have no `--json`; a fresh memory's `search` index is empty —
-use `memory ls --q`; pass absolute file paths because the launcher may run `care` from
-the workspace).
+It also carries the knowledge that makes those commands reliable: never call
+`maestro` without a subcommand (that opens the app window), which commands lack
+`--json`, that `revise` and `compose` only preview without `--yes`, that a fresh
+Memory's `search` index may be empty (use `memory ls --q`), absolute file paths, the
+honest list of interactive-only actions (`/upload`, the gated `/promote`, IdeaL work
+in the app), and to talk to users in Maestro terms rather than internal component
+names.
 
-## Beyond the CLI: interpret & visualize
+### Interpret & visualize
 
-After a chain is generated, the skill offers more than raw JSON — its first move is to
-**interpret & visualize** it (and it can also run or evolve it):
+After a chain is generated, the skill's first offer is to **interpret & visualize**
+it: render the dependency graph with the runtime's own `to_mermaid` (plus
+critical-path and token / latency / cost heatmaps when given a run) and walk every
+step in plain language. The agent does the interpreting, so it works without a model
+key. A two-step weather chain, for example:
 
-- **Interpret & visualize, together** — render the dependency DAG (Maestro's own
-  `to_mermaid`, plus critical-path and token / latency / cost heatmaps when you pass a
-  run) **and** walk every step in plain language: what it does, what it reads via
-  `$`-references, what it produces, and why it depends on what it does. The graph gives
-  the shape, the per-step notes give the meaning — as one explanation. The agent does
-  the interpreting, so it works even with no model key or services. For example, a
-  two-step weather chain:
+```mermaid
+flowchart TD
+    S1["1 · fetch_forecast<br/>mcp"]
+    S2["2 · summarise_forecast<br/>llm"]
+    S1 --> S2
+```
 
-  ```mermaid
-  flowchart TD
-      S1["1 · fetch_forecast<br/>mcp"]
-      S2["2 · summarise_forecast<br/>llm"]
-      S1 --> S2
-  ```
+The next offers are to run the chain on a sample input, revise it in words, or evolve
+it.
 
-- **Run / evolve** — execute the chain on a sample input (`care run --execute`) or
-  improve it automatically (`care evolve --wait --accept`).
+### IdeaL from the CLI skill
 
-## Portable by design
+The CLI has no IdeaL subcommands. The skill tells the agent to prefer the desktop app
+for idea work, how to fetch a run's signed radar link with an API key, how to connect
+the lake to an agent over MCP, and the rules that keep idea ratings honest (English
+text, cite only applied ideas, report control mutations, no test answers or secrets).
 
-The bundled `scripts/care.sh` resolves `care` the same way in any environment, so the
-skill works on a developer machine, in CI, or inside hermes without edits:
+### Portable by design
 
-1. a global `care` on `PATH` (what [`uvx maestro-install`](/care/getting-started/quick-start/)
-   installs as a shim), else
-2. a local checkout (via `$CARE_HOME` or common locations), else
-3. the published package directly: `uvx --from maestro-care care`.
+`scripts/care.sh` resolves the CLI the same way everywhere:
+
+1. a global `maestro` (or older `care`) on `PATH`, which
+   [`uvx maestro-install`](/care/getting-started/quick-start/) installs as a shim;
+2. a local checkout via `$CARE_HOME` or common locations (`uv run --frozen` when a
+   lockfile exists);
+3. the published package: `uvx --from maestro-care maestro`.
 
 With none of these present it prints an actionable hint instead of failing silently.
-See [Install & Use](/care/skill/install/) to set it up.
+
+## The native app skill
+
+The desktop app's agent preset mounts its own `maestro` skill. It works only with the
+app's typed Maestro tools, never the CLI, and uses the chat model connection the app
+already has. It covers:
+
+- **Chains**: capability check (`maestro_capabilities`), a plan
+  (`maestro_agent_plan`), generation as a background job, inspecting the generated
+  artifact, execution, and at most one repair proposal after a failed run.
+- **Evolution**: staging a seed chain and a real dataset, finding them by name
+  (`maestro_find_artifacts`), lab plan and start, reading the result.
+- **IdeaL**: seeding ideas for a task with `maestro_ideal_graph`,
+  `maestro_idea_check`, `maestro_idea_translate` and `maestro_idea_save` after the
+  user approves the list; editing and archiving ideas; the run radar
+  (`maestro_ideal_run_radar`), a chain's runs (`maestro_ideal_chain_runs`) and
+  forcing an idea into a running evolution (`maestro_ideal_run_force`); new tools go
+  through the tools workshop (`maestro_capability_draft` → `maestro_capability_save`).
+
+Paid actions (generation, repair, execution, evolution start) ask once through the
+app's own dialog. The native skill is part of the app; it is not installed with
+`maestro-install skill`.

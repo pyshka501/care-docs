@@ -24,6 +24,8 @@ print(reflection)
 | `language` | `Language \| None` | `None` | По умолчанию — язык контекста. |
 | `options` | `ReflectionOptions \| None` | `None` | Управляет содержимым промпта. |
 
+Делает один вызов LLM через клиент контекста.
+
 Вызывает `RuntimeError`, если ни одного запуска ещё не было.
 
 ## Параметры
@@ -39,6 +41,13 @@ chain.reflect(
 )
 ```
 
+Поля `ReflectionOptions` (все `include_*` по умолчанию `True`):
+`include_chain_structure`, `include_step_definitions`,
+`include_execution_metrics`, `include_dependency_analysis`,
+`include_metric_scores`, `extra_feedback`, `max_output_preview_chars` (500),
+`max_result_preview_chars` (300), `language`, `dataset_report`
+(`DatasetEvaluationReport`, который нужно включить).
+
 Когда `include_metric_scores=True` (по умолчанию), любые оценки [метрик](/ru/carl/evaluation/metrics/)
 передаются в промпт как конкретные сигналы качества — например, низкое `keyword_coverage`
 на шаге побуждает модель предложить лучшие `step_context_queries`.
@@ -52,4 +61,4 @@ chain.reflect(
 ## Смотрите также
 
 - [Метрики](/ru/carl/evaluation/metrics/) · [Датасеты и оценка](/ru/carl/evaluation/datasets/)
-- [Пример рефлексии](https://github.com/Glazkoff/carl-experiments/blob/main/examples/evaluation/reflection_example.py) в репозитории.
+- [Пример рефлексии](https://github.com/Glazkoff/carl/blob/main/examples/evaluation/reflection_example.py) в репозитории.

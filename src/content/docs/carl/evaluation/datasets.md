@@ -71,13 +71,35 @@ print(report.format_cost_trend(pricing=...)) # per-run cost with regression flag
 In a Jupyter cell, just type `report` — `_repr_markdown_` renders a banner +
 tables + diagrams.
 
-## EvalSuite — golden-output regression
+Also available: `format_step_metric_heatmap()` (cases × steps grid of
+step-level metric scores).
 
-For docs/examples regression, `EvalSuite` is a lightweight golden-output harness:
-record expected outputs once, then diff future runs (`EvalSuiteReport` /
-`EvalSuiteDiff`).
+`DatasetEvaluator` takes one metric. Each case gets a fresh context from
+`context_factory`, but the client inside can be shared: the executor does not
+close a client it does not own, so one `OpenAICompatibleClient` can serve the
+whole evaluation.
+
+## EvalSuite — several metrics against `expected`
+
+`EvalSuite` scores a chain on a dataset with several metrics at once,
+typically the built-in match metrics that compare against `DataCase.expected`.
+It reports per-metric pass rates and score distributions, and two reports can
+be diffed to catch regressions.
+
+```python
+from mmar_carl import EvalSuite, ExactMatchMetric, ContainsMetric
+
+suite = EvalSuite(chain, dataset)
+suite.add_metric(ExactMatchMetric())                    # pass_threshold=1.0
+suite.add_metric(ContainsMetric(), pass_threshold=1.0)
+report = await suite.run(lambda case: ReasoningContext(outer_context=case.input, api=client))
+
+diff = previous_report.diff(report)   # EvalSuiteDiff: score deltas, regressed / improved cases
+```
+
+Cases run sequentially here too.
 
 ## See also
 
 - [Metrics](/carl/evaluation/metrics/)
-- [Dataset evaluator example](https://github.com/Glazkoff/carl-experiments/blob/main/examples/evaluation/dataset_evaluator_example.py) in the repo.
+- [Dataset evaluator example](https://github.com/Glazkoff/carl/blob/main/examples/evaluation/dataset_evaluator_example.py) in the repo.

@@ -1,71 +1,102 @@
 ---
 title: Configuration
-description: How MAESTRO reads configuration — the four layers, and TOML ↔ env mapping.
+description: Where Maestro reads configuration — the desktop app settings, the four CareConfig layers, TOML and env mapping, and variables outside CareConfig.
 sidebar:
   order: 1
 ---
 
-MAESTRO reads configuration from four layers, in increasing precedence:
+## In the desktop app
 
-1. Defaults baked into `care.config.CareConfig`.
-2. `~/.config/care/config.toml` (user-global).
-3. `./care.toml` (per-project overrides).
-4. `CARE_*` environment variables (highest).
+Two sources matter:
 
-The fastest way to a working config is [`care init`](/care/cli/setup/), which writes
-a starter `.env`; [`care doctor`](/care/cli/setup/) checks it.
+1. **Settings → Chat model** (harness settings): provider, key and models.
+   In the app this model does all of Maestro's model work: generation,
+   execution, repair, data generation, workshop drafts, idea translation.
+2. **Settings → MAESTRO**: memory, IdeaL, web research, evolution platform,
+   app lock. It writes the `CareConfig` fields below and Keychain references.
+   Every save needs a full restart. See [Settings](/care/app/settings/).
 
-## TOML ↔ env mapping
+The `CARE_MAGE__*` provider, URL, model and key are **not** used by the
+desktop app for generation; they configure the CLI, the TUI and the legacy
+workbench. `CARE_MAGE__MODE` and the research switches do apply in the app.
 
-Nested fields use **double underscores** in env-var form, mirroring how the TOML
-sections nest. For example:
+## The four layers
+
+`CareConfig` (in `care/config.py`) is read from four layers, in increasing
+precedence:
+
+1. defaults in `care.config.CareConfig`;
+2. `~/.config/care/config.toml` (user-global);
+3. `./care.toml` in the working directory (per project);
+4. `CARE_*` environment variables (highest). At start, the CLI also loads
+   `./.env`; variables already set in the shell win over it.
+
+[`maestro init`](/care/cli/setup/) writes a starter `.env` for the CLI and the
+TUI; [`maestro doctor`](/care/cli/setup/) shows which variables are set, the
+resolved config path, installed extras and live probes of Memory, MAGE and the
+platform.
+
+## TOML and env mapping
+
+Nested fields use a double underscore in env form:
 
 ```toml
-[mage]
-model = "qwen/qwen3-coder"
+[memory]
+base_url = "http://localhost:8002"
+retrieval_backend = "ideal"
+ideal_namespace = "my-team"
 ```
 
 is the same as:
 
 ```bash
-CARE_MAGE__MODEL="qwen/qwen3-coder"
+CARE_MEMORY__BASE_URL=http://localhost:8002
+CARE_MEMORY__RETRIEVAL_BACKEND=ideal
+CARE_MEMORY__IDEAL_NAMESPACE=my-team
 ```
-
-and `[chat] default_mode = "production"` is `CARE_CHAT__DEFAULT_MODE=production`.
-
-:::note[Lenient `default_mode` parsing]
-`chat.default_mode` is parsed leniently: a known legacy alias (`ad_hoc` / `ad-hoc` /
-`adhoc` / `prod`) is normalised to its canonical id, and an unrecognised value is
-dropped so the field's default (`interactive`) applies — either way a warning is
-logged and the rest of the config still loads. A malformed mode never crashes
-startup. Other fields are still validated strictly.
-:::
 
 ## Sections
 
-`CareConfig` nests twelve sections, each with the env prefix `CARE_<SECTION>__`:
+`CareConfig` has twelve sections:
 
 | Section | Env prefix | Purpose |
 | --- | --- | --- |
-| `mage` | `CARE_MAGE__*` | MAGE generator (provider, API key, model, mode). |
-| `memory` | `CARE_MEMORY__*` | GigaEvo Memory connection. |
-| `platform` | `CARE_PLATFORM__*` | GigaEvo Platform connection (evolution). |
-| `hub` | `CARE_HUB__*` | Agent hub for `/deploy`. |
-| `upload` | `CARE_UPLOAD__*` | Artifact-upload endpoint (`/upload`). |
-| `sandbox` | `CARE_SANDBOX__*` | AgentSkill sandbox backend + limits. |
-| `tools` | `CARE_TOOLS__*` | `@carl_tool` registry + bundled builtins + synthesis. |
-| `telemetry` | `CARE_TELEMETRY__*` | Opt-in event-stream sink (Langfuse, …). |
-| `defaults` | `CARE_DEFAULTS__*` | UI defaults (language, history size). |
-| `chat` | `CARE_CHAT__*` | Chat surface (default mode, ad-hoc history, retries). |
-| `context` | `CARE_CONTEXT__*` | User-context injection (CARE.md + LTM digest). |
-| `artifacts` | `CARE_ARTIFACTS__*` | Saved-artifact store directory. |
+| `mage` | `CARE_MAGE__*` | Chain generator: mode, research, limits, topology. Provider/URL/model/key for CLI, TUI, legacy workbench. |
+| `memory` | `CARE_MEMORY__*` | GigaEvo Memory URL and key, read-only mode, chain memory backend, IdeaL namespace. |
+| `platform` | `CARE_PLATFORM__*` | Evolution platform URLs and key, mutation and validation models. |
+| `hub` | `CARE_HUB__*` | Agent hub for `/deploy` and `maestro deploy`. |
+| `upload` | `CARE_UPLOAD__*` | External chain-upload target (`/upload`). |
+| `sandbox` | `CARE_SANDBOX__*` | Skill sandbox: backend (`docker` default, `e2b`, `firejail`, `local`), limits, network policy. |
+| `tools` | `CARE_TOOLS__*` | `@carl_tool` directory, bundled builtins, web search, code execution, tool synthesis, STARM solvers. |
+| `telemetry` | `CARE_TELEMETRY__*` | Opt-in event sink (Langfuse). |
+| `defaults` | `CARE_DEFAULTS__*` | Answer language, TUI language, DAG display, history size, reduced motion. |
+| `chat` | `CARE_CHAT__*` | TUI modes and stage policies. |
+| `context` | `CARE_CONTEXT__*` | `CARE.md` standing context and long-term memory. |
+| `artifacts` | `CARE_ARTIFACTS__*` | Where files produced by chains are copied. |
 
-See [section reference](/care/configuration/sections/) for the notable keys in each,
-or [`.env.example`](https://github.com/Glazkoff/care/blob/main/.env.example) for the
-complete surface.
+Keys per section: [Section reference](/care/configuration/sections/). The
+annotated list of variables is `.env.example` in the Maestro repository.
 
-## First boot
+## Variables outside `CareConfig`
 
-Without `~/.config/care/config.toml` on disk, the first launch lands on the
-**Settings** screen so you can configure Memory / Platform URLs + MAGE credentials.
-Returning users go straight to the chat surface.
+| Variable | Meaning |
+| --- | --- |
+| `CARE_BENCHMARK_FACTORY_DB` | SQLite file of the evolution data generator. Default `~/.local/state/care/benchmark-factory/factory.sqlite3`. |
+| `MAESTRO_APP_LOCK_MODE` | Force the app lock for one launch: `disabled` or `touch-id`. |
+| `CARE_LOG_FILE`, `CARE_LOG_LEVEL` | Write a log file; level (default `INFO`). |
+| `CARE_CHAT__LOOP_MAX_ITER` | TUI Interactive loop cap (default 5). |
+| `CARE_CHAT__GENERATION_MAX_ATTEMPTS` | TUI generation retries (default 3). |
+| `CARE_CHAT__AD_HOC_HISTORY_TURNS`, `CARE_CHAT__AD_HOC_HISTORY_CHARS` | TUI follow-up context: turns (default 6) and characters per turn (default 1200). |
+
+Developer-only variables for the desktop app select the harness runtime and
+its data directory; see `maestro app --help`. The app sets further internal
+`MAESTRO_HARNESS_*` variables for its tool process; do not set them by hand.
+
+## Secrets
+
+- In the desktop app, keys are entered in native dialogs and stored in the
+  macOS Keychain. Config files hold only `keystore://` references.
+- `maestro init` writes the generator key **in plain text** to `.env`.
+- `maestro migrate-secrets` moves literal `*_api_key` values from
+  `~/.config/care/config.toml` into the OS keystore and rewrites the file
+  with `keystore://` references.

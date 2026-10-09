@@ -80,12 +80,22 @@ chain = ReasoningChain(steps=steps, replan_policy=policy)
 | --- | --- | --- |
 | `max_replans_per_chain` | `3` | Всего действий RE-PLAN за запуск. |
 | `max_replans_per_step` | `2` | Перепланирований, связанных с одним шагом. |
-| `max_visits_per_checkpoint` | — | Ограничение повторных входов в контрольную точку. |
-| `fail_on_budget_exhaustion` | — | Завершить неудачей (вместо продолжения) при исчерпании бюджета. |
+| `max_visits_per_checkpoint` | `3` | Ограничение повторных входов в контрольную точку. |
+| `max_same_rollback_target_repeats` | `2` | Ограничение повторных откатов к одной цели. |
+| `fail_on_budget_exhaustion` | `True` | Завершить неудачей (вместо продолжения) при исчерпании бюджета. |
+
+Поля `ReplanTriggerConfig`: `evaluate_after_step` (`True`),
+`evaluate_after_failure` (`True`), `checkpoint_only` (`False`),
+`step_numbers`, `step_types`.
+
+:::note
+При [`fail_fast=True`](/ru/carl/chains/run-controls/) окончательный сбой шага
+останавливает прогон раньше, чем RE-PLAN успеет повторить шаг или откатиться.
+:::
 
 ## Пример
 
-[Детерминированный пример RE-PLAN](https://github.com/Glazkoff/carl-experiments/blob/main/examples/replan/replan_deterministic_example.py)
+[Детерминированный пример RE-PLAN](https://github.com/Glazkoff/carl/blob/main/examples/replan/replan_deterministic_example.py)
 из репозитория (mock-клиент, без API-ключа) запускает цепочку из 3 шагов для
 служебной записки. Шаг 2 на первой попытке выдаёт `NEEDS_REPLAN`; основанный на
 правилах чекер находит эту подстроку, повторяет шаг с обратной связью, и вторая
@@ -119,4 +129,4 @@ for event in result.replan_events:
 ## Смотрите также
 
 - [Чекеры и агрегация](/ru/carl/replan/checkers/)
-- [Примеры RE-PLAN](https://github.com/Glazkoff/carl-experiments/tree/main/examples/replan) в репозитории (детерминированный / LLM / голосование / контрольная точка / бюджет).
+- [Примеры RE-PLAN](https://github.com/Glazkoff/carl/tree/main/examples/replan) в репозитории (детерминированный / LLM / голосование / контрольная точка / бюджет).

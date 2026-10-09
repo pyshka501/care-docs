@@ -70,13 +70,35 @@ print(report.format_cost_trend(pricing=...)) # per-run cost with regression flag
 В ячейке Jupyter просто введите `report` — `_repr_markdown_` отрисует баннер +
 таблицы + диаграммы.
 
-## EvalSuite — регрессия золотого вывода
+Есть и `format_step_metric_heatmap()`: сетка кейсы × шаги с оценками метрик
+шагов.
 
-Для регрессии документации/примеров `EvalSuite` — лёгкий набор с фиксированными ответами:
-запишите ожидаемые выводы один раз, затем сравнивайте будущие запуски (`EvalSuiteReport` /
-`EvalSuiteDiff`).
+`DatasetEvaluator` принимает одну метрику. Каждый кейс получает свежий
+контекст из `context_factory`, но клиент внутри может быть общим:
+исполнитель не закрывает клиент, которым не владеет. Один
+`OpenAICompatibleClient` может обслуживать всю оценку.
+
+## EvalSuite — несколько метрик против `expected`
+
+`EvalSuite` оценивает цепочку на датасете сразу несколькими метриками.
+Обычно это встроенные метрики сравнения с `DataCase.expected`. Он считает
+долю прошедших и распределение оценок по каждой метрике. Два отчёта можно
+сравнить, чтобы поймать регрессии.
+
+```python
+from mmar_carl import EvalSuite, ExactMatchMetric, ContainsMetric
+
+suite = EvalSuite(chain, dataset)
+suite.add_metric(ExactMatchMetric())                    # pass_threshold=1.0
+suite.add_metric(ContainsMetric(), pass_threshold=1.0)
+report = await suite.run(lambda case: ReasoningContext(outer_context=case.input, api=client))
+
+diff = previous_report.diff(report)   # EvalSuiteDiff: изменения оценок, ухудшившиеся / улучшившиеся кейсы
+```
+
+Кейсы здесь тоже идут последовательно.
 
 ## Смотрите также
 
 - [Метрики](/ru/carl/evaluation/metrics/)
-- [Пример датасетного оценщика](https://github.com/Glazkoff/carl-experiments/blob/main/examples/evaluation/dataset_evaluator_example.py) в репозитории.
+- [Пример датасетного оценщика](https://github.com/Glazkoff/carl/blob/main/examples/evaluation/dataset_evaluator_example.py) в репозитории.

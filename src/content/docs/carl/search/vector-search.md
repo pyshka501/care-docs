@@ -26,7 +26,6 @@ from mmar_carl import ContextSearchConfig, ReasoningChain
 
 search_config = ContextSearchConfig(
     strategy="vector",
-    embedding_model="all-MiniLM-L6-v2",   # optional; a sensible default is used otherwise
     vector_config={
         "index_type": "flat",        # "flat" (default) or "ivf" for large datasets
         "similarity_threshold": 0.7, # minimum similarity score, 0–1 (default 0.7)
@@ -51,5 +50,12 @@ chain = ReasoningChain(steps=steps, search_config=search_config)
 | Matching | exact keywords | semantic similarity |
 | Speed | fastest | slower (embeds text) |
 | Best for | codes, IDs, exact terms | paraphrased / conceptual matches |
+
+:::caution[Embedding model is fixed]
+`ContextSearchConfig.embedding_model` and an `embedding_model` key in
+`vector_config` are accepted but ignored: the embedder is always
+`sentence-transformers/all-MiniLM-L6-v2` via `fastembed`. The model is
+downloaded on first use, so the first vector query needs network access.
+:::
 
 Mix both in one step with [per-query overrides](/carl/search/overview/#per-query-overrides).

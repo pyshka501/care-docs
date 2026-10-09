@@ -59,13 +59,13 @@ class WordCountMetric(MetricBase):
 ```
 
 :::note
-`WordCountMetric` и метрика LLM-судьи показаны в [примере метрик](https://github.com/Glazkoff/carl-experiments/blob/main/examples/evaluation/metrics_example.py)
+`WordCountMetric` и метрика LLM-судьи показаны в [примере метрик](https://github.com/Glazkoff/carl/blob/main/examples/evaluation/metrics_example.py)
 в репозитории — это пользовательские метрики, не импорты из библиотеки.
 :::
 
 ## Пример
 
-[Пример метрик](https://github.com/Glazkoff/carl-experiments/blob/main/examples/evaluation/metrics_example.py)
+[Пример метрик](https://github.com/Glazkoff/carl/blob/main/examples/evaluation/metrics_example.py)
 из репозитория работает с mock-клиентом LLM (без API-ключа) и определяет четыре
 пользовательские метрики — `WordCountMetric`, `SentenceLengthMetric`,
 `KeywordCoverageMetric` и `MockLLMJudgeMetric` (асинхронную заглушку с I/O-формой

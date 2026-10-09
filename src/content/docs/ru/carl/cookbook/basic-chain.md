@@ -5,7 +5,7 @@ sidebar:
   order: 3
 ---
 
-[`basic_chain_example.py`](https://github.com/Glazkoff/carl-experiments/blob/main/examples/orchestration/basic_chain_example.py)
+[`basic_chain_example.py`](https://github.com/Glazkoff/carl/blob/main/examples/orchestration/basic_chain_example.py)
 из репозитория строит 4-шаговую цепочку, анализирующую квартальный отчёт: извлечь метрики →
 (проанализировать достижения ‖ оценить риски) → синтезировать сводку. Шаги 2 и 3 выполняются
 параллельно (оба зависят только от шага 1); шаг 4 ждёт оба.
@@ -63,6 +63,10 @@ chain = ReasoningChain(steps=steps, max_workers=2, enable_progress=True)
 ```
 
 ## Запуск
+
+Скрипт из репозитория вызывает настоящую модель и требует `OPENAI_API_KEY`.
+Чтобы попробовать цепочку офлайн, передайте клиент-заглушку, как в
+[сквозном руководстве](/ru/carl/cookbook/end-to-end/#3-запуск).
 
 ```python
 client = OpenAICompatibleClient(OpenAIClientConfig(

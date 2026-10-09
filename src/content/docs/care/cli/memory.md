@@ -5,17 +5,17 @@ sidebar:
   order: 5
 ---
 
-These read and curate the GigaEvo Memory store — the terminal twins of the
-Library screen. The browsing verbs accept `--json` and most accept `--channel`
+These read and curate the Memory store, the same library the desktop app and the
+TUI's Library screen show. The browsing verbs accept `--json` and most accept `--channel`
 (default `latest`); the version, channel, and long-term-memory verbs below are
 documented with their own flags.
 
-## `care memory ls`
+## `maestro memory ls`
 
 List saved entities.
 
 ```bash
-care memory ls --entity-type chain --tag finance --q weather --favourites-only
+maestro memory ls --entity-type chain --tag finance --q weather --favourites-only
 ```
 
 | Flag | Default | Purpose |
@@ -28,7 +28,7 @@ care memory ls --entity-type chain --tag finance --q weather --favourites-only
 | `--q TEXT` | — | Case-insensitive substring on name/description. |
 | `--favourites-only` | off | Only favourited entities. |
 
-## `care memory show <entity_id>`
+## `maestro memory show <entity_id>`
 
 Print one entity's metadata + content.
 
@@ -38,16 +38,16 @@ Print one entity's metadata + content.
 | `--channel NAME` | `latest` | Version channel. |
 | `--content-only` | off | Print only the `content` body. |
 
-## `care memory history <chain_id>`
+## `maestro memory history <chain_id>`
 
 List recorded runs for a chain (`--limit`, `--channel`, `--namespace`).
 
-## `care search "<query>"`
+## `maestro search "<query>"`
 
 BM25 / vector / hybrid search across saved entities.
 
 ```bash
-care search "quarterly risk" --search-type hybrid --top-k 5
+maestro search "quarterly risk" --search-type hybrid --top-k 5
 ```
 
 | Flag | Default | Purpose |
@@ -56,7 +56,7 @@ care search "quarterly risk" --search-type hybrid --top-k 5
 | `--search-type bm25\|vector\|hybrid` | `bm25` | Search backend. |
 | `--top-k N` | `10` | Max hits. |
 
-## `care diff <left> <right>`
+## `maestro diff <left> <right>`
 
 Compare two saved chains side-by-side.
 
@@ -65,7 +65,7 @@ Compare two saved chains side-by-side.
 | `--channel NAME` | Channel to read both from (default `latest`). |
 | `--left-label` / `--right-label` | Display labels (default: entity_id). |
 
-## `care lineage <chain_id>`
+## `maestro lineage <chain_id>`
 
 Walk a chain's ancestry DAG.
 
@@ -75,13 +75,13 @@ Walk a chain's ancestry DAG.
 | `--version-id ID` | — | Walk from a specific historical version. |
 | `--max-depth N` | `10` | BFS-depth cap (1–100). |
 
-## `care favourite <entity_id>`
+## `maestro favourite <entity_id>`
 
 Star / unstar a library entity.
 
 ```bash
-care favourite my-chain          # star
-care favourite my-chain --off    # unstar
+maestro favourite my-chain          # star
+maestro favourite my-chain --off    # unstar
 ```
 
 | Flag | Purpose |
@@ -98,14 +98,14 @@ pointers into that history: `latest` always tracks the newest write, while
 `stable` is the curated pointer you advance deliberately. The verbs below let
 you inspect versions and move channels around without ever destroying data.
 
-### `care versions <entity_id>`
+### `maestro versions <entity_id>`
 
 List an entity's version history, annotated with which channels point at each
 version (the terminal twin of the TUI `/versions`).
 
 ```bash
-care versions my-chain
-care versions my-agent --entity-type agent --limit 50 --json
+maestro versions my-chain
+maestro versions my-agent --entity-type agent --limit 50 --json
 ```
 
 | Flag | Default | Purpose |
@@ -114,20 +114,20 @@ care versions my-agent --entity-type agent --limit 50 --json
 | `--limit N` | `20` | Max versions to list. |
 | `--json` | off | Emit the version list as JSON. |
 
-### `care rollback <entity_id> --to <version-id>`
+### `maestro rollback <entity_id> --to <version-id>`
 
 Repoint a channel at a specific version. This is a **non-destructive pin**, not
 a revert: it moves a channel pointer without deleting any history. The TUI twin
 is `/rollback`.
 
 ```bash
-care rollback my-chain --to 7f3a9c1b2d4e            # pin stable
-care rollback my-chain --to 7f3a9c1b2d4e --channel latest
+maestro rollback my-chain --to 7f3a9c1b2d4e            # pin stable
+maestro rollback my-chain --to 7f3a9c1b2d4e --channel latest
 ```
 
 | Flag | Default | Purpose |
 | --- | --- | --- |
-| `--to <version-id>` | — (**required**) | Version to pin the channel to (see `care versions`). |
+| `--to <version-id>` | — (**required**) | Version to pin the channel to (see `maestro versions`). |
 | `--channel C` | `stable` | Channel to repoint. |
 | `--entity-type …` | `chain` | Entity type. |
 
@@ -136,7 +136,7 @@ care rollback my-chain --to 7f3a9c1b2d4e --channel latest
 status line — they do not support `--json`.
 :::
 
-### `care promote <entity_id>`
+### `maestro promote <entity_id>`
 
 Copy one channel pointer to another — by default `latest → stable`. This is the
 direct channel move. The TUI `/promote` layers an interactive baseline/eval gate
@@ -144,8 +144,8 @@ on top (run the candidate against a baseline before advancing `stable`); the CLI
 move is headless and ungated, so promote deliberately.
 
 ```bash
-care promote my-chain                          # latest -> stable
-care promote my-chain --from latest --to canary
+maestro promote my-chain                          # latest -> stable
+maestro promote my-chain --from latest --to canary
 ```
 
 | Flag | Default | Purpose |
@@ -154,15 +154,15 @@ care promote my-chain --from latest --to canary
 | `--to C` | `stable` | Target channel. |
 | `--entity-type …` | `chain` | Entity type. |
 
-### `care forget <entity_id>`
+### `maestro forget <entity_id>`
 
 Soft-delete a saved entity. The deletion is **recoverable via Memory trash**.
 Without `--force` the command only previews what would be deleted; pass `--force`
 to actually delete. The TUI twin is `/forget`.
 
 ```bash
-care forget my-chain               # preview only — nothing is deleted
-care forget my-chain --force       # soft-delete (recoverable)
+maestro forget my-chain               # preview only — nothing is deleted
+maestro forget my-chain --force       # soft-delete (recoverable)
 ```
 
 | Flag | Default | Purpose |
@@ -177,13 +177,13 @@ care forget my-chain --force       # soft-delete (recoverable)
 Long-term memory (LTM) is a per-session notes store that persists facts and
 preferences across runs, separate from the entity library above.
 
-### `care remember <note>`
+### `maestro remember <note>`
 
 Save an explicit note to long-term memory. The note is stored **verbatim** — the
 TUI's LLM-merge deduplication is TUI-only. The TUI twin is `/remember`.
 
 ```bash
-care remember "prefer hybrid search for finance chains"
+maestro remember "prefer hybrid search for finance chains"
 ```
 
 LTM must be enabled, or the command exits `2`:
@@ -197,14 +197,14 @@ export CARE_CONTEXT__LTM_ENABLED=true   # and install the `carl` extra
 installed. With LTM disabled it exits `2` and tells you how to turn it on.
 :::
 
-### `care notes`
+### `maestro notes`
 
 Show the stored long-term-memory notes digest (the terminal twin of the TUI's
 `/memory` verb). When LTM is disabled it prints a hint instead of failing.
 
 ```bash
-care notes
-care notes --max-chars 500
+maestro notes
+maestro notes --max-chars 500
 ```
 
 | Flag | Default | Purpose |
@@ -213,6 +213,6 @@ care notes --max-chars 500
 
 ## See also
 
-- [`care evolve`](/care/cli/capabilities/) — produce new versions to promote.
-- [`care run`](/care/cli/generate-run/) — record runs that populate `memory history`.
-- [The MAESTRO CARE TUI](/care/tui/overview/) — the `/versions`, `/rollback`, `/promote`, `/forget`, `/remember`, and `/memory` twins.
+- [`maestro evolve`](/care/cli/capabilities/) — produce new versions to promote.
+- [`maestro run`](/care/cli/generate-run/) — record runs that populate `memory history`.
+- [The TUI](/care/tui/overview/) — the `/versions`, `/rollback`, `/promote`, `/forget`, `/remember`, and `/memory` twins.

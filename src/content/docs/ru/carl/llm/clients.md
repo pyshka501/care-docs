@@ -67,11 +67,15 @@ client = AnthropicClient(AnthropicClientConfig(
 - **`get_response_with_tools(...)`** — нативный tool-calling Anthropic. Преобразуйте
   схемы инструментов в стиле OpenAI через `openai_tools_to_anthropic(tools)`.
 
-Отсутствие SDK или ключа вызывает `AnthropicClientError`.
+Отсутствие SDK или ключа вызывает `AnthropicClientError`. У
+`AnthropicClientConfig` нет `retry_policy`, его методы с повторами используют
+простые повторы.
 
 ## Интерфейс клиента
 
-`LLMClientBase` определяет методы, используемые исполнителями:
+`LLMClientBase` определяет методы, которые вызывают исполнители. Абстрактные
+только `get_response` и `get_response_with_retries`, остальные реализованы
+поверх них.
 
 | Метод | Назначение |
 | --- | --- |
@@ -81,6 +85,7 @@ client = AnthropicClient(AnthropicClientConfig(
 | `get_response_with_usage(prompt)` | Возвращает текст + использование токенов. |
 | `get_response_with_messages(messages)` | Многоходовой (см. `ChatMessage`). |
 | `get_response_with_tools(...)` | Tool-calling. |
+| `get_response_with_tools_and_usage(...)` | Tool-calling плюс расход токенов: `(content, tool_calls, usage)`. Базовая реализация возвращает пустой usage, `OpenAICompatibleClient` и `AnthropicClient` возвращают настоящие счётчики. Шаги agent используют его для бюджета токенов. |
 | `stream_response(prompt)` | Стриминг токенов. |
 
 Плюс интроспекция: `model_name`, `temperature`, `max_tokens`, `supports_streaming`.
@@ -88,16 +93,38 @@ client = AnthropicClient(AnthropicClientConfig(
 `ChatMessage(role, content)` (`role: "system" | "user" | "assistant"`) моделирует
 многоходовую историю.
 
-## Автоопределение
+## Свои клиенты и заглушки
 
-Вам не обязательно создавать клиент вручную — передайте любой поддерживаемый API-объект
-в `ReasoningContext(api=...)` и CARL выберет правильный клиент:
+`ReasoningContext(api=...)` берёт объект как есть, никакого автоопределения
+или обёрток нет. Исполнители вызывают на нём методы `LLMClientBase`, поэтому
+передавайте подкласс `LLMClientBase`. Для тестов и офлайн-примеров заглушке
+нужны только два абстрактных метода:
 
-- `OpenAICompatibleClient` / `AnthropicClient`
-- `LLMHub` (из `mmar-llm`), `LLMHubAPI` (из `mmar-mapi`)
-- Mock-объекты, реализующие `__getitem__` или `get_response` (для тестов)
+```python
+from mmar_carl import LLMClientBase
+
+class StubLLM(LLMClientBase):
+    async def get_response(self, prompt: str) -> str:
+        return "ok"
+    async def get_response_with_retries(self, prompt: str, retries: int = 3) -> str:
+        return await self.get_response(prompt)
+```
+
+Переопределите `model_name`, если хотите видеть модель в трассе.
+
+## Кто закрывает клиент
+
+Клиентом из `api` владеет вызывающий код. CARL выполняет каждый шаг на копии
+контекста. Когда шаг заканчивается, копия вызывает
+`ReasoningContext.close_derived_clients()`. Он закрывает только клиенты,
+которые контекст создал для переопределений `llm_config` в шагах. Общий
+клиент `api` остаётся открытым, поэтому несколько цепочек могут одновременно
+работать с одним `OpenAICompatibleClient` (например, при оценке на датасете).
+
+Закройте его сами, когда закончите: `await context.close()` закрывает `api`
+(если это `OpenAICompatibleClient`) и производные клиенты.
 
 ## Смотрите также
 
 - [Повторные попытки](/ru/carl/llm/retries/) · [Запись и воспроизведение](/ru/carl/llm/record-replay/)
-- [Переопределение модели на уровне шага](/ru/carl/steps/llm/#конфигурация-llm-на-уровне-шага)
+- [Переопределение модели на уровне шага](/ru/carl/steps/llm/#настройки-llm-для-шага)

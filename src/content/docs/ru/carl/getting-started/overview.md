@@ -1,46 +1,64 @@
 ---
 title: Что такое CARL?
-description: Формат, в котором описываются reasoning-цепочки — типизированные шаги, зависимости и исполнение на DAG; mmar-carl — его эталонная библиотека.
+description: Формат, в котором пишутся цепочки рассуждений (типизированные шаги, зависимости, исполнение по DAG), и его эталонная библиотека mmar-carl 0.5.0.
 sidebar:
   order: 1
 ---
 
-**CARL** — это формат, в котором описываются reasoning-цепочки. Цепочка — это
-список типизированных **шагов** с зависимостями, контекстными запросами под
-каждый шаг и настройками исполнения. Эталонная реализация формата — Python-
-библиотека `mmar-carl` (Collaborative Agent Reasoning Library): она читает
-цепочку, строит направленный ациклический граф (DAG), запускает параллельно всё,
-что можно, и автоматически извлекает релевантный контекст из входных данных под
-каждый шаг.
+**CARL** — формат, в котором пишутся цепочки рассуждений. Цепочка — это список
+типизированных **шагов** с зависимостями, запросами к контексту и настройками
+исполнения. Эталонная реализация — Python-библиотека `mmar-carl` (Collaborative
+Agent Reasoning Library). Она читает цепочку, строит направленный ациклический
+граф (DAG), запускает параллельно всё, что можно, и для каждого шага подбирает
+нужный кусок входного контекста.
 
-В MAESTRO цепочки в этом формате создаёт MAGE, а исполняет их рантайм.
-Цепочки CARL можно также описывать и запускать напрямую из Python.
+В Maestro цепочки генерируются в этом формате и исполняются этой библиотекой.
+Писать и запускать цепочки CARL можно и напрямую из Python.
 
-## Ключевые возможности
+## Что она умеет
 
-- **Исполнение на DAG** — шаги параллелятся автоматически по зависимостям.
-- **RAG-извлечение контекста** — substring- или FAISS-векторный поиск подбирает контекст под каждый шаг.
-- **Много типов шагов** — LLM, Tool, MCP, Memory, Transform, Conditional, Structured Output, AgentSkill и мульти-агентная оркестрация (handoff / supervisor / debate / parallel sampling / human-in-the-loop).
-- **Async + streaming** — `execute_async` и `stream_async` с пошаговыми колбэками.
-- **Эволюция и оценка** — генетический поиск по цепочкам, метрики, оценка на датасетах, рефлексия.
-- **Наблюдаемость** — трейсы исполнения, Gantt-диаграммы, разбивка по токенам/стоимости, Langfuse.
-- **OpenAI-совместимость** — OpenRouter, Azure, Ollama, vLLM, LM Studio; плюс нативный Anthropic-клиент.
+- **Исполнение по DAG**: шаги идут параллельно, когда это позволяют зависимости.
+- **25 типов шагов**: LLM и структурированный вывод, инструменты и MCP, память и
+  преобразования, условия и циклы, ограниченные агенты, делегирование в Claude
+  Code и Codex, код и команды в строгой песочнице, ожидание и fan-out, а также
+  мультиагентная оркестрация (handoff, supervisor, debate, parallel sampling,
+  human input). См. [список шагов](/ru/carl/steps/overview/).
+- **Цепочки как инструменты**: проверенную цепочку можно встроить как
+  типизированный изолированный инструмент.
+- **Полномочия у хоста**: сериализованная цепочка только запрашивает.
+  Инструменты, политики команд и кода, сетевые ограничения и обработчик ввода
+  от человека хост передаёт во время запуска.
+- **Управление запуском**: fail-fast, пауза с подтверждением, возобновление,
+  отмена, таймауты.
+- **Async и стриминг**: `execute_async`, `stream_async`, колбэки по шагам.
+- **Эволюция и оценка**: мутации и кроссовер цепочек, метрики, оценка на
+  датасетах, рефлексия.
+- **Наблюдаемость**: трассы исполнения, токены и стоимость, Langfuse.
+- **Клиенты**: любой OpenAI-совместимый API (OpenRouter, Azure, Ollama, vLLM,
+  LM Studio) и нативный клиент Anthropic.
 
-## Дополнительные экстры установки
+## Extras для установки
 
 ```bash
-pip install mmar-carl                 # ядро (substring-поиск)
-pip install 'mmar-carl[vector-search]' # FAISS семантический поиск
-pip install 'mmar-carl[openai]'        # OpenAI-совместимые провайдеры
-pip install 'mmar-carl[mcp]'           # Model Context Protocol
-pip install 'mmar-carl[skills]'        # AgentSkills (+ pdf + pptx)
-pip install 'mmar-carl[viz]'           # вывод PNG-диаграмм
-pip install 'mmar-carl[all]'           # всё сразу
+pip install 'mmar-carl==0.5.0'           # core
+pip install 'mmar-carl[vector-search]'   # FAISS semantic context search
+pip install 'mmar-carl[mcp]'             # Model Context Protocol steps
+pip install 'mmar-carl[langfuse]'        # Langfuse tracing
+pip install 'mmar-carl[pandas]'          # pandas helpers
+pip install 'mmar-carl[viz]'             # PNG charts (matplotlib)
+pip install 'mmar-carl[e2b]'             # E2B sandbox runtime
+pip install 'mmar-carl[codex]'           # Codex step (openai-codex SDK)
+pip install 'mmar-carl[skills]'          # AgentSkills catalog + pdf + pptx
+pip install 'mmar-carl[all]'             # everything above
 ```
 
-Требуется Python 3.12+.
+OpenAI SDK и `jsonschema` входят в базовые зависимости, extra `openai` нет.
+Ни одним extra не покрыты: `AnthropicClient` требует `pip install anthropic`,
+а шагу Claude Code нужен CLI `claude` в `PATH`.
 
-## Дальше
+Нужен Python 3.12+.
 
-- [Быстрый старт](/ru/carl/getting-started/quick-start/) — первая цепочка.
-- [Базовые концепции](/ru/carl/concepts/what-is-carl/) — ментальная модель.
+## Что дальше
+
+- [Быстрый старт](/ru/carl/getting-started/quick-start/): первая цепочка, работает без сети.
+- [Основные понятия](/ru/carl/concepts/what-is-carl/): как всё устроено.

@@ -33,8 +33,9 @@ references with [`$memory.namespace.key`](/carl/chains/dynamic-references/).
 
 :::caution
 Under [parallel execution](/carl/async/overview/) each step gets a copy-on-write
-view of memory — writes are visible only to **subsequent** batches, not parallel
-siblings. See [copy-on-write](/carl/memory/cow/).
+view of memory. Writes are visible only to **later** batches, not to parallel
+siblings. When siblings write the same key, the step declared later wins. See
+[copy-on-write](/carl/memory/cow/).
 :::
 
 ## History management

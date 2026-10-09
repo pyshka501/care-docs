@@ -1,28 +1,81 @@
 ---
 title: Conditional-шаг
-description: Переход к шагу на основе условного выражения.
+description: Направить выполнение в одну ветку по условию.
 sidebar:
   order: 6
 ---
 
-`ConditionalStepDescription` вычисляет одно или несколько условий и направляет выполнение
-к целевому шагу. Запускается шаг победившей ветви; нижестоящие шаги проигравших ветвей
-пропускаются (настоящая маршрутизация).
+`ConditionalStepDescription` по порядку проверяет свои ветки на одном значении и
+направляет выполнение в первую подходящую. Выбранный шаг выполняется, остальные
+ветки пропускаются. Вызова LLM нет.
 
 ## ConditionalStepConfig
 
 | Поле | Тип | По умолчанию | Назначение |
 | --- | --- | --- | --- |
-| `branches` | `list[ConditionalBranch]` | — (обязательное) | Упорядоченные ветви; побеждает первая, условие которой истинно. |
-| `default_step` | `int \| None` | `None` | Шаг для запуска, если ни одна ветвь не совпала. |
-| `condition_context_key` | `str` | `"$history[-1]"` | Значение, против которого вычисляются условия. |
+| `branches` | `list[ConditionalBranch]` | (обязательное) | Упорядоченные ветки. Побеждает первая с истинным условием. |
+| `default_step` | `int \| None` | `None` | Шаг, который запускается, если ни одна ветка не подошла. |
+| `condition_context_key` | `str` | `"$history[-1]"` | [Ссылка](/ru/carl/chains/dynamic-references/) на значение, которое проверяют условия. Неразрешённая ссылка превращается в `""`. |
 
-Каждый `ConditionalBranch` имеет:
+У каждой `ConditionalBranch` есть:
 
 | Поле | Тип | Назначение |
 | --- | --- | --- |
-| `condition` | `str` | Выражение, вычисляемое против контекста (использует `simpleeval`). |
-| `next_step` | `int` | Номер шага для запуска, если условие истинно. |
+| `condition` | `str` | Шаблон или выражение `simpleeval` (см. ниже). |
+| `next_step` | `int` | Номер шага, который запустится, если условие истинно. |
+
+## Условия
+
+Условие видит **только разрешённое значение**, а не синтаксис ссылки. Выберите
+значение через `condition_context_key`, затем проверяйте его.
+
+Встроенные шаблоны (сравниваются со `str(value)`):
+
+| Шаблон | Истинно, когда значение… |
+| --- | --- |
+| `contains:X` | содержит подстроку `X` (с учётом регистра). |
+| `equals:X` | точно равно `X` (с учётом регистра). |
+| `startswith:X` / `endswith:X` | начинается / заканчивается на `X`. |
+| `matches:REGEX` | соответствует регулярному выражению (`re.search`). |
+| `empty` / `nonempty` | пустое или состоит из пробелов / не пустое. |
+
+Всё остальное считается выражением `simpleeval`, где значение привязано к `value`
+(и `v`). Доступные функции: `len`, `str`, `int`, `float`, `abs`, `min`, `max`,
+`sum`, `bool`. Примеры: `len(value) > 5`, `int(value) >= 70`,
+`'error' in value or 'fail' in value`.
+
+:::caution
+Выражение, которое бросает исключение, молча считается **ложным**. Условие вроде
+`$history[-1] == 'yes'` не даёт ошибки, оно просто никогда не срабатывает: ссылки
+`$...` внутри выражения недоступны. Учтите и то, что `$history[-1]` (ключ по
+умолчанию) это полная запись истории, `Step N. Title` плюс `Result: ...`. Поэтому
+`equals:` на ней почти никогда не срабатывает. Чтобы проверить значение
+результата шага N, используйте `$metadata.step_N`.
+:::
+
+## Правила маршрутизации
+
+- Шаги веток должны объявлять зависимость от conditional-шага
+  (`dependencies=[<conditional number>]`). Иначе они могут запуститься раньше,
+  чем будет принято решение.
+- После решения каждый ещё не выполненный шаг, который не является выбранным и не
+  зависит от него (прямо или транзитивно), записывается как пропущенный
+  (`skipped=True`, `success=True`). Шаг слияния, который зависит от выбранной
+  ветки, всё равно выполняется.
+- Если ни одна ветка не подошла и `default_step` нет, пропускаются все шаги,
+  которые напрямую зависят от conditional-шага.
+- `result_data` содержит `next_step` и `matched_condition` (сработавшее условие
+  или `"(default)"`).
+
+:::caution[Известная проблема: пропускаются и посторонние ожидающие шаги]
+Правило пропуска не ограничено ветками самого conditional-шага. Шаг на
+независимом пути, который ещё не выполнился к моменту решения (например, шаг,
+зависящий от соседа conditional-шага), тоже пропускается и уже не запустится.
+Шаг, выполненный в одном батче с conditional-шагом, может к тому же появиться в
+`step_results` дважды: один раз как выполненный и один раз как пропущенный. Пока
+это не исправлено, завершайте независимую работу до conditional-шага (сделайте
+conditional-шаг зависимым от неё) или сделайте её зависимой от всех целей веток.
+:::
 
 ## Пример
 
@@ -34,40 +87,21 @@ ConditionalStepDescription(
     title="Route on classification",
     dependencies=[1],
     config=ConditionalStepConfig(
+        condition_context_key="$metadata.step_1",
         branches=[
-            ConditionalBranch(condition="$history[-1] == 'yes'", next_step=3),
+            ConditionalBranch(condition="equals:yes", next_step=3),
         ],
         default_step=4,
     ),
 )
 ```
 
-Выражения условий могут использовать [динамические ссылки](/ru/carl/chains/dynamic-references/)
-(`$history[-1]`, `$memory.ns.key`, …) для проверки предыдущего вывода.
-
-## Шаблоны условий
-
-Помимо обычных выражений `simpleeval`, условия ветвей принимают набор встроенных
-сокращённых шаблонов (сопоставляются с разрешённым значением `condition_context_key`):
-
-| Шаблон | Совпадает, когда значение… |
-| --- | --- |
-| `contains:X` | содержит подстроку `X`. |
-| `equals:X` | в точности равно `X` (с учётом регистра). |
-| `startswith:X` / `endswith:X` | начинается / заканчивается на `X`. |
-| `matches:REGEX` | соответствует регулярному выражению. |
-| `empty` / `nonempty` | пусто / непусто (с учётом пробельных символов). |
-
-Всё остальное вычисляется как выражение `simpleeval`, где `value` привязано к
-разрешённому входу — например, `len(value) > 5`, `int(value) >= 70` или
-`'error' in value or 'fail' in value`.
-
-## Пример
-
-[Пример условий](https://github.com/Glazkoff/carl-experiments/blob/main/examples/orchestration/conditions_example.py)
-из репозитория (без API-ключа) строит маршрутизатор тональности с помощью
-`ChainBuilder`: инструмент классифицирует текст, затем conditional-шаг направляет
-выполнение к одному из трёх обработчиков по шаблонам `contains:`.
+[Пример условий](https://github.com/Glazkoff/carl/blob/main/examples/orchestration/conditions_example.py)
+в репозитории (без API-ключа) собирает маршрутизатор по тональности через
+`ChainBuilder`. Инструмент классифицирует текст, затем conditional-шаг направляет
+его в один из трёх обработчиков по шаблонам `contains:`. В фрагменте ниже к
+обработчикам добавлено `dependencies=[2]`. В файле примера этого нет, поэтому там
+все три обработчика выполняются в первом батче, до решения о маршруте.
 
 ```python
 chain = (
@@ -80,18 +114,17 @@ chain = (
         branches=[("contains:positive", 3), ("contains:negative", 4), ("contains:neutral", 5)],
         default_step=5, dependencies=[1],
     )
-    .add_tool_step(number=3, title="Handle Positive", tool_name="handle_positive", input_mapping={})
-    .add_tool_step(number=4, title="Handle Negative", tool_name="handle_negative", input_mapping={})
-    .add_tool_step(number=5, title="Handle Neutral", tool_name="handle_neutral", input_mapping={})
+    .add_tool_step(number=3, title="Handle Positive", tool_name="handle_positive",
+                   input_mapping={}, dependencies=[2])
+    .add_tool_step(number=4, title="Handle Negative", tool_name="handle_negative",
+                   input_mapping={}, dependencies=[2])
+    .add_tool_step(number=5, title="Handle Neutral", tool_name="handle_neutral",
+                   input_mapping={}, dependencies=[2])
     .build()
 )
 ```
 
-В `result_data` conditional-шага записываются `matched_condition` (условие
-победившей ветви или `"(default)"`) и `next_step` (шаг, к которому он направил
-выполнение).
+## См. также
 
-## Смотрите также
-
-- [Циклы](/ru/carl/steps/loops/) — повторный запуск диапазона шагов до выполнения условия.
-- [Пример условной маршрутизации](https://github.com/Glazkoff/carl-experiments/blob/main/examples/orchestration/conditions_example.py) в репозитории.
+- [Циклы](/ru/carl/steps/loops/): повторять диапазон шагов, пока выполняется условие.
+- [Evaluation-шаг](/ru/carl/steps/advanced/): встроенная проверка качества со своей маршрутизацией `on_fail`.

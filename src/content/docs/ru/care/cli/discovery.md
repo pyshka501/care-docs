@@ -5,12 +5,12 @@ sidebar:
   order: 4
 ---
 
-## `care catalog`
+## `maestro catalog`
 
 Список установленных AgentSkills, MCP-серверов, инструментов и карточек возможностей.
 
 ```bash
-care catalog --json --kind skill
+maestro catalog --json --kind skill
 ```
 
 | Флаг | Назначение |
@@ -18,27 +18,27 @@ care catalog --json --kind skill
 | `--json` | Вывод в машинночитаемом формате. |
 | `--kind ...` | Фильтр по виду возможности. |
 
-## `care validate <chain.json>`
+## `maestro validate <chain.json>`
 
 Разобрать и провести preflight CARL-цепочки — поймать проблемы до запуска.
 
 ```bash
-care validate chain.json
+maestro validate chain.json
 ```
 
-## `care import <pattern>...`
+## `maestro import <pattern>...`
 
 Пакетная валидация JSON-файлов цепочек и импорт их в Memory. Принимает пути и
 маски (`**/*.json` для рекурсивного обхода). Это обратная операция к
-[`care export`](/ru/care/cli/export/).
+[`maestro export`](/ru/care/cli/export/).
 
 ```bash
-care import "chains/*.json"            # dry-run валидация (по умолчанию)
-care import "chains/*.json" --apply    # реальный импорт
+maestro import "chains/*.json"            # dry-run валидация (по умолчанию)
+maestro import "chains/*.json" --apply    # реальный импорт
 ```
 
 :::note[По умолчанию — dry-run]
-`care import` по умолчанию лишь делает предпросмотр: проверяет каждое совпадение и
+`maestro import` по умолчанию лишь делает предпросмотр: проверяет каждое совпадение и
 показывает, что *было бы* импортировано, не трогая Memory. Добавьте `--apply`,
 чтобы реально сохранить корректные цепочки. Код выхода — `0`, если прошли все
 совпадения, иначе `1`.
@@ -49,4 +49,4 @@ care import "chains/*.json" --apply    # реальный импорт
 | `--apply` | выкл. (dry-run) | Реально сохранить цепочки в Memory. |
 | `--channel NAME` | `latest` | Канал по умолчанию для записей, где он не указан. |
 
-Запустите `care <команда> --help` для полного списка флагов.
+Запустите `maestro <команда> --help` для полного списка флагов.

@@ -61,13 +61,13 @@ class WordCountMetric(MetricBase):
 
 :::note
 `WordCountMetric` and an LLM-judge metric are shown in the repo's
-[metrics example](https://github.com/Glazkoff/carl-experiments/blob/main/examples/evaluation/metrics_example.py) —
+[metrics example](https://github.com/Glazkoff/carl/blob/main/examples/evaluation/metrics_example.py) —
 they're custom metrics, not library imports.
 :::
 
 ## Example
 
-The repo's [metrics example](https://github.com/Glazkoff/carl-experiments/blob/main/examples/evaluation/metrics_example.py)
+The repo's [metrics example](https://github.com/Glazkoff/carl/blob/main/examples/evaluation/metrics_example.py)
 runs with a mock LLM client (no API key) and defines four custom metrics —
 `WordCountMetric`, `SentenceLengthMetric`, `KeywordCoverageMetric`, and a
 `MockLLMJudgeMetric` (an async, I/O-shaped stand-in for an LLM-as-a-judge). It

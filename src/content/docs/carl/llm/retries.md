@@ -42,8 +42,14 @@ client = OpenAICompatibleClient(OpenAIClientConfig(
 permanent, so retrying just wastes budget. They abort immediately.
 :::
 
-The policy wires through `OpenAIClientConfig.retry_policy` and governs the
-retry-aware methods (`get_response_with_retries`, `get_response_with_usage`, …).
+Only statuses listed in `retry_on_status` are retried; any other HTTP status
+aborts at once. Errors without a status (connection errors, timeouts) are
+treated as transient and retried.
+
+The policy is set through `OpenAIClientConfig.retry_policy` and applies to
+`OpenAICompatibleClient.get_response_with_retries` and
+`get_response_with_usage`. Without a policy those methods fall back to the old
+behaviour above. `AnthropicClientConfig` has no `retry_policy`.
 
 ## See also
 

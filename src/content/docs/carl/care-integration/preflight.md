@@ -1,28 +1,33 @@
 ---
 title: Preflight
-description: Statically introspect what a chain needs, and check it against a context before running.
+description: Statically list what a chain needs, and check it against a context before running.
 sidebar:
   order: 2
 ---
 
-Before running a saved chain you often want to know what it will try to use —
-which tools, MCP servers, and AgentSkills — so you can register or install the
-missing pieces. CARL exposes static introspection on `ReasoningChain`.
+Before running a saved chain you want to know what it will use, so you can
+register or install the missing pieces. `ReasoningChain` answers this without
+executing anything and without an LLM call.
 
 ## What does this chain reference?
 
 ```python
-chain.required_tools()         # de-duplicated tool names from ToolStep configs
-chain.required_mcp_servers()   # MCP server names referenced by MCP steps
-chain.required_skills()        # AgentSkill identifiers (URI or source string)
+chain.required_tools()             # tool names from tool / map / agent steps and chain tools' allowed_tools
+chain.required_mcp_servers()       # MCP server names
+chain.required_skills()            # AgentSkill identifiers (URI or source string)
+chain.required_code_profiles()     # runtime_profile names of code steps
+chain.required_claude_code_clis()  # cli_path of claude_code steps (default "claude")
+chain.required_codex_runtimes()    # ["openai-codex"] if the chain has a codex step
 ```
 
-These are pure static reads — no execution, no LLM.
+Tools found only at run time by a [tool-discovery step](/carl/steps/tool-discovery/)
+are not listed. Names of embedded chain tools are left out, because the chain
+supplies them itself.
 
 ## Preflight against a context
 
-`chain.preflight(context)` compares the requirements against a context's registry
-and returns a `PreflightReport`:
+`chain.preflight(context)` compares those lists with what the context has and
+returns a `PreflightReport`:
 
 ```python
 report = chain.preflight(context)
@@ -33,18 +38,29 @@ if not report.all_present:
 
 ### PreflightReport
 
-| Field / member | Meaning |
+| Field / member | How "missing" is decided |
 | --- | --- |
-| `required_tools` / `required_mcp_servers` / `required_skills` | Everything the chain references. |
-| `missing_tools` | Tools referenced but **not** registered in the context (MAESTRO's "register before running" list). |
-| `missing_mcp_servers` / `missing_skills` | Reserved (currently always empty — MCP carries its own config; skill resolution is async/network-bound). |
-| `all_present` (property) | `True` when nothing is missing. |
-| `format_text()` | One-line summary when OK, multi-line breakdown otherwise. |
+| `required_*` | Everything the chain references (six lists, as above). |
+| `missing_tools` | Not in `context.list_tools()`. |
+| `missing_code_profiles` | `context.code_execution_policy` is absent or does not resolve the profile. |
+| `missing_claude_code_clis` | `shutil.which()` cannot find the CLI. |
+| `missing_codex_runtimes` | `check_codex_runtime()` reports the runtime unavailable. |
+| `missing_mcp_servers` / `missing_skills` | Always empty. MCP servers carry their own config and skills resolve over the network at run time, so preflight lists them but does not check them. |
+| `all_present` (property) | `True` when every `missing_*` list is empty. |
+| `format_text()` | One line when everything is present, a breakdown otherwise. |
 
-The report is **structured, not narrated** — MAESTRO turns it into a modal; CLIs and
-CI read the raw lists.
+The report is data, not prose: Maestro turns it into a refusal or a dialog,
+and CLIs and CI read the lists directly.
+
+## In Maestro
+
+Maestro runs preflight twice: once on the parsed chain without a context (to
+list requirements), and once against the populated run context right before
+execution. A missing tool, MCP server or skill refuses the run. From the
+command line, `maestro validate <chain.json>` parses and preflights a chain
+file (see [CLI discovery](/care/cli/discovery/)).
 
 ## See also
 
-- [MAESTRO integration overview](/carl/care-integration/overview/)
-- The CLI twin: [`care validate`](/care/cli/discovery/) preflights a chain file.
+- [Maestro integration overview](/carl/care-integration/overview/)
+- [Chain tools](/carl/steps/chain-tools/) · [Code step](/carl/steps/code/)

@@ -1,46 +1,59 @@
 ---
 title: Glossary
-description: Key MAESTRO terms in one place.
+description: Key Maestro terms in one place.
 sidebar:
   order: 2
 ---
 
 | Term | Meaning |
 | --- | --- |
-| **MAESTRO** | The whole system — generate, run, and evolve reasoning chains. You use it via the MAESTRO CARE TUI or the `care` CLI. |
-| **MAESTRO CARE** | The Textual TUI — the terminal interface to MAESTRO (the `care` command launches it). |
-| **CARL** | Collaborative Agent Reasoning Library — the format reasoning chains are written in (and the library that runs them). See the [CARL docs](/carl/getting-started/overview/). |
+| **Maestro** | The product: a desktop app (plus TUI and CLI) to generate, run, repair, save and evolve agent chains. |
+| **Maestro desktop app** | The primary interface: a native window around the Maestro harness. Started with `maestro` or `Maestro.app`. |
+| **Maestro harness** | The resident chat agent inside the app: sessions, model selection, tools, approvals, background jobs. |
+| **`maestro-care`, `care`** | The Python package and its import name. `care` is also a command alias of `maestro`. CARE stands for Collaborative Agent Reasoning Ecosystem. |
+| **Session** | One conversation in a workspace. Generated chains, runs and approvals belong to it. |
+| **Chat model** | The model selected in a session. In the app it does generation, execution, repair, data generation, drafts and idea translation. |
+| **Strategy** | How the agent handles a chain request: direct answer, reuse a saved chain, generate one, let the agent write one, or use an artifact from the session. |
+| **Chain** | A CARL program of typed steps with dependencies. MAGE generates it; CARL executes it. |
+| **Artifact** | An exact chain or input staged in a session, pinned by SHA-256. Runs and evolution use artifacts, never "whatever is current". |
+| **Input contract** | The input schema a chain declares. Input is checked against it before a run. |
+| **Repair** | A proposed corrected chain after a failed run. Never run automatically; the original does not change. |
+| **Library** | The app panel with saved chains, memory cards, ideas, datasets, tools and skills. |
+| **Chain card** | A saved chain in the Library: structure graph, rename, evolutions, Run / Evolve / Data actions. |
+| **Draft request** | Text that a Library action puts into a session's input field. You review and send it; nothing runs from the panel. |
+| **Activity** | The app panel listing Maestro work across all sessions. |
+| **Full access** | A session preset that never asks; paid Maestro work then runs without a dialog. |
+| **Paid work** | Actions that call a model: generation, execution, repair, evolution start, data generation start, drafts, idea translation. One confirmation each. |
+| **Background job** | Generation, execution, repair or evolution moved to the harness job list. Lost on restart. |
+| **CARL** | The chain runtime and format. See [CARL](/carl/getting-started/overview/). |
 | **MAGE** | The generator that turns a task into a CARL chain. |
-| **GigaEvo Memory** | The store for saved entities (chains, agents, skills, run records) — the Library. |
-| **GigaEvo Platform** | The evolution service (genetic search over chains). |
-| **Chain** | A CARL reasoning chain — the unit MAGE generates and CARL executes. |
-| **`chain_id`** | The stable id a chain is saved under in Memory. |
-| **Agent** | A saved, named chain in the Library you return to and re-run. |
-| **AgentSkill** | A portable skill folder (`SKILL.md` + scripts) a chain can run. See [Capabilities](/care/capabilities/overview/). |
-| **`memory_card`** | A saved note / run digest entity in Memory. |
-| **Channel** | A version channel for a saved chain; `latest` is the default `care run` reads. |
-| **Lineage** | A chain's ancestry DAG (parents it was derived/evolved from) — see `care lineage`. |
-| **Fitness** | An evolved chain's score on the dataset; higher wins. |
-| **Ad-Hoc mode** | Generate + run inline; nothing is saved. |
-| **Interactive mode** | The default chat surface — generate a chain, run it on the spot, answer inline; save / evolve are your call (button-driven). The legacy `ad_hoc` name normalises to this. See [Chat surfaces](/care/workflows/modes/). |
-| **Production mode** | Generate a reproducible chain, save it to Memory, seed a dataset, optionally evolve. |
-| **Per-stage policy** | How each pipeline stage behaves: `ask` (confirm gate first), `auto` (do it silently), or `skip` (never, and skip dependents). Set per surface via `CARE_CHAT__MODE__<MODE>__<STAGE>`. See [Stage policy](/care/workflows/modes/). |
-| **Soft config parsing** | A malformed or legacy `default_mode` never crashes the config load: known aliases are normalised, anything unrecognised falls back to the default (`interactive`) with a logged warning. |
-| **Version** | An immutable point in a saved entity's history. Channels (`latest`, `stable`) are named pointers into that history — see `care versions`. |
-| **`rollback`** | Repoint a channel at a specific version — a non-destructive pin, not a revert (`care rollback`, TUI `/rollback`). |
-| **`promote`** | Copy one channel pointer to another (default `latest → stable`) — `care promote`. The TUI `/promote` layers a baseline/eval gate on top. |
-| **Library bundle** | A portable tarball packing saved chains (+ AgentSkills) for transfer to another machine — `care export` / `care import`. |
-| **Dataset (eval case)** | A chain's set of `task → expected` test cases used to baseline and score it — `care dataset list/add/run/export`. |
-| **Long-term memory (LTM)** | A per-session notes store that persists facts and preferences across runs (`care remember` / `care notes`), separate from the entity Library. |
-| **Agent hub** | A lightweight local process that serves a deployed chain as an HTTP agent with its own Swagger UI — `care deploy` / `deployments` / `metrics`. See [Deploy](/care/workflows/deploy/). |
-| **DAG modal** | The full-screen chain view (`F`) that puts the box-and-arrow graph, step list, and details side by side; under `/revise` it overlays the new version's diff. See [Reading the DAG](/care/tui/dag/). |
-| **Latency heat-map** | A DAG overlay that shades each step box by a run metric (latency / tokens / cost) on a low→high scale. |
-| **Pareto front** | The table of non-dominated individuals from an evolution run; with ≥ 2 objectives a 2D scatter sits beneath it. |
-| **Evolution dashboard** | The TUI screen (`/evolution`) that lists active + recent runs and streams a live Fitness chart, Pareto front, Programs, and Versions. See [Evolution](/care/tui/evolution/). |
-| **Preflight** | Static validation of a chain before execution (`care validate` / `care run`). |
-| **Catalog** | The list of installed capabilities (skills / MCP / tools / cards) — `Ctrl+K` or `care catalog`. |
+| **GigaEvo Memory** | The store for chains, memory cards, tools and skills. |
+| **IdeaL** | The idea lake in GigaEvo Memory: ideas per namespace, rated by evolution outcomes. See [IdeaL](/ideal/getting-started/overview/). |
+| **Namespace** | The IdeaL space Maestro reads and writes (`CARE_MEMORY__IDEAL_NAMESPACE`). |
+| **Idea** | A concrete, reusable change to a chain, given to evolution mutations. Archived, never deleted. |
+| **Radar** | The app view of one evolution run in IdeaL: ideas around the task, their effect, best-score curve, ideas versus control. |
+| **Evolution platform** | GigaEvo Platform: mutates and scores chains on a dataset. |
+| **Evolution data / benchmark factory** | Maestro's generator of verified datasets for evolution. Versions are named `bf_<hex>.v<N>`. |
+| **Search part / holdout** | The dataset part given to evolution / the hidden part kept in the local store. |
+| **Workshop** | Draft → checks → save for tools and skills. |
+| **Tool** | A Python function a chain step calls. |
+| **AgentSkill** | A portable `SKILL.md` folder a chain step can run. See [Capabilities](/care/capabilities/overview/). |
+| **Sandbox** | Where skill scripts and generated code run. Docker by default. |
+| **STARM solver** | A small trained model for an algorithmic task, exposed as a tool. See [STARM solvers](/care/solvers/starm/). |
+| **`chain_id`** | The id a chain is saved under in Memory. |
+| **Version, channel** | Saved entities have immutable versions; channels (`latest`, `stable`) point at versions. |
+| **`memory_card`** | A saved note or run digest in Memory. |
+| **Interactive mode** | TUI mode (default; formerly Ad-Hoc): generate, ask before running, show the answer; save and evolve by buttons. |
+| **Ad-Hoc** | Former name of Interactive. `ad_hoc` is still read as `interactive`. |
+| **Production mode** | TUI mode: generate, save, baseline, evolve; follow-ups revise the saved chain. |
+| **Stage policy** | TUI per-stage behaviour: `ask`, `auto` or `skip` (`CARE_CHAT__MODE__<MODE>__<STAGE>`). |
+| **Dataset (eval cases)** | TUI/CLI test cases of a chain stored as memory cards (`maestro dataset`, `/dataset`). Separate from evolution data. |
+| **Lineage** | A chain's ancestry (`maestro lineage`). |
+| **Fitness** | A candidate chain's score on the dataset. |
+| **Preflight** | Static validation before execution (`maestro validate`). |
+| **Agent hub** | A local process that serves deployed chains as HTTP agents (`/deploy`, `maestro deploy`). |
+| **Catalog** | Installed skills, MCP servers, tools and memory cards (`maestro catalog`, `Ctrl+K` in the TUI). |
 
 ## See also
 
-- [Architecture](/care/concepts/architecture/) — how the modules fit together.
-- [FAQ & Troubleshooting](/care/reference/faq/)
+- [Architecture](/care/concepts/architecture/) · [FAQ](/care/reference/faq/)

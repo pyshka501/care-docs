@@ -5,7 +5,7 @@ sidebar:
   order: 3
 ---
 
-The repo's [`basic_chain_example.py`](https://github.com/Glazkoff/carl-experiments/blob/main/examples/orchestration/basic_chain_example.py)
+The repo's [`basic_chain_example.py`](https://github.com/Glazkoff/carl/blob/main/examples/orchestration/basic_chain_example.py)
 builds a 4-step chain that analyses a quarterly report: extract metrics → (analyse
 achievements ‖ assess risks) → synthesise a summary. Steps 2 and 3 run in parallel
 (both depend only on step 1); step 4 waits for both.
@@ -63,6 +63,10 @@ chain = ReasoningChain(steps=steps, max_workers=2, enable_progress=True)
 ```
 
 ## Run it
+
+The repo script calls a real model and needs `OPENAI_API_KEY`. To try the
+chain offline, pass a stub client instead, as in the
+[end-to-end tutorial](/carl/cookbook/end-to-end/#3-run-it).
 
 ```python
 client = OpenAICompatibleClient(OpenAIClientConfig(
