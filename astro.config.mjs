@@ -163,7 +163,7 @@ document.addEventListener('astro:page-load', fixTitle);
 				ru: { label: 'Русский', lang: 'ru' },
 			},
 			plugins: [
-				// Two independent products → two separate sidebars.
+				// Three independent topics → three separate sidebars.
 				starlightSidebarTopics([
 					{
 						label: 'MAESTRO',
@@ -330,6 +330,38 @@ document.addEventListener('astro:page-load', fixTitle);
 								label: 'Reference',
 								translations: { ru: 'Справочник' },
 								items: [{ autogenerate: { directory: 'carl/reference' } }],
+							},
+						],
+					},
+					{
+						label: 'IdeaL',
+						link: '/ideal/getting-started/overview/',
+						icon: 'star',
+						items: [
+							{
+								label: 'Getting Started',
+								translations: { ru: 'Начало работы' },
+								items: [{ autogenerate: { directory: 'ideal/getting-started' } }],
+							},
+							{
+								label: 'Concepts',
+								translations: { ru: 'Концепции' },
+								items: [{ autogenerate: { directory: 'ideal/concepts' } }],
+							},
+							{
+								label: 'With MAESTRO',
+								translations: { ru: 'С MAESTRO' },
+								items: [{ autogenerate: { directory: 'ideal/maestro' } }],
+							},
+							{
+								label: 'Console',
+								translations: { ru: 'Консоль' },
+								items: [{ autogenerate: { directory: 'ideal/console' } }],
+							},
+							{
+								label: 'Agent Connection',
+								translations: { ru: 'Подключение агента' },
+								items: [{ autogenerate: { directory: 'ideal/agent-connection' } }],
 							},
 						],
 					},
