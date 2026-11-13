@@ -10,8 +10,10 @@ It replaces the former **Ad-Hoc** mode: the old name `ad_hoc` is still
 accepted and is read as `interactive`.
 
 The desktop app has no modes. There the chat agent does what you ask
-(generate, run, save, evolve) and paid steps ask for one confirmation. See
-[The desktop app](/care/app/overview/).
+(build, run, save, evolve) and paid steps ask for one confirmation. Its
+closest settings are **Who writes chains** and **Clarify before building**
+(ask for what is missing, or decide and state assumptions). See
+[The desktop app](/care/app/overview/) and [Settings](/care/app/settings/).
 
 | | **Interactive** (default) | **Production** |
 | --- | --- | --- |

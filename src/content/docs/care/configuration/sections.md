@@ -14,7 +14,7 @@ from `care/config.py`.
 | Key | Default | Notes |
 | --- | --- | --- |
 | `mode` | `deep` | `fast` or `deep`. Applies in the desktop app too. |
-| `api_key`, `base_url`, `model` | unset | Generator endpoint for the CLI, TUI and legacy workbench. **Ignored by the desktop app**, which uses the chat model. |
+| `api_key`, `base_url`, `model` | unset | Generator endpoint for the CLI, TUI and legacy workbench. The desktop app uses it only with `defaults.chain_model = "custom"`; otherwise it is the evolution platform's fallback model. |
 | `enable_memory_research` | `true` | Recall related saved chains before planning. |
 | `memory_search_mode` | `bm25` | `bm25`, `vector` or `hybrid`. |
 | `enable_web_research` | `false` | Let generation search the web. |
@@ -28,12 +28,13 @@ from `care/config.py`.
 
 | Key | Default | Notes |
 | --- | --- | --- |
-| `base_url` | `http://localhost:8002` | GigaEvo Memory API. For a hosted store include its API prefix. |
-| `api_key` | unset | When the server needs one. |
+| `base_url` | `http://localhost:8002` | GigaEvo Memory API. For a hosted store include its API prefix. A pasted IdeaL page address (`…/api/v1/ideal/app`) is cut to its `/api` root. |
+| `api_key` | unset | When the server needs one. In the app, the key you enter on the IdeaL sign-in page is saved here (`CARE_MEMORY__API_KEY` in the app's `.env`). |
 | `timeout` | `30` | Seconds. |
 | `read_only` | `false` | Never write: no saved chains, tools, skills or ideas; evolution runs without IdeaL memory. |
 | `retrieval_backend` | `legacy` | `legacy` or `ideal`. With `ideal`, chains, recall and ideas use the IdeaL namespace. |
-| `ideal_namespace` | unset | Required when `retrieval_backend = "ideal"`. |
+| `ideal_namespace` | unset | Required when `retrieval_backend = "ideal"`, unless `ideal_project` is set. |
+| `ideal_project` | unset | *Development line.* Active IdeaL project (slug or id) on stands with projects. Unset: the key's only project, else the one whose lake is `ideal_namespace`, else the first. |
 
 ## `platform`: evolution
 
@@ -85,10 +86,13 @@ The platform calls these models itself; Maestro does not.
 | --- | --- | --- |
 | `language` | `en` | Language chains answer in (CLI/TUI execution). |
 | `ui_language` | `ru` | TUI language. The desktop app follows its own language setting. |
+| `chain_author` | `agent` | *Development line, desktop app.* Who writes a new chain: `agent` (the chat agent writes, test-runs and repairs it) or `mage` (the MAGE generator). |
+| `clarify_mode` | `ask` | *Development line, desktop app.* Before building: `ask` for what is missing with question cards, or `auto`: decide and state assumptions. |
+| `chain_model` | `chat` | *Development line, desktop app.* Model for chain generation, execution and repair: `chat` (the session's chat model) or `custom` (the `[mage]` endpoint, model and key). |
 | `dag_layout` | `tb` | TUI DAG modal: `tb` or `lr`. |
 | `dag_ascii`, `dag_bus_lanes` | `false` | TUI DAG drawing options. |
 | `max_history_entries` | `50` | |
-| `reduced_motion` | `false` | Disable TUI animations. |
+| `reduced_motion` | `false` | Disable TUI animations. The desktop app follows the system *Reduce motion* setting. |
 
 ## `context`
 

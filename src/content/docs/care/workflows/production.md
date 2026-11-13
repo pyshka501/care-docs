@@ -53,7 +53,7 @@ channel points at the newest. `stable` is the released one. The CLI reads
 ```
 
 The baseline seeds the first entry. These TUI datasets are stored as memory
-cards; they are separate from the [evolution data](/care/workflows/data-generation/)
+cards; they are separate from the [datasets](/care/autobench/overview/)
 that the desktop app generates.
 
 ## Evolution

@@ -7,7 +7,7 @@ sidebar:
 
 The workshop creates a new **tool** or **skill**, or reworks one saved in
 memory, in three steps: **draft → checks → save**. Open it from
-**Library → Tools & skills** (*Инструменты и навыки*) with a session open, or
+**My agents → Tools & skills** (*Инструменты и навыки*) with a session open, or
 ask the agent in chat.
 
 | | Tool | Skill |
@@ -25,7 +25,8 @@ ask the agent in chat.
    find the mismatch"*. Optionally give a name, arguments (for a tool) and
    requirements.
 3. **Prepare draft** (*Подготовить черновик*). This makes one or two
-   chat-model calls (paid). Pressing the button is your consent; no extra
+   model calls (paid; the chat model, or the custom chain model from
+   Settings). Pressing the button is your consent; no extra
    dialog appears. When the agent drafts from chat, the app asks once instead.
 4. Review the draft and its check results. **Make another variant**
    (*Сделать другой вариант*) asks for a new draft.

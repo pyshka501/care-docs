@@ -1,20 +1,22 @@
 ---
 title: Quick Start
-description: Install Maestro, open the desktop app, set the chat model and build your first chain. CLI and TUI quick start at the end.
+description: Install Maestro, open the desktop app, set the chat model and build your first agent. CLI and TUI quick start at the end.
 sidebar:
   order: 2
 ---
 
-This page takes you from a fresh machine to a first generated and executed
-chain in the Maestro desktop app. The CLI/TUI path is at the end.
+This page takes you from a fresh machine to a first built and executed
+agent (chain) in the Maestro desktop app. The CLI/TUI path is at the end.
 
 ## Prerequisites
 
 - **macOS on Apple silicon** for `Maestro.app`. The bundle is arm64 only.
   Running the app from a source checkout uses the platform WebView elsewhere,
   but macOS is the tested target.
-- An API key for a model provider you will use in chat (any provider the
-  chat-model settings offer, or an OpenAI-compatible endpoint).
+- An API key for a model provider you will use in chat. The default is
+  **OpenRouter**; other providers the chat-model settings offer, an
+  OpenAI-compatible endpoint, or (*development line*) a ChatGPT Plus/Pro
+  subscription also work.
 - Optional: a running **GigaEvo Memory** (to save chains; local default
   `http://localhost:8002`), a **GigaEvo Platform** (to evolve chains; local
   default `http://localhost:8000`), and **Docker** (the default sandbox for
@@ -55,77 +57,90 @@ uv run maestro            # same as: uv run maestro app
 Plain `uv sync` does not install the `desktop` extra; run the command above
 once. A source launch also needs the pinned harness runtime. Maestro looks for
 it in this order: an explicit flag or environment variable, the runtime inside
-an installed `Maestro.app`, a built harness checkout in the directory next to
-the Maestro repository, then an executable on `PATH`. If none is found, the
-launch stops with a message that says what to install. Developer flags:
+an installed `Maestro.app`, a built runtime checkout next to the Maestro
+repository, then an executable on `PATH`. If none is found, the launch stops
+with a message that says what to install. The developer flags that point at
+a runtime are listed in `maestro app --help`; the packaging README says where
+to get the runtime source.
 
-```bash
-uv run maestro app --dsh-source /path/to/harness-checkout   # a built source checkout
-uv run maestro app --dsh-executable /path/to/runtime     # a runtime executable
-```
-
-A harness version different from the pinned one stops the launch.
+A runtime version different from the pinned one stops the launch.
 
 The app opens a native window. Nothing is opened in a browser; the harness
 listens only on a random `127.0.0.1` port inside that window. Closing the
 window stops it.
 
-## 2. Choose a workspace
+## 2. Choose a project folder
 
-On the start screen, choose a project folder (**Choose workspace**). Sessions
-belong to a workspace. Library actions that open a session also need one.
+On the start screen, choose a project folder (*Выберите папку проекта*).
+Sessions belong to a project folder, and files you attach in chat are saved
+into it. Actions in *My agents* that open a session also need one.
+
+The packaged app keeps its own settings file `.env` in `~/Documents/Maestro`
+unless you start it from a terminal in another folder.
 
 ## 3. Set the chat model
 
-Open **Settings → Chat model**. Add a provider, enter its API key and pick the
-models you want in the model selector. The key stays inside the app's harness
-and is not written to Maestro's configuration files.
+On first launch the app asks for an **OpenRouter** key. To use another
+provider, open **Settings → Chat model** (*Модель чата*), add it, enter its
+API key and pick the models you want in the model selector. To use a ChatGPT
+subscription instead of a key, sign in in **Settings → Codex**. The key stays
+inside the app's harness and is not written to Maestro's configuration files.
 
-This is the only model you need for the desktop app. Generation, execution,
-repair, data generation, tool and skill drafts and idea translation all use the
-model selected in the current chat. Do not paste keys into chat.
+This is the only model you need for the desktop app. Writing and running
+chains, generation, repair, dataset work, tool and skill drafts and idea
+translation all use the model selected in the current chat, unless you set a
+custom chain model in Settings → MAESTRO. Do not paste keys into chat.
 
 ## 4. Connect memory and evolution (optional)
 
 Open **Settings → MAESTRO**. Here you set:
 
-- **Memory base URL** and **Memory API key**; **Read only** for a shared store;
-- **Chain memory**: the default store or **IdeaL** with a namespace;
-- **Platform base URL** and the mutation and validation models for evolution;
-- web search provider and key, the research switches, and the app lock.
+- **Memory address**; **Chain memory**: library search or **IdeaL** with a
+  namespace or project. The IdeaL key is entered once, on the sign-in page of
+  the IdeaL panel in the sidebar;
+- under **Advanced**: **Read only** for a shared store, the evolution
+  platform address and its mutation and validation models, web research, and
+  the app lock;
+- at the top: who writes chains, how the agent clarifies the task, and
+  which model does chain work.
 
-Keys are entered in a native secure-text dialog and stored in the macOS
-Keychain. Every save asks for a native confirmation and **requires a full
-restart** of the app. The page also has a *Chain generation* block; in the
-desktop app its provider, URL, model and key are not used. See
-[Settings](/care/app/settings/).
+Other keys are entered in a native secure-text dialog. By default they are
+stored in Maestro's own owner-only files, not in the Keychain
+(`CARE_SECRET_STORE`). Every save asks for a native confirmation and
+**requires a full restart** of the app. See [Settings](/care/app/settings/).
 
-## 5. Build your first chain
+## 5. Build your first agent
 
-Start a new session and describe the task in plain words:
+Press **New agent** (*Новый агент*) and describe the task in plain words, or
+pick a starter card under the input field:
 
 ```text
-Make a chain that takes a customer review and returns its sentiment
+Make an agent that takes a customer review and returns its sentiment
 (positive, neutral or negative) with a one-line reason.
 ```
 
-The agent picks a strategy. For a new chain it uses the Maestro generator by
-default. Generation is paid work, so the app shows **one confirmation dialog**.
-After approval you get a chain card with the structure graph and a
-readiness summary.
+The agent studies the request and asks for what is missing in a question
+card (input, output format, quality criterion). Pick an option or type your
+own answer. Then it shows a short brief and builds the chain.
 
-Then ask it to run:
+By default the chat agent writes the chain itself and **test-runs** it on a
+realistic input. A test run calls the model, so the app shows **one
+confirmation dialog** for it. You get a chain card with the step graph and the
+label *Checked by a run* once the test succeeded. (With **Who writes chains →
+MAGE**, the generator builds the chain instead, one dialog for the
+generation, and the chain is *Not checked by a run*.)
+
+Then ask it to run on your input:
 
 ```text
 Run it on: "Delivery was late, but support fixed everything in ten minutes."
 ```
 
-Execution asks once more (it calls the model). The result card shows each
-step's output preview. While a run is going you can pause, resume or stop it
-from the card.
+Execution asks once more. The result card shows each step's output preview.
+While a run is going you can pause, resume or stop it from the card.
 
-If you have Memory configured, ask *"save this chain"*. Saving is free and
-needs no dialog. The chain then appears in the **Library**.
+If you have Memory configured, ask *"save this agent"*. Saving is free and
+needs no dialog. It then appears in **My agents**.
 
 To skip all dialogs for paid work in one session, choose the **Full access**
 preset for that session. See [Confirmations](/care/app/confirmations/).
@@ -133,8 +148,9 @@ preset for that session. See [Confirmations](/care/app/confirmations/).
 ## Next steps
 
 - [The desktop app](/care/app/overview/): sessions, strategies, cards and the progress dock.
-- [Library](/care/app/library/): saved chains, ideas, datasets, tools and skills.
-- [Evolution data](/care/workflows/data-generation/) and [evolution](/care/workflows/evolution/).
+- [Chat](/care/app/chat/) and [Building an agent](/care/app/agents/).
+- [My agents](/care/app/library/): saved chains, datasets, tools and skills.
+- [Datasets](/care/autobench/overview/) and [evolution](/care/workflows/evolution/).
 
 ---
 
