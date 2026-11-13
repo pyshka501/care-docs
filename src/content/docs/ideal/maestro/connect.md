@@ -10,15 +10,17 @@ service: it is part of the same GigaEvo Memory API that stores your chains.
 
 ## Settings
 
-In the desktop app, open **Settings → Research and Memory**.
+In the desktop app, open **Settings → MAESTRO → Memory and IdeaL** (*Память и IdeaL*).
+The full field list is on [Settings](/care/app/settings/).
 
 | Field | What to enter |
 | --- | --- |
-| **Memory base URL** | The memory API. Local Compose stack: `http://localhost:8000/api` (through nginx) or `http://localhost:8002` (direct port). A hosted store: include its `/api` prefix. |
-| **Memory API key** | Your IdeaL key. Stored in the system keychain, never shown to the agent. |
-| **Read only** | Never write to this memory. Use it for shared or hosted stores you only want to look at. |
-| **Chain memory** | `Library search` (default) or `IdeaL (ideas + evolution learning)`. |
-| **IdeaL namespace** | Required for IdeaL. Latin letters, digits, `.`, `_`, `:`, `-`; starts with a letter or digit; up to 128 characters; case-sensitive. |
+| **Memory address** (*Адрес памяти*) | The memory API. Local Compose stack: `http://localhost:8000/api` (through nginx) or `http://localhost:8002` (direct port). A hosted store: include its `/api` prefix; a pasted IdeaL page address is cut to its `/api` root. |
+| **IdeaL key** (*Ключ IdeaL*) | Only shows whether a key is saved. You enter the key once, on the sign-in page of the [IdeaL panel](/care/app/ideas/). Maestro checks it and keeps it in the app's `.env` file (`~/Documents/Maestro/.env`); the agent never sees it. |
+| **Chain memory** (*Память цепочек*) | **Library search** (default) or **IdeaL (ideas and learning from evolutions)**. |
+| **IdeaL namespace** (*Пространство IdeaL*) | Required for IdeaL unless a project is set. Latin letters, digits, `.`, `_`, `:`, `-`; starts with a letter or digit; up to 128 characters; case-sensitive. |
+| **IdeaL project** (*Проект IdeaL*) | On stands with projects: a slug or id. Empty means automatic. |
+| **Read only** | Under **Advanced** (*Расширенные*). Never write to this memory. Use it for shared or hosted stores you only want to look at. |
 
 The same settings for the CLI and the TUI, as environment variables:
 
@@ -50,7 +52,7 @@ and what they mean:
 | Generation hints | Library search over saved chains and cards. | One `mode=catalog` retrieve with the task: up to 4 hints, split between task chains and ideas. Catalog reads are not recorded. |
 | Evolution | Runs without memory. | Each run gets `memory_backend=ideal`, the namespace and a stable task key. Evolution receives idea slates and reports outcomes. See [Evolution](/ideal/maestro/evolution/). |
 | Saving chains, ideas, tools | Owner namespace of the key. | The configured IdeaL namespace. |
-| Library → Ideas | Not available. | The idea graph, idea form, archive, run radars. See [Ideas in the Library](/ideal/maestro/library/). |
+| IdeaL panel | Not used. | The lake radar, the idea graph and run pages, embedded from IdeaL. See [IdeaL panel](/care/app/ideas/). |
 | Chat facts | Local memory. | Still local memory. IdeaL never receives chat facts. |
 
 Generation sends only the bounded task text to the catalog. Attachments,
@@ -60,7 +62,7 @@ chat history and long-term facts are not sent.
 
 With **Read only** on:
 
-- the idea form, archive and restore are disabled;
+- saving, archiving and restoring ideas are disabled;
 - evolution runs **without** IdeaL memory, because IdeaL evolution writes
   retrieval receipts and outcomes;
 - generation still reads catalog hints;

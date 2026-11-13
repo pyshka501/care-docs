@@ -34,9 +34,9 @@ Every save on the MAESTRO page needs a **full quit and reopen** of the app.
 ### Library says memory is not responding
 
 The status line at the top of the Library tells you whether the key is missing
-or the server does not answer. Check **Memory base URL** (a hosted store needs
-its API prefix, for example `https://…/api`) and **Memory API key**. Then press
-↻.
+or the server does not answer. Check **Memory address** in **Settings → MAESTRO** (a hosted store needs
+its API prefix, for example `https://…/api`) and whether the IdeaL key is
+saved; the key is entered on the sign-in page of the IdeaL panel. Then press ↻.
 
 ### Ideas, Datasets or Tools & skills say "open a session"
 
