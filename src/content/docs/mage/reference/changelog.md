@@ -21,10 +21,14 @@ is prepared and waits for publication; until it is on PyPI, everything after
   the chain. Hosts need an `on_human_input_requested` callback; readiness
   treats a `human_input` step as ready only when the host declares
   `human_input_callback_available=True`.
-- **No scoped LLM inputs in released CARL.** Semantic-strategy chains that
-  need them come back `Unsupported` on CARL 0.5.2.
+- **No scoped LLM inputs in released CARL.** CARL 0.5.2 ignores
+  `llm_config.input_mapping` / `include_outer_context`, so admission rejects
+  LLM steps under a runtime input schema with private fields; semantic-strategy
+  chains that need scoped inputs come back `Unsupported`.
 - **Saved chains are migrated before editing** (`ReasoningChain.migrate`) when
-  they carry an older `format_version` or a legacy `fallback_value`.
+  they carry an older `format_version` or a legacy `fallback_value`; defaults
+  the author never set (such as `fail_fast`) are not added, and
+  `MAGEEditResult.migrated` marks the migrated form.
 - Five step types that older CARL could not round-trip (`agent_skill`,
   `debate`, `evaluation`, `mcp_resource`, `tool_discovery`) now keep their
   config.
@@ -32,7 +36,7 @@ is prepared and waits for publication; until it is on PyPI, everything after
   `evaluation/`: experimental, not part of the package API.
 
 Checked offline only: lint, types and 2514 tests on Python 3.12 and 3.13
-against CARL 0.5.2, and a clean install of the wheel. No live generation run.
+against CARL 0.5.2 (2527 tests), and a clean install of the wheel. No live generation run.
 
 ## Experimental: v3 branches (not released)
 
