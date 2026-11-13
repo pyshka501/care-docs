@@ -25,7 +25,7 @@ MAGEConfig.for_local(base_url="http://localhost:8000/v1")   # api_key "EMPTY", m
 | Field | Default | Notes |
 | --- | --- | --- |
 | `mode` | `deep` | `fast` or `deep`. |
-| `generation_strategy` | `legacy` | 0.2: `semantic` routes `generate()` through `compile()`. |
+| `generation_strategy` | `legacy` | 0.2: `semantic` routes `generate()` through `compile()`; 0.2.0 candidate: `v3` runs the [v3 generator](/mage/concepts/v3-generator/), see [below](#v3-strategy). |
 | `provider` | `openai` | `openai`, `openrouter`, `local`, `custom`. |
 | `base_url`, `api_key`, `model` | unset, unset, `gpt-4o` | `model="__auto__"` takes the first model the server lists at `/v1/models`. |
 | `temperature` | `0.2` | |
@@ -43,6 +43,27 @@ MAGEConfig.for_local(base_url="http://localhost:8000/v1")   # api_key "EMPTY", m
 
 Every optional stage has its own `enable_*` switch, all off by default; the
 list is in [Generation pipeline](/mage/concepts/pipeline/#deep-mode).
+
+## v3 strategy
+
+**0.2.0 candidate.** Read only with `generation_strategy="v3"`. The defaults
+are the measured v3.4 configuration.
+
+| Field | Default | Notes |
+| --- | --- | --- |
+| `v3_max_repairs` | `3` | Admission repair rounds after the first authoring attempt (0 to 10). |
+| `v3_dry_run_rounds` | `1` | Dry-run rounds (0 to 3); `0` turns the dry run off. |
+| `v3_dry_run_fixtures` | `2` | Synthesized test inputs per round (1 to 4). |
+| `v3_dry_run_repairs` | `2` | Authoring attempts allowed to repair one failed dry run (1 to 3). |
+| `v3_dry_run_timeout_seconds` | `240.0` | Wall-clock limit of one test input's CARL run. |
+| `v3_dry_run_judge` | `false` | Fresh-context model review of each dry-run answer. Off in v3.4: only the deterministic review runs. |
+| `v3_dry_run_max_output_tokens` | `6144` | Per-call cap for the chain's own model steps in the dry run; `None` means no extra cap. |
+| `v3_temperature` | `0.0` | Sampling temperature of every v3 call; `None` uses `temperature`. |
+| `v3_normalize_bindings` | `false` | Rewrite typed or bare tool arguments as CARL string bindings. Off in v3.4. |
+
+The dry run never calls host tools, but it costs model calls: test inputs,
+the chain's own model steps and the simulated tools. The `max_*` budgets
+count them. None of the `v3_*` fields has an environment variable.
 
 ## Environment variables
 

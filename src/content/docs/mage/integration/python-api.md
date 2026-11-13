@@ -1,6 +1,6 @@
 ---
 title: Python API
-description: MAGEGenerator and its generate, compile and edit methods, progress callbacks, cancellation, MAGEResult, the exceptions, and the admission helpers a host imports directly.
+description: MAGEGenerator and its generate, compile and edit methods, the opt-in v3 strategy and build_v3_contract, progress callbacks, cancellation, MAGEResult, the exceptions, and the admission helpers a host imports directly.
 sidebar:
   order: 1
 ---
@@ -26,8 +26,8 @@ result = await generator.generate(
     user_context="",          # legacy string form only
     safe_task=None,           # legacy string form only
     cancel=None,              # asyncio.Event
-    capabilities=None,        # CapabilityContext: a closed-world tool catalogue
-    runtime_features=None,    # 0.2: RuntimeEnvironmentFeatures, used by the semantic strategy
+    capabilities=None,        # CapabilityContext: a closed-world tool catalogue (with v3: the whole tool set)
+    runtime_features=None,    # 0.2: RuntimeEnvironmentFeatures, used by the semantic and v3 strategies
     return_candidates=False,  # deep mode: one MAGEResult per sampled topology
 )
 
@@ -58,6 +58,32 @@ Per-stage wrappers for debugging: `analyze_domain`, `plan_steps`, `build_dag`,
 `describe_steps`, `critique_steps`, `verify_chain`, `refine`. They do not save
 and do not wrap the output in a `MAGEResult`.
 
+## v3 strategy
+
+**0.2.0 candidate, opt-in.** With `MAGEConfig(generation_strategy="v3")`,
+`generate()` runs the [v3 generator](/mage/concepts/v3-generator/) and still
+returns a `MAGEResult`. Pass the tools as `capabilities` (without them the
+chain may use none) and declare `human_input_callback_available` in
+`runtime_features` (undeclared means nobody can answer `human_input`).
+
+```python
+from mmar_mage import MAGEConfig, MAGEGenerator, build_v3_contract
+
+generator = MAGEGenerator(MAGEConfig(generation_strategy="v3", api_key="sk-..."))
+result = await generator.generate(request, capabilities=caps, runtime_features=features)
+
+contract = build_v3_contract(request, caps, features)   # what the v3 model reads; no model call
+```
+
+| Symbol | Purpose |
+| --- | --- |
+| `build_v3_contract(request, capabilities=None, runtime_features=None, *, resolved=None)` | The JSON contract v3 reads, built from a `GenerationRequest` (or a plain string) under its egress policy: `generation_view`, `current_turn_constraints`, `retrieved_untrusted_context`, `input_manifest`, `runtime_input_schema`, `output_contract`, `capability_fixture`, `environment`. Private schema fields, local paths and secrets in tool entries are left out. `generate()` calls it; a host can call it to inspect what the model would see. |
+| `V3Result` | The outcome of the process function `mmar_mage.authoring.generate_v3`: `chain`, `admitted`, `plan`, `attempts`, `dry_runs`, `dry_run_passed`, `trace()`. `generate()` packs it into a `MAGEResult`; the benchmark adapter in `evaluation/` uses it directly. |
+
+The rest of `mmar_mage.authoring` (`generate_v3`, `V3Settings`, `V3Hooks`,
+the dry-run helpers) is importable but documented in code only; `V3Hooks` is
+how the research extensions in `evaluation/` plug in.
+
 ## Progress and cancellation
 
 ```python
@@ -75,7 +101,8 @@ class Progress:
 Stage names: `fast_generation` in fast mode; in deep mode `domain_analysis`,
 `step_planning`, `dag_building`, `step_describing` plus the optional stages
 listed in [Generation pipeline](/mage/concepts/pipeline/); `chain_edit` for
-edits; `semantic_*` stages for the semantic strategy.
+edits; `semantic_*` stages for the semantic strategy; `v3_plan`,
+`v3_author`, `v3_dry_run` for the v3 strategy.
 
 Set the `cancel` event to stop. It is checked between stages and before model
 calls; the call in flight finishes and its result is discarded. MAGE raises
@@ -92,7 +119,7 @@ calls; the call in flight finishes and its result is discarded. MAGE raises
 | `memory_key`, `memory_keys` | Ids of what was saved, if anything. |
 | `mode` | `fast` or `deep`. |
 | `metadata` | `MAGEMetadata`: domain, step count, time, model, stages completed, memory and web hits used, suggested name, description and tags, token usage per stage, provider attempts. |
-| `intermediate_artifacts` | Dumps of the stages that ran: `domain_analysis`, `step_plan`, `dag`, `described_steps` and others. |
+| `intermediate_artifacts` | Dumps of the stages that ran: `domain_analysis`, `step_plan`, `dag`, `described_steps` and others. With v3, one `v3` entry: the process trace (plan, compiler actions, attempts, dry runs). |
 | `quality_report` | Execution feedback or benchmark mode report, when enabled. |
 
 `to_care_dict()` and `from_care_dict()` serialise a replay bundle;
@@ -104,7 +131,7 @@ All derive from `MAGEError`.
 
 | Exception | When |
 | --- | --- |
-| `MAGEValidationError` | The chain failed structure, lint or runtime admission. `.raw_output` holds the model output. |
+| `MAGEValidationError` | The chain failed structure, lint or runtime admission; with v3, no authoring attempt was admitted. `.raw_output` holds the model output. |
 | `MAGELLMError` | A provider call failed after retries. |
 | `MAGEProviderContractError` | 0.2. Provider output broke the expected wire format. |
 | `MAGEBudgetError` | 0.2. A `max_*` budget cannot be honoured. Terminal. |

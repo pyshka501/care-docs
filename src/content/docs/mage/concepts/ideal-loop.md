@@ -7,8 +7,9 @@ sidebar:
 
 :::caution[Experimental]
 Branch `feat/v3-ideal-loop` (commit ceaf38b, 2 November 2026), module
-`mmar_mage/ideal_loop.py`. Used only by the [v3 generator](/mage/concepts/v3-generator/)
-in the evaluation harness. Tested offline against a fake IdeaL server; not
+`mmar_mage/ideal_loop.py`, merged into the 0.2.0 candidate. Plugged into the
+[v3 generator](/mage/concepts/v3-generator/) only from the MAGEBench arms in
+`evaluation/`; the shipped `generation_strategy="v3"` does not use it. Tested offline against a fake IdeaL server; not
 measured, not released. What Maestro does with IdeaL today is described in
 [Memory and reuse](/mage/concepts/memory/#maestro-recall-by-the-host-ideal-hints).
 :::

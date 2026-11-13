@@ -36,6 +36,10 @@ flowchart LR
 - **Typed requests** (development line). A `GenerationRequest` separates the
   safe task from private context, carries an input schema and an exact output
   contract, and states what may leave the machine and what may be saved.
+- **v3 strategy** (0.2.0 candidate, opt-in). `generation_strategy="v3"`
+  plans the data flow, lets the model write CARL, repairs it against
+  admission and dry-runs it in CARL with simulated tools. See
+  [v3 generator](/mage/concepts/v3-generator/).
 - **Natural-language edits** of an existing chain, applied to a copy and
   admitted the same way.
 - **Optional memory**: recall of related saved chains from GigaEvo Memory and
@@ -51,26 +55,26 @@ of them.
 | Label | What it means | Where |
 | --- | --- | --- |
 | **Released** | In `mmar-mage` 0.1.3 on PyPI (June 2026). | Public repository `AIRI-MAESTRO/mage`, tag `v0.1.3`. |
-| **Development line** | Package version `0.2.0`, not tagged, not on PyPI. Maestro pins a git revision of this line. | Branches of the development repository `Glazkoff/carl-mage`. |
-| **Experimental** | The v3 generator, its memory loop, IdeaL loop and tool forges. Research code in `evaluation/`, not part of the package API. | Development branches `feat/v3-*`, not released, not merged. |
+| **Development line** | Package version `0.2.0`, not on PyPI. The release candidate (branch `prep/mage-0.2.0`, draft PR `Glazkoff/carl-mage#21`) is prepared for publication; Maestro pins older git revisions of this line. | Branches of the development repository `Glazkoff/carl-mage`. |
+| **Experimental** | Research extensions of the v3 generator: generation memory, the IdeaL loop, the tool forges, author-written `code` steps. They plug into v3 only from `evaluation/` and are not part of the package API. | Development branches, merged into `prep/mage-0.2.0` but not called by `MAGEGenerator`. |
 
 What Maestro actually runs is described in
 [Maestro as host](/mage/integration/maestro-host/). The full list is in
 [Capability status](/mage/reference/status/) and the
 [changelog](/mage/reference/changelog/).
 
-:::caution[The v3 generator is not in the package]
-The plan, author, compile and dry-run generator called "v3", the IdeaL loop
-and the code-tool forge live in the evaluation harness of a development
-branch. `MAGEGenerator` does not call them, and the wheel does not ship the
-`evaluation/` directory. They are documented under
-[Concepts](/mage/concepts/v3-generator/) so you know where generation is
-heading, not as something you can install.
+:::caution[The v3 strategy is opt-in and not released]
+The plan, author, compile and dry-run generator called "v3" ships in the
+0.2.0 candidate as `MAGEConfig(generation_strategy="v3")`. The default stays
+`legacy`, 0.2.0 is not on PyPI yet, and the shipped strategy has been checked
+offline only, not in a live run with a real model. Maestro does not use it.
+Its research extensions (IdeaL loop, code-tool forge and others) remain
+experimental. See [v3 generator](/mage/concepts/v3-generator/).
 :::
 
 ## What MAGE emits
 
-`MAGEGenerator` writes 16 CARL step types: `llm`, `structured_output`, `tool`,
+With the default `legacy` strategy, `MAGEGenerator` writes 16 CARL step types: `llm`, `structured_output`, `tool`,
 `mcp`, `mcp_resource`, `memory`, `transform`, `conditional`, `agent_skill`,
 `evaluation`, `human_input`, `tool_discovery`, `agent_handoff`,
 `parallel_sampling`, `supervisor`, `debate`. It does not write `code`,

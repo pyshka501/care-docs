@@ -1,6 +1,6 @@
 ---
 title: Quick Start
-description: Install MAGE (the released 0.1.3 or the development line Maestro pins), generate a first chain from Python and from the CLI, and check it.
+description: Install MAGE (the released 0.1.3, the 0.2.0 candidate or the development line Maestro pins), generate a first chain from Python and from the CLI, try the opt-in v3 strategy, and check the result.
 sidebar:
   order: 2
 ---
@@ -24,9 +24,21 @@ runtime admission or the semantic compiler. Its CARL requirement is open
 (`mmar-carl>=0.2`), so pip picks the newest CARL; that combination was not
 checked against CARL 0.5.0.
 
+### 0.2.0 candidate: not on PyPI yet
+
+The release candidate is the branch `prep/mage-0.2.0` (draft PR
+`Glazkoff/carl-mage#21`). It requires the published `mmar-carl>=0.5.2,<0.6`,
+so only MAGE itself comes from git:
+
+```bash
+pip install "mmar-mage @ git+https://github.com/Glazkoff/carl-mage@651b8deb8781c72f82d12e025dfd001ee950f30d"
+```
+
+This is the only line with the [v3 strategy](#generate-with-the-v3-strategy).
+
 ### Development line: what Maestro pins
 
-The 0.2.0 line is not on PyPI. It requires a CARL build
+The revisions Maestro pins are older than the candidate. They require a CARL build
 (`mmar-carl==0.3.0+maestro.contracts.3.ideal.20261005.1`) that no package
 index serves, so a project that uses it pins both by git revision. This is how
 Maestro does it, with `uv`:
@@ -57,7 +69,7 @@ uv run mage version          # mmar-mage 0.2.0
 
 ## Generate a chain from Python
 
-This works on both lines.
+This works on all three.
 
 ```python
 import asyncio
@@ -138,6 +150,80 @@ else, MAGE reports the mismatch, tries one repair and otherwise raises
 `MAGEValidationError`. At run time the chain gets the input object as
 `$outer_context` (here `$outer_context.reviews`).
 
+## Generate with the v3 strategy
+
+0.2.0 candidate only, opt-in. `generation_strategy="v3"` plans the data flow,
+lets the model write CARL, repairs it against admission and dry-runs it in
+CARL with the declared tools simulated. See
+[v3 generator](/mage/concepts/v3-generator/).
+
+```python
+import asyncio
+from mmar_mage import (
+    CapabilityContext, GenerationOutputContract, GenerationRequest,
+    MAGEConfig, MAGEGenerator, RuntimeEnvironmentFeatures,
+)
+
+station_tool = {
+    "name": "station_coordinates",
+    "description": "Coordinates of a weather station by its id.",
+    "required_args": ["station"],
+    "input_schema": {
+        "type": "object",
+        "properties": {"station": {"type": "string"}},
+        "required": ["station"],
+        "additionalProperties": False,
+    },
+    "output_schema": {
+        "type": "object",
+        "properties": {"latitude": {"type": "number"}, "longitude": {"type": "number"}},
+        "required": ["latitude", "longitude"],
+    },
+}
+
+request = GenerationRequest(
+    current_task="Return the coordinates of the weather station named in the request.",
+    runtime_input_schema={
+        "type": "object",
+        "properties": {"request": {"type": "string"}},
+        "required": ["request"],
+    },
+    output_contract=GenerationOutputContract(
+        schema_name="coords",
+        json_schema={
+            "type": "object",
+            "properties": {"latitude": {"type": "number"}, "longitude": {"type": "number"}},
+            "required": ["latitude", "longitude"],
+            "additionalProperties": False,
+        },
+    ),
+)
+
+config = MAGEConfig(
+    generation_strategy="v3",   # opt-in; the default is "legacy"
+    api_key="sk-...",
+    model="gpt-4o",
+    enable_memory=False,
+)
+result = asyncio.run(MAGEGenerator(config).generate(
+    request,
+    capabilities=CapabilityContext(tools=[station_tool]),   # the only tools v3 may use
+    runtime_features=RuntimeEnvironmentFeatures(human_input_callback_available=False),
+))
+print([s["step_type"] for s in result.chain_dict["steps"]])  # e.g. structured_output, tool, structured_output
+print(result.metadata.verification_passed)                   # True if the last dry run passed
+print(result.intermediate_artifacts["v3"]["attempts"])        # authoring and repair attempts
+```
+
+- `capabilities` is a closed world. Without it the chain may use no tools.
+- The dry run never calls `station_coordinates`; a model simulates it from
+  its schemas. It costs extra model calls; `v3_dry_run_rounds=0` turns it off.
+- A failed dry run still returns the last admitted chain, with
+  `verification_passed=False`. A chain that never passes admission raises
+  `MAGEValidationError`.
+- With a private field in `runtime_input_schema`, v3 rejects every `llm`
+  step. Use the default strategy for such tasks.
+
 ## Generate from the CLI
 
 ```bash
@@ -157,6 +243,12 @@ The two Python examples and `mage validate` were run on the development branch
 `feat/v3-ideal-loop` (acf7091) with the OpenAI client replaced by a stub that
 returns a fixed chain: no network, no key. The chains loaded in CARL. A real
 endpoint was not called.
+
+The v3 example was run on `prep/mage-0.2.0` (651b8de) against `mmar-carl`
+0.5.2, with the provider replaced by scripted replies (the same ones as
+`tests/test_v3_strategy.py`): the chain was admitted and its dry run passed.
+No real endpoint was called, and the `pip install` from git above was not
+run.
 
 ## Next
 

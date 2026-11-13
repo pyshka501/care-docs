@@ -7,9 +7,10 @@ sidebar:
 
 :::caution[Эксперимент]
 Ветка `feat/v3-ideal-loop` (коммит ceaf38b, 2 ноября 2026), модуль
-`mmar_mage/ideal_loop.py`. Используется только
-[генератором v3](/ru/mage/concepts/v3-generator/) в оценочном стенде.
-Проверен офлайн на поддельном сервере IdeaL; не измерен, не выпущен. Что
+`mmar_mage/ideal_loop.py`, влит в кандидат 0.2.0. К
+[генератору v3](/ru/mage/concepts/v3-generator/) подключается только из
+рукавов MAGEBench в `evaluation/`; стратегия `generation_strategy="v3"` из
+пакета его не использует. Проверен офлайн на поддельном сервере IdeaL; не измерен, не выпущен. Что
 Maestro делает с IdeaL сегодня, описано в
 [Памяти и переиспользовании](/ru/mage/concepts/memory/).
 :::

@@ -53,9 +53,10 @@ result as untrusted context. See
 
 ## Experimental: generation memory and the reuse ladder
 
-**Experimental**, branch `feat/v3-ideal-loop`, used only by the v3 generator
-in the evaluation harness (`mmar_mage/generation_memory.py`,
-`mmar_mage/ideal_loop.py`).
+**Experimental**, branch `feat/v3-ideal-loop` (merged into the 0.2.0
+candidate), plugged into the v3 generator only from the MAGEBench arms in
+`evaluation/` (`mmar_mage/generation_memory.py`, `mmar_mage/ideal_loop.py`).
+The shipped `generation_strategy="v3"` does not use it.
 
 A task gets a **profile** (task families derived from the input schema, tools,
 output contract) and a stable **task key**. Two memories build on that:

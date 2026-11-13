@@ -6,9 +6,10 @@ sidebar:
 ---
 
 :::caution[Experimental]
-Both forges are on development branches and run only inside the
-[v3 generator](/mage/concepts/v3-generator/) in the evaluation harness.
-`MAGEGenerator` does not use them. Neither is released.
+Both forges are on development branches (merged into the 0.2.0 candidate)
+and plug into the [v3 generator](/mage/concepts/v3-generator/) only from the
+MAGEBench arms in `evaluation/`. `MAGEGenerator` does not use them, also not
+with `generation_strategy="v3"`. Neither is released.
 :::
 
 A chain often fails not because the plan is wrong, but because a step has to

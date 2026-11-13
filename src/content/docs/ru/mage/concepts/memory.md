@@ -54,9 +54,10 @@ MAGE одним `RetrievedUntrustedContext` с id `ideal-catalog` в режим�
 
 ## Эксперимент: память генерации и лестница переиспользования
 
-**Эксперимент**, ветка `feat/v3-ideal-loop`, используется только генератором
-v3 в оценочном стенде (`mmar_mage/generation_memory.py`,
-`mmar_mage/ideal_loop.py`).
+**Эксперимент**, ветка `feat/v3-ideal-loop` (влита в кандидат 0.2.0).
+К генератору v3 подключается только из рукавов MAGEBench в `evaluation/`
+(`mmar_mage/generation_memory.py`, `mmar_mage/ideal_loop.py`). Стратегия
+`generation_strategy="v3"` из пакета её не использует.
 
 У задачи есть **профиль** (семейства задач по схеме входа, инструменты,
 контракт выхода) и стабильный **ключ задачи**. На них строятся две памяти.

@@ -20,9 +20,13 @@ development line in `pyproject.toml` (`[tool.uv.sources]`):
 | `feat/dataset-studio` (development, after 0.5.0) | `b7a6e27` (2 Nov 2026), branch `maestro/step-field-refs` | The commit above plus fixes from `feat/v3-phase0`: saved input contracts survive edit and repair, typed literal bindings, `$steps.N.tool_name`, estimated usage when a provider reports none, and an export fix (a field of a step result is `$steps.N.result_data.<field>`, not `$history[N].<field>`). |
 
 Both report version `0.2.0+ideal.20261005.1`. Both run `MAGEGenerator` with
-the default `legacy` strategy. The v3 generator on `feat/v3-phase0` sits in
-`evaluation/` and is **not used** by Maestro; the memory loop and the forges
-on `feat/v3-ideal-loop` are not in either revision.
+the default `legacy` strategy. Neither revision has the
+[`v3` strategy](/mage/concepts/v3-generator/): it ships only in the 0.2.0
+candidate (`prep/mage-0.2.0`), which Maestro does not pin, so Maestro does
+**not use** v3. The memory loop and the forges are not in either revision.
+On the development branch of the desktop app the chat agent writes chains
+itself by default, so MAGE is not called at all unless you ask for it (see
+below).
 
 Maestro's dependency line still says `mmar-mage>=0.1.4`, a version that was
 never published, so Maestro installs only from a checkout where the git pins

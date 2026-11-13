@@ -1,6 +1,6 @@
 ---
 title: Быстрый старт
-description: Установить MAGE (выпущенный 0.1.3 или ветку разработки, которую закрепляет Maestro), получить первую цепочку из Python и из CLI и проверить её.
+description: Установить MAGE (выпущенный 0.1.3, кандидат 0.2.0 или ветку разработки, которую закрепляет Maestro), получить первую цепочку из Python и из CLI, попробовать стратегию v3 и проверить результат.
 sidebar:
   order: 2
 ---
@@ -24,9 +24,21 @@ pip install 'mmar-mage[memory]==0.1.3'   # + gigaevo-client для GigaEvo Memor
 поэтому pip поставит самый новый CARL; с CARL 0.5.0 это сочетание не
 проверялось.
 
+### Кандидат 0.2.0: на PyPI пока нет
+
+Кандидат в релиз лежит на ветке `prep/mage-0.2.0` (черновик PR
+`Glazkoff/carl-mage#21`). Ему нужен опубликованный `mmar-carl>=0.5.2,<0.6`,
+так что из git ставится только сам MAGE:
+
+```bash
+pip install "mmar-mage @ git+https://github.com/Glazkoff/carl-mage@651b8deb8781c72f82d12e025dfd001ee950f30d"
+```
+
+[Стратегия v3](#стратегия-v3) есть только в этой линии.
+
 ### Ветка разработки: то, что закрепляет Maestro
 
-Линии 0.2.0 на PyPI нет. Она требует сборку CARL
+Ревизии, которые закрепляет Maestro, старше кандидата. Им нужна сборка CARL
 (`mmar-carl==0.3.0+maestro.contracts.3.ideal.20261005.1`), которую не отдаёт
 ни один индекс пакетов, поэтому проект закрепляет обе зависимости по
 git-ревизии. Так это сделано в Maestro, через `uv`:
@@ -57,7 +69,7 @@ uv run mage version          # mmar-mage 0.2.0
 
 ## Цепочка из Python
 
-Работает на обеих линиях.
+Работает на всех трёх линиях.
 
 ```python
 import asyncio
@@ -138,6 +150,81 @@ print([s["step_type"] for s in result.chain_dict["steps"]])   # последни
 дальше выбрасывает `MAGEValidationError`. При запуске цепочка получает объект
 входа как `$outer_context` (здесь `$outer_context.reviews`).
 
+## Стратегия v3
+
+Только кандидат 0.2.0, включается явно. `generation_strategy="v3"`
+планирует поток данных, даёт модели написать CARL, чинит цепочку по
+замечаниям допуска и прогоняет её всухую в CARL, имитируя объявленные
+инструменты. См. [Генератор v3](/ru/mage/concepts/v3-generator/).
+
+```python
+import asyncio
+from mmar_mage import (
+    CapabilityContext, GenerationOutputContract, GenerationRequest,
+    MAGEConfig, MAGEGenerator, RuntimeEnvironmentFeatures,
+)
+
+station_tool = {
+    "name": "station_coordinates",
+    "description": "Coordinates of a weather station by its id.",
+    "required_args": ["station"],
+    "input_schema": {
+        "type": "object",
+        "properties": {"station": {"type": "string"}},
+        "required": ["station"],
+        "additionalProperties": False,
+    },
+    "output_schema": {
+        "type": "object",
+        "properties": {"latitude": {"type": "number"}, "longitude": {"type": "number"}},
+        "required": ["latitude", "longitude"],
+    },
+}
+
+request = GenerationRequest(
+    current_task="Return the coordinates of the weather station named in the request.",
+    runtime_input_schema={
+        "type": "object",
+        "properties": {"request": {"type": "string"}},
+        "required": ["request"],
+    },
+    output_contract=GenerationOutputContract(
+        schema_name="coords",
+        json_schema={
+            "type": "object",
+            "properties": {"latitude": {"type": "number"}, "longitude": {"type": "number"}},
+            "required": ["latitude", "longitude"],
+            "additionalProperties": False,
+        },
+    ),
+)
+
+config = MAGEConfig(
+    generation_strategy="v3",   # включается явно; по умолчанию "legacy"
+    api_key="sk-...",
+    model="gpt-4o",
+    enable_memory=False,
+)
+result = asyncio.run(MAGEGenerator(config).generate(
+    request,
+    capabilities=CapabilityContext(tools=[station_tool]),   # другие инструменты v3 недоступны
+    runtime_features=RuntimeEnvironmentFeatures(human_input_callback_available=False),
+))
+print([s["step_type"] for s in result.chain_dict["steps"]])  # например, structured_output, tool, structured_output
+print(result.metadata.verification_passed)                   # True, если последний сухой прогон прошёл
+print(result.intermediate_artifacts["v3"]["attempts"])        # попытки автора и починки
+```
+
+- `capabilities` задаёт закрытый мир. Без него инструментов у цепочки нет.
+- Сухой прогон никогда не вызывает `station_coordinates`: его имитирует
+  модель по схемам. Это лишние вызовы модели; `v3_dry_run_rounds=0`
+  выключает прогон.
+- При проваленном сухом прогоне всё равно возвращается последняя допущенная
+  цепочка с `verification_passed=False`. Если цепочка так и не прошла
+  допуск, выбрасывается `MAGEValidationError`.
+- Если в `runtime_input_schema` есть приватное поле, v3 отклоняет любой шаг
+  `llm`. Для таких задач берите стратегию по умолчанию.
+
 ## Цепочка из CLI
 
 ```bash
@@ -157,6 +244,11 @@ CARL и `ReasoningChain.from_json`. Это не полный допуск: ли�
 `feat/v3-ideal-loop` (acf7091), клиент OpenAI был заменён заглушкой с
 фиксированной цепочкой: без сети и без ключа. Цепочки загрузились в CARL.
 Настоящий эндпоинт не вызывался.
+
+Пример с v3 запускался на `prep/mage-0.2.0` (651b8de) с `mmar-carl` 0.5.2,
+вместо провайдера были заготовленные ответы (те же, что в
+`tests/test_v3_strategy.py`): цепочка прошла допуск, сухой прогон прошёл.
+Настоящий эндпоинт не вызывался, `pip install` из git выше не запускался.
 
 ## Дальше
 

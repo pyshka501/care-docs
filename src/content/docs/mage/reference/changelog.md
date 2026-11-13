@@ -1,6 +1,6 @@
 ---
 title: Changelog
-description: MAGE versions — the released 0.1.x line on PyPI, the unreleased 0.1.4 and 0.2.0 development line that Maestro pins, and the experimental v3 branches.
+description: MAGE versions — the released 0.1.x line on PyPI, the prepared 0.2.0 with the opt-in v3 strategy, the unreleased 0.1.4 and 0.2.0 development line that Maestro pins, and the experimental v3 branches.
 sidebar:
   order: 1
 ---
@@ -11,8 +11,10 @@ is prepared and waits for publication; until it is on PyPI, everything after
 
 ## 0.2.0 (prepared, not yet on PyPI)
 
-0.2.0 collects the development line below, the v3 research code and the
+0.2.0 collects the development line below, the v3 generator as an opt-in
+strategy, the v3 research code (still experimental) and the
 `$steps.N.result_data` export fix, and moves MAGE to the released CARL.
+Branch `prep/mage-0.2.0` (651b8de), draft PR `Glazkoff/carl-mage#21`.
 
 - **Requires `mmar-carl>=0.5.2,<0.6`**; the `memory` extra needs
   `gigaevo-client>=0.3.1,<0.4`. Python 3.12 or 3.13.
@@ -32,17 +34,32 @@ is prepared and waits for publication; until it is on PyPI, everything after
 - Five step types that older CARL could not round-trip (`agent_skill`,
   `debate`, `evaluation`, `mcp_resource`, `tool_discovery`) now keep their
   config.
-- The v3 generator, generation memory, the IdeaL loop and the forges stay in
-  `evaluation/`: experimental, not part of the package API.
+- **v3 strategy (opt-in).** `generation_strategy="v3"` runs the v3.4
+  generator from `mmar_mage/authoring/`: data-flow plan, author, deterministic
+  compiler, admission with repair, dry run in real CARL with simulated tools.
+  It builds its contract with `build_v3_contract` under the request's egress
+  policy, makes every call through the generator's `LLMClient`, treats
+  `capabilities` as a closed world and passes `validate_runtime_chain`.
+  `v3_*` fields carry the v3.4 defaults. The default stays `legacy`. The
+  MAGEBench arm `plan_author_v3` now runs the same package code. Known limits
+  (private runtime input rejects every `llm` step, family guides keyed on
+  schema names and others) are listed in
+  [v3 generator](/mage/concepts/v3-generator/#known-limits).
+- Generation memory, the IdeaL loop, the API and code-tool forges and
+  author-written `code` steps stay in `evaluation/` and modules used only
+  from there: experimental, not called by `MAGEGenerator`, not part of the
+  package API.
 
-Checked offline only: lint, types and 2527 tests on Python 3.12 and 3.13
-against CARL 0.5.2, and a clean install of the wheel. No live generation run.
+Checked offline only: ruff, mypy and the offline test suite (2543 passed,
+16 skipped) on Python 3.12 and 3.13 against CARL 0.5.2, and a scripted smoke
+test of the wheel. No paid API run. Live smoke on 2026-11-13 with a local Codex CLI model (`gpt-6-luna`; smoke, not a measurement): through `MAGEGenerator` and executed in CARL 0.5.2, 3 of 3 host tasks gave correct answers; the benchmark arm on 7 lite tasks generated and admitted 7 of 7, and 3 of 7 passed scoring.
 
 ## Experimental: v3 branches (not released)
 
-Research code on development branches of `Glazkoff/carl-mage`. The generator
-lives in `evaluation/` and is not part of the package API. See
-[v3 generator](/mage/concepts/v3-generator/).
+Research code on development branches of `Glazkoff/carl-mage`. Since 0.2.0
+the v3.4 generator itself ships in the package (see above); the extensions
+below stay in `evaluation/` and modules used only from there, and are not
+part of the package API. See [v3 generator](/mage/concepts/v3-generator/).
 
 **`feat/v3-ideal-loop`** (2 November 2026, acf7091). Merges `feat/v3-memory`, `feat/v3-forge`
 and `feat/v3-codestep`, then adds:

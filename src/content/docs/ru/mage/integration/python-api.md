@@ -1,6 +1,6 @@
 ---
 title: Python API
-description: MAGEGenerator и его методы generate, compile и edit, обратные вызовы прогресса, отмена, MAGEResult, исключения и функции допуска, которые хост импортирует напрямую.
+description: MAGEGenerator и его методы generate, compile и edit, стратегия v3 и build_v3_contract, обратные вызовы прогресса, отмена, MAGEResult, исключения и функции допуска, которые хост импортирует напрямую.
 sidebar:
   order: 1
 ---
@@ -26,8 +26,8 @@ result = await generator.generate(
     user_context="",          # только для строковой формы
     safe_task=None,           # только для строковой формы
     cancel=None,              # asyncio.Event
-    capabilities=None,        # CapabilityContext: закрытый каталог инструментов
-    runtime_features=None,    # 0.2: RuntimeEnvironmentFeatures, нужен семантической стратегии
+    capabilities=None,        # CapabilityContext: закрытый каталог инструментов (для v3 это весь набор)
+    runtime_features=None,    # 0.2: RuntimeEnvironmentFeatures, нужен семантической стратегии и v3
     return_candidates=False,  # deep: по MAGEResult на каждую выбранную топологию
 )
 
@@ -59,6 +59,33 @@ edited = await edit_chain("Rename to 'Invoice QA'", chain=chain_dict, config=con
 `build_dag`, `describe_steps`, `critique_steps`, `verify_chain`, `refine`. Они
 ничего не сохраняют и не заворачивают результат в `MAGEResult`.
 
+## Стратегия v3
+
+**Кандидат 0.2.0, включается явно.** С `MAGEConfig(generation_strategy="v3")`
+`generate()` запускает [генератор v3](/ru/mage/concepts/v3-generator/) и
+по-прежнему возвращает `MAGEResult`. Инструменты передайте в `capabilities`
+(без них у цепочки инструментов нет), а в `runtime_features` объявите
+`human_input_callback_available` (без объявления считается, что на
+`human_input` ответить некому).
+
+```python
+from mmar_mage import MAGEConfig, MAGEGenerator, build_v3_contract
+
+generator = MAGEGenerator(MAGEConfig(generation_strategy="v3", api_key="sk-..."))
+result = await generator.generate(request, capabilities=caps, runtime_features=features)
+
+contract = build_v3_contract(request, caps, features)   # что прочитает модель v3; без вызова модели
+```
+
+| Символ | Назначение |
+| --- | --- |
+| `build_v3_contract(request, capabilities=None, runtime_features=None, *, resolved=None)` | JSON-контракт, который читает v3. Строится из `GenerationRequest` (или строки) с учётом его политики выдачи данных: `generation_view`, `current_turn_constraints`, `retrieved_untrusted_context`, `input_manifest`, `runtime_input_schema`, `output_contract`, `capability_fixture`, `environment`. Приватные поля схемы, локальные пути и секреты в описаниях инструментов туда не попадают. Его вызывает `generate()`; хост может вызвать его сам и посмотреть, что увидит модель. |
+| `V3Result` | Исход функции процесса `mmar_mage.authoring.generate_v3`: `chain`, `admitted`, `plan`, `attempts`, `dry_runs`, `dry_run_passed`, `trace()`. `generate()` упаковывает его в `MAGEResult`; адаптер бенчмарка в `evaluation/` работает с ним напрямую. |
+
+Остальное из `mmar_mage.authoring` (`generate_v3`, `V3Settings`, `V3Hooks`,
+функции сухого прогона) импортируется, но описано только в коде. Через
+`V3Hooks` подключаются исследовательские расширения из `evaluation/`.
+
 ## Прогресс и отмена
 
 ```python
@@ -76,7 +103,8 @@ class Progress:
 Имена стадий: `fast_generation` в fast; в deep `domain_analysis`,
 `step_planning`, `dag_building`, `step_describing` и необязательные стадии из
 [Конвейера генерации](/ru/mage/concepts/pipeline/); `chain_edit` для правок;
-стадии `semantic_*` для семантической стратегии.
+стадии `semantic_*` для семантической стратегии; `v3_plan`, `v3_author`,
+`v3_dry_run` для стратегии v3.
 
 Чтобы остановить, выставьте событие `cancel`. Его проверяют между стадиями и
 перед вызовами модели; текущий вызов доходит до конца, его результат
@@ -93,7 +121,7 @@ class Progress:
 | `memory_key`, `memory_keys` | Id сохранённого, если что-то сохранялось. |
 | `mode` | `fast` или `deep`. |
 | `metadata` | `MAGEMetadata`: область, число шагов, время, модель, пройденные стадии, использованные находки в памяти и вебе, предложенные имя, описание и теги, токены по стадиям, попытки провайдера. |
-| `intermediate_artifacts` | Дампы отработавших стадий: `domain_analysis`, `step_plan`, `dag`, `described_steps` и другие. |
+| `intermediate_artifacts` | Дампы отработавших стадий: `domain_analysis`, `step_plan`, `dag`, `described_steps` и другие. У v3 одна запись `v3`: трасса процесса (план, действия компилятора, попытки, сухие прогоны). |
 | `quality_report` | Отчёт обратной связи исполнения или режима бенчмарка, если включены. |
 
 `to_care_dict()` и `from_care_dict()` сериализуют пакет для повтора;
@@ -105,7 +133,7 @@ class Progress:
 
 | Исключение | Когда |
 | --- | --- |
-| `MAGEValidationError` | Цепочка не прошла структуру, линт или допуск рантаймом. В `.raw_output` ответ модели. |
+| `MAGEValidationError` | Цепочка не прошла структуру, линт или допуск рантаймом; у v3 ни одна попытка автора не прошла допуск. В `.raw_output` ответ модели. |
 | `MAGELLMError` | Вызов провайдера упал после повторов. |
 | `MAGEProviderContractError` | 0.2. Ответ провайдера нарушил ожидаемый формат. |
 | `MAGEBudgetError` | 0.2. Бюджет `max_*` соблюсти нельзя. Окончательная ошибка. |

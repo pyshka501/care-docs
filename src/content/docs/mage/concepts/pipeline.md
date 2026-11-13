@@ -5,9 +5,10 @@ sidebar:
   order: 1
 ---
 
-This page describes `MAGEGenerator.generate()`, the path every host uses
-today, Maestro included. The experimental v3 generator is a separate path,
-see [v3 generator](/mage/concepts/v3-generator/).
+This page describes the default `legacy` path of `MAGEGenerator.generate()`,
+the one every host uses today, Maestro included. The opt-in `v3` strategy of
+the 0.2.0 candidate is a separate path, see
+[v3 strategy](#v3-strategy) below and [v3 generator](/mage/concepts/v3-generator/).
 
 ```mermaid
 flowchart TB
@@ -118,6 +119,21 @@ declaration the result fails closed.
 | `Unsupported` | `reasons` the task cannot be compiled. |
 
 `compile()` never writes Memory. Maestro uses the default `legacy` strategy.
+
+## v3 strategy
+
+**0.2.0 candidate, opt-in.** With `generation_strategy="v3"`, `generate()`
+skips the modes and the optional stages above, and the tail's repair and
+CARL export: the v3 chain is already final CARL JSON. It runs the
+v3.4 pipeline from `mmar_mage/authoring/`: a data-flow plan, one author call
+that writes CARL, a deterministic compiler, admission with up to
+`v3_max_repairs` repairs, and a dry run in real CARL with the declared tools
+simulated. The final chain passes the same lint and `validate_runtime_chain`
+admission, gets a heuristic name, and persistence follows the rule in step 6
+of the tail. Use the
+legacy strategy for tasks with private runtime input: v3 rejects every `llm`
+step there. Details, limits and what stays experimental:
+[v3 generator](/mage/concepts/v3-generator/). Maestro does not use it.
 
 ## Budgets and cancellation
 
