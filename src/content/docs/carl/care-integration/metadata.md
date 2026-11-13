@@ -34,11 +34,11 @@ Pass either `meta=` or keyword fields; mixing them raises `ValueError`.
 `mage_metadata`, `display_name`, `description`, `tags`.
 
 :::caution
-`set_care_metadata()` **replaces** the whole `care` block with the typed
-fields. Keys that `CareChainMetadata` does not model are lost, including
-Maestro's `runtime_input_schema`; keyword fields you don't pass are reset too
-(checked on 0.5.0). To change one value in a chain that came from Maestro,
-edit `chain.metadata["care"]` directly.
+`set_care_metadata()` rewrites the typed fields of the `care` block. Keys that
+`CareChainMetadata` does not model, such as Maestro's `runtime_input_schema`,
+are kept. Modelled fields you don't pass are reset, and empty ones are dropped:
+calling it with only `display_name=` removes existing `tags` (checked on
+0.5.2). To change one value, edit `chain.metadata["care"]` directly.
 :::
 
 ## Maestro's input contract

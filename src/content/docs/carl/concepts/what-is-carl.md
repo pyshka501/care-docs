@@ -18,9 +18,9 @@ See [ReasoningChain](/carl/chains/overview/).
 
 Each **step** is a typed description of one unit of work. All steps share
 `number`, `title`, `dependencies`, `triggered_by`, `metrics`, `cache`,
-`loop_back_to` / `loop_config` and the RE-PLAN checkpoint fields, and add a
-type-specific config. There are 25 step types, from a single LLM call to a
-bounded agent loop or a sandboxed command. See the
+`loop_back_to` / `loop_config`, `frozen`, `metadata` and the RE-PLAN checkpoint
+fields, and add a type-specific config. There are 29 step types, from a single
+LLM call to a bounded agent loop, a sandboxed command or an early `terminate`. See the
 [steps overview](/carl/steps/overview/).
 
 ## DAG-based parallel execution

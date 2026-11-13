@@ -96,7 +96,7 @@ ConditionalStepDescription(
 )
 ```
 
-The repo's [conditions example](https://github.com/Glazkoff/carl/blob/main/examples/orchestration/conditions_example.py)
+The repo's [conditions example](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/orchestration/conditions_example.py)
 (no API key) builds a sentiment router with `ChainBuilder`: a tool classifies the
 text, then a conditional step routes to one of three handlers using `contains:`
 patterns. The snippet below adds `dependencies=[2]` to the handlers. The

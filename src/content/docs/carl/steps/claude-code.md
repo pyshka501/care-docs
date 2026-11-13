@@ -23,6 +23,10 @@ How it differs from the other agent-like steps:
 - The CLI must already be signed in. Authentication is host-owned: CARL never
   stores credentials in the chain or the context.
 - No extra Python package is needed.
+- The host must allow local agents for this run:
+  `ReasoningContext(..., allow_local_agent_execution=True)`. The flag defaults
+  to `False`, is never serialized, and loading a chain does not set it.
+  Without it the step fails before the CLI starts. This gate is new in 0.5.0.
 
 Check the host before running:
 
@@ -85,7 +89,7 @@ claude -p "<rendered task>" --output-format json --max-turns 8 \
 | `resume_session` | `str \| None` | `None` | Session to continue (`--resume`). A `$` reference is resolved at run time. |
 | `stream` | `bool` | `False` | Use `--output-format stream-json --verbose` and forward each assistant text block to `context.on_llm_chunk`. |
 | `extra_cli_args` | `list[str]` | `[]` | Raw argv appended last. |
-| `env` | `dict[str, str]` | `{}` | Extra environment variables for the CLI process. |
+| `env` | `dict[str, str]` | `{}` | Extra environment variables for the CLI process. Not written by `to_dict()`; a host sets it on a trusted step. A loaded dict that still has `env` keeps it, so strip it from untrusted JSON. |
 | `timeout` | `float` | `600.0` | Wall-clock budget in seconds (> 0). The process is killed on expiry. |
 | `max_output_chars` | `int` | `20000` | Truncation limit for the answer in the step result and history. |
 | `store_session_key` | `str \| None` | `None` | Memory key for the session id in namespace `claude_code`. `None` = `step_<number>`. |
@@ -99,12 +103,13 @@ claude -p "<rendered task>" --output-format json --max-turns 8 \
   allow. CARL adds no sandbox of its own.
 - The CLI process **inherits the host environment** (`os.environ`) plus `env`.
   Any secret in the host environment is visible to the agent.
-- The flags that grant authority (`permission_mode`, `allowed_tools`,
-  `extra_cli_args`, `env`, `add_dirs`) are **part of the serialized chain**.
-  A chain can ask for `bypassPermissions`. Unlike `command` and `code` steps,
-  there is no host-side policy object that caps them. Review chains with
-  `claude_code` steps before you run them, and run untrusted ones in a
-  disposable checkout or container.
+- The host decides whether a local agent may start at all
+  (`allow_local_agent_execution`). Once it is granted, the flags that shape
+  the agent's authority (`permission_mode`, `allowed_tools`, `extra_cli_args`,
+  `add_dirs`) come from the serialized chain. A chain can ask for
+  `bypassPermissions`, and no host-side policy object caps these flags the way
+  `CommandPolicy` caps command steps. Grant the flag only for chains you
+  reviewed, and run untrusted ones in a disposable checkout or container.
 - `cache` is rejected on this step type: the agent may read or change workspace
   state, so a memoized result would be wrong.
 
@@ -141,6 +146,8 @@ ClaudeCodeStepDescription(
 
 The step returns `success=False` with `error_message` when:
 
+- the host did not set `allow_local_agent_execution`
+  (`Local agent execution requires host approval via allow_local_agent_execution`);
 - the CLI is not found (`Claude Code CLI not found at 'claude'…`);
 - the CLI exits non-zero, or prints no parseable JSON;
 - the CLI reports `is_error` (the message includes its `subtype`, e.g. a turn
@@ -161,4 +168,4 @@ the agent. Read `result_data["total_cost_usd"]` after the run.
 
 - [Codex step](/carl/steps/codex/): the same idea through the Codex SDK, with a read-only default sandbox.
 - [Agent step](/carl/steps/agent/): a bounded loop over your own registered tools.
-- [Example](https://github.com/Glazkoff/carl/blob/pre-release/examples/agents/claude_code_step_example.py) in the repo.
+- [Example](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/agents/claude_code_step_example.py) in the repo.

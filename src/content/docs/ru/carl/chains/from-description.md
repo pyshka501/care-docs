@@ -26,11 +26,13 @@ chain = await ChainBuilder.from_description(
 
 ## Что может выдать планировщик
 
-Промпт планирования предлагает четыре типа шагов: `llm`, `tool`, `memory` и
-`transform`. Если передать `available_skills`, разрешаются ещё шаги
-`agent_skill` с этими именами. Остальные типы (агенты, код, команды,
-оркестрация) этот помощник не планирует. Для полной генерации цепочек с ними
-в Maestro есть свой генератор.
+С 0.5.0 промпт планирования собирается из живого каталога шагов
+(`get_step_catalog().generation_prompt(...)`), поэтому описывает **все**
+зарегистрированные типы: по компактной карточке на тип и грамматику ссылок
+`$...`. `available_tools` и `available_skills` перечисляются для шагов `tool` и
+`agent_skill`. `capability_library` (`CapabilityLibrary`) добавляет в промпт
+подобранный список инструментов и навыков. Maestro этим помощником не
+пользуется, у него свой генератор.
 
 ## Параметры
 
@@ -40,6 +42,7 @@ chain = await ChainBuilder.from_description(
 | `llm_client` | `Any` | обязателен | `LLMClientBase` или любой объект с async `get_response_with_retries(prompt, retries=…)` либо `get_response(prompt)`. |
 | `available_skills` | `list[str] \| None` | `None` | Имена навыков, которые планировщик может взять в шаги `agent_skill`. |
 | `available_tools` | `list[str] \| None` | `None` | Имена инструментов, которые планировщику велено использовать в шагах `tool`. |
+| `capability_library` | `CapabilityLibrary \| None` | `None` | Дополнительные описания инструментов и навыков для промпта (EvoC). |
 | `max_steps` | `int` | `10` | Предел числа шагов в плане (при превышении `ValueError`). |
 | `max_workers` | `int \| str` | `"auto"` | Значение воркеров у итоговой цепочки. |
 | `extra_instructions` | `str` | `""` | Свободный текст в конце промпта планирования. |
@@ -61,5 +64,5 @@ chain = await ChainBuilder.from_description(
 
 ## См. также
 
-- [Пример chain_from_description](https://github.com/Glazkoff/carl/blob/main/examples/skills/chain_from_description_example.py) в репозитории.
+- [Пример chain_from_description](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/skills/chain_from_description_example.py) в репозитории.
 - [ChainBuilder](/ru/carl/chains/builder/) · [Preflight](/ru/carl/care-integration/preflight/)

@@ -86,17 +86,18 @@ legacy = ReasoningChain.from_dict(d)        # legacy StepDescription where possi
 s = chain.to_json();  ReasoningChain.from_json(s)
 ```
 
-- Every dict carries `format_version` (currently `11`) and `carl_version`.
+- Every dict carries `format_version` (`15` in CARL 0.5.2) and `carl_version`.
   A newer `format_version` than the library knows raises `ChainFormatNewerError`.
-  Older dicts are lifted with `ReasoningChain.migrate(raw)`.
+  Older dicts are lifted with `ReasoningChain.from_dict(ReasoningChain.migrate(raw))`.
 - `from_dict`, `from_json` and `load` build legacy `StepDescription` objects for
   the classic step types; use `from_dict_typed` to get typed classes everywhere.
-- `fail_fast`, `chain_tools`, loops (`loop_back_to`, `loop_config`),
-  `triggered_by`, and collaboration topology (`sub_chain`, `agents`, `base_step`)
-  round-trip.
-- Not serialized: `metrics` and `cache` on steps, `memory_schema`, `step_groups`,
-  `max_injections`, and all host authority (tools, policies, providers,
-  enforcers). Re-attach them after loading.
+- `fail_fast`, `max_injections`, `memory_schema`, `step_groups`, `chain_tools`,
+  loops (`loop_back_to`, `loop_config`), `triggered_by`, and collaboration
+  topology (`sub_chain`, `agents`, `base_step`) round-trip.
+- Not serialized: `metrics` and `cache` on steps, the prompt template, and all
+  host authority (tools, policies, providers, enforcers,
+  `allow_local_agent_execution`, `decision_endpoints`). Re-attach them after
+  loading.
 
 Details: [JSON format](/carl/serialization/json/) and
 [migration](/carl/serialization/migration/).

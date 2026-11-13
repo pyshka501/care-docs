@@ -108,15 +108,20 @@ While the pool is open, `register_mcp_tools`, the registered tool wrappers and
 
 ## Status and limits
 
-MCP is a supported, non-experimental part of CARL 0.5.0. Live tests against a
+MCP is a supported, non-experimental part of CARL 0.5.2. Live tests against a
 real FastMCP server run under `pytest -m mcp_live`. Known limits:
 
 - An MCP step is an ordinary step for [run controls](/carl/chains/run-controls/)
   and [streaming](/carl/async/streaming/): cancellation and pause are checked
   between steps, not inside a running tool call, and the tool's output is not
   streamed.
-- The step does not inspect the result's `isError` flag. A tool that returns an
-  error result still produces a successful step whose result is the error text.
+- Since 0.5.0 a result with `isError: true` fails the step
+  (`MCP tool returned isError=true`). Before, it produced a successful step whose
+  result was the error text.
+- A JSON object or array returned as text is decoded into `result_data`, so
+  `$steps.N.result_data.<field>` works on it.
+- The `mcp` extra pins the MCP Python SDK to 1.x (`mcp>=1.9,<2`); the 2.x
+  client API is not supported.
 - `from_json()` / `load()` rebuild an MCP step as a legacy `StepDescription`; use
   the typed loader to get `MCPStepDescription` back. See
   [JSON serialization](/carl/serialization/json/).

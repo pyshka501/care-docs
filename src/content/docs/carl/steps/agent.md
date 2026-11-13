@@ -273,7 +273,7 @@ model call and without writing `output_key`. See [caching](/carl/steps/caching/)
   [preflight](/carl/care-integration/preflight/) reports unregistered ones in
   `missing_tools`.
 - The wire type is `"agent"`. It entered the chain format at `format_version` 4.
-  Chains saved by CARL 0.5.0 carry `format_version` 11. See
+  Chains saved by CARL 0.5.2 carry `format_version` 15. See
   [migration](/carl/serialization/migration/).
 - `ChainBuilder` has no `add_agent_step` helper. Build the
   `AgentStepDescription` and pass it in `ReasoningChain(steps=[...])`.

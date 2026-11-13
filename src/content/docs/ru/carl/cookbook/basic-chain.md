@@ -5,7 +5,7 @@ sidebar:
   order: 3
 ---
 
-[`basic_chain_example.py`](https://github.com/Glazkoff/carl/blob/main/examples/orchestration/basic_chain_example.py)
+[`basic_chain_example.py`](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/orchestration/basic_chain_example.py)
 из репозитория строит 4-шаговую цепочку, анализирующую квартальный отчёт: извлечь метрики →
 (проанализировать достижения ‖ оценить риски) → синтезировать сводку. Шаги 2 и 3 выполняются
 параллельно (оба зависят только от шага 1); шаг 4 ждёт оба.

@@ -1,13 +1,13 @@
 ---
 title: API Reference
-description: The public surface of mmar_carl 0.5.0 — top-level exports, grouped.
+description: The public surface of mmar_carl 0.5.2 — top-level exports, grouped.
 sidebar:
   order: 1
 ---
 
 Everything below is importable from the top-level package
 (`from mmar_carl import ...`). The list was checked against `mmar_carl.__all__`
-(about 310 names) plus the host-contract names listed at the end. Follow the
+of 0.5.2 (381 names) plus the host-contract names listed at the end. Follow the
 links for guides.
 
 ## Core
@@ -15,7 +15,8 @@ links for guides.
 `ReasoningChain` · `ChainBuilder` · `create_chain_from_config` ·
 `ReasoningContext` · `ReasoningResult` · `StepExecutionResult` · `DAGExecutor`
 · `ContextSnapshot` · `PromptTemplate` · `Language` · `StepType` ·
-`MemoryOperation` · `ChainFormatNewerError` · `ExecutionCancelledError` →
+`MemoryOperation` · `ChainFormatNewerError` · `ExecutionCancelledError` ·
+`LLMTokenLimitError` →
 [chains](/carl/chains/overview/) · [run controls](/carl/chains/run-controls/)
 
 ## Steps
@@ -30,7 +31,9 @@ Typed: `LLMStepDescription` · `ToolStepDescription` · `MemoryStepDescription`
 `EvaluationStepDescription` · `AgentStepDescription` · `CodeStepDescription` ·
 `WaitStepDescription` · `MapStepDescription` · `CommandPlanStepDescription` ·
 `CommandStepDescription` · `ShellSessionStepDescription` ·
-`ClaudeCodeStepDescription` · `CodexStepDescription`.
+`ClaudeCodeStepDescription` · `CodexStepDescription` ·
+`SelectionStepDescription` · `PlannerStepDescription` ·
+`DecisionStepDescription` · `TerminateStepDescription`.
 Base / legacy: `StepDescriptionBase` · `StepDescription` ·
 `AnyStepDescription` · `StepConfig` · `create_step` →
 [steps](/carl/steps/overview/)
@@ -50,7 +53,9 @@ Base / legacy: `StepDescriptionBase` · `StepDescription` ·
 `AfterWaitCondition` · `AtWaitCondition` · `EventWaitCondition` ·
 `AnyOfWaitCondition` · `MapStepConfig` · `CommandPlanStepConfig` ·
 `CommandStepConfig` · `ShellSessionStepConfig` · `ClaudeCodeStepConfig` ·
-`CodexStepConfig` · `LoopConfig` · `StepCache` · `StepGroup`
+`CodexStepConfig` · `SelectionStepConfig` · `PlannerStepConfig` ·
+`DecisionStepConfig` · `DecisionQuestion` · `DecisionChoice` · `DecisionLevel` ·
+`TerminateStepConfig` · `LoopConfig` · `StepCache` · `StepGroup`
 
 ## Typed step outcomes
 
@@ -82,7 +87,14 @@ Base / legacy: `StepDescriptionBase` · `StepDescription` ·
 
 `ClaudeCodeStepExecutor` · `ClaudeCodeCliStatus` · `check_claude_code_cli` ·
 `CodexStepExecutor` · `CodexRuntimeStatus` · `check_codex_runtime` →
-[Claude Code step](/carl/steps/claude-code/) · [Codex step](/carl/steps/codex/)
+[Claude Code step](/carl/steps/claude-code/) · [Codex step](/carl/steps/codex/).
+Both need `ReasoningContext.allow_local_agent_execution=True`.
+
+## Decision models
+
+`DecisionStepExecutor` (accepts an `httpx` `transport` for tests) ·
+`DecisionProviderError` → [decision step](/carl/steps/decision/). The host
+grant is `ReasoningContext.decision_endpoints`.
 
 ## Context extraction
 
@@ -115,10 +127,30 @@ Base / legacy: `StepDescriptionBase` · `StepDescription` ·
 
 ## Evolution
 
-`ChainEvolver` · `ChainMutator` · `MutationKind` · `ChainCrossover` ·
-`CROSSOVER_KIND` · `EvolutionResult` · `IndividualMetrics` ·
-`EvolutionCostEstimate` · `GenerationStats` · `format_runs_pareto` →
-[evolution](/carl/evolution/overview/)
+`ChainEvolver` · `ChainMutator` · `MutationKind` · `EvolutionResult` ·
+`IndividualMetrics` · `EvolutionCostEstimate` · `GenerationStats` ·
+`format_runs_pareto` → [evolution](/carl/evolution/overview/)
+
+## EvoC primitives (0.5.0)
+
+Catalog and validation: `get_step_catalog` · `StepCatalog` · `StepTypeSpec` ·
+`FieldSpec` · `ReferenceSpec` · `schema_for` · `config_class_names` ·
+`reference_fields` · `validate_spec` · `validate_and_build` · `ValidationReport`
+· `ValidationIssue` · `check_drift` · `DriftReport` ·
+`auto_generate_minimal_step`. Mutation: `mutable_fields` · `mutable_targets` ·
+`get_field_by_path` · `set_field_by_path` · `iter_mutable_values` ·
+`expand_field_path` · `sample_field_value` · `mutate_content` ·
+`insert_step_at` · `remove_step` · `rewire_dependencies` · `change_step_type`
+· `apply_records` · `MutationRecord` · `MutationError` · `find_root_steps` ·
+`find_leaf_steps` · `dependents_of` · `steps_of_type` · `deletable_steps` ·
+`can_delete_step` · `frozen_step_numbers`. Capabilities: `CapabilityLibrary`
+· `CapabilityEntry`. Code tools: `CodeTool` · `CodeToolLibrary` ·
+`CodeToolError` · `validate_code_tool` · `compile_code_tool` ·
+`mutate_tool_code` · `TOOL_LIBRARY_KEY`. Runs and datasets: `RunDescriptor` ·
+`ComplexityDescriptor` · `extract_run_descriptor` · `extract_complexity` ·
+`pareto_front` · `pareto_rank` · `dominates` · `subsample` · `split` ·
+`select_cases` · `CaseSplit` · `CaseDiff` →
+[EvoC primitives](/carl/evolution/overview/#evoc-primitives)
 
 ## Tracing, cost & visualization
 
@@ -170,7 +202,10 @@ Base / legacy: `StepDescriptionBase` · `StepDescription` ·
 `CallableToolSource` · `DictToolSource` · `AsyncToolWrapper` · `get_executor`
 · `register_executor` · `StepExecutorBase` · one `*StepExecutor` class per
 step type (for example `LLMStepExecutor`, `ToolStepExecutor`,
-`MapStepExecutor`, `WaitStepExecutor`) → [tool steps](/carl/steps/tool/)
+`MapStepExecutor`, `WaitStepExecutor`) → [tool steps](/carl/steps/tool/).
+`GitToolSource` is not exported at the top level: import it from
+`mmar_carl.models.config`. `execute_eager_tools` lives in
+`mmar_carl.eager_tools`.
 
 ## Testing & MCP infrastructure
 
@@ -178,9 +213,9 @@ step type (for example `LLMStepExecutor`, `ToolStepExecutor`,
 
 ## Host contract names
 
-These names come with the Maestro host contracts that are part of 0.5.0
-(see [changelog](/carl/reference/changelog/#host-contracts-used-by-maestro)).
-They are module attributes, not entries of `__all__`:
+These names mark the host-input contracts that Maestro relies on. They exist in
+0.5.2 and in Maestro's pinned CARL build. They are module attributes, not
+entries of `__all__`:
 
 | Name | Value | Meaning |
 | --- | --- | --- |

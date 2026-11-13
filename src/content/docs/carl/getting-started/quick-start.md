@@ -11,7 +11,7 @@ stub LLM client, so you can check your setup without an API key.
 ## 1. Install
 
 ```bash
-pip install 'mmar-carl==0.5.0'
+pip install 'mmar-carl==0.5.2'
 ```
 
 The OpenAI-compatible client is part of the core package. Python 3.12+ is
@@ -121,5 +121,5 @@ print(result.get_final_output())
 
 - [What is CARL?](/carl/getting-started/overview/): the big picture and extras.
 - [Core concepts](/carl/concepts/what-is-carl/): chains, steps, DAG, context.
-- [Steps overview](/carl/steps/overview/): all 25 step types.
+- [Steps overview](/carl/steps/overview/): all 29 step types.
 - [Run controls](/carl/chains/run-controls/): fail-fast, pause, cancel.

@@ -80,7 +80,7 @@ print(step.result_data["approval"])          # "approved"
 [предупреждении на странице Command-шага](/ru/carl/steps/command/#минимальный-пример).
 
 Пример из двух шагов, где файл передаётся между новыми оболочками через артефакты:
-[`examples/orchestration/shell_session_artifacts_example.py`](https://github.com/Glazkoff/carl/blob/main/examples/orchestration/shell_session_artifacts_example.py).
+[`examples/orchestration/shell_session_artifacts_example.py`](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/orchestration/shell_session_artifacts_example.py).
 
 ## ShellSessionStepConfig
 

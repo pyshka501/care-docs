@@ -104,5 +104,5 @@ decision.sub_result            # ReasoningResult of the sub-chain
 ## См. также
 
 - [Handoff](/ru/carl/orchestration/handoff/): передача одной заранее известной под-цепочке.
-- [Пример маршрутизации supervisor](https://github.com/Glazkoff/carl/blob/main/examples/agents/supervisor_routing_example.py)
+- [Пример маршрутизации supervisor](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/agents/supervisor_routing_example.py)
   (mock-клиент, без API-ключа).

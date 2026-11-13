@@ -5,7 +5,7 @@ sidebar:
   order: 3
 ---
 
-The repo's [`basic_chain_example.py`](https://github.com/Glazkoff/carl/blob/main/examples/orchestration/basic_chain_example.py)
+The repo's [`basic_chain_example.py`](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/orchestration/basic_chain_example.py)
 builds a 4-step chain that analyses a quarterly report: extract metrics → (analyse
 achievements ‖ assess risks) → synthesise a summary. Steps 2 and 3 run in parallel
 (both depend only on step 1); step 4 waits for both.

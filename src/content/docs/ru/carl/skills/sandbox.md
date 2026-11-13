@@ -13,7 +13,7 @@ sidebar:
 
 ## Где выполняются скрипты навыка
 
-`AgentSkillStepConfig.runtime` по умолчанию `"local"`. В CARL 0.5.0 это
+`AgentSkillStepConfig.runtime` по умолчанию `"local"`. В CARL 0.5.2 это
 единственный рантайм, в котором шаг AgentSkill может запускать скрипты.
 `LocalSkillRuntime` запускает подпроцесс на хосте. Скрипт видит файловую
 систему и сеть хоста. Если `extra_pip` не задан, он получает и всё окружение

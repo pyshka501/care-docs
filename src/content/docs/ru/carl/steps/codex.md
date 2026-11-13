@@ -22,6 +22,11 @@ pip install 'mmar-carl[codex]'     # openai-codex>=0.147.0, also in mmar-carl[al
 codex login                        # authentication stays in the host's Codex install
 ```
 
+Хост также должен разрешить локальных агентов для запуска:
+`ReasoningContext(..., allow_local_agent_execution=True)`. По умолчанию флаг
+`False` и в JSON не пишется. Без него шаг падает до старта Codex. Это
+требование появилось в 0.5.0.
+
 Проверьте хост перед запуском:
 
 ```python
@@ -87,9 +92,9 @@ CodexStepDescription(
   приостановить цепочку, чтобы запросить больше прав.
 - Учётные данные, переопределения окружения, произвольные аргументы запуска и
   политика подтверждений **не входят** в сериализованный конфиг.
-- Политики на стороне хоста, которая ограничивала бы выбор `cwd` в цепочке или
-  разрешение `workspace-write`, пока нет. Если вы запускаете чужие цепочки, проверяйте
-  эти два поля.
+- Кроме `allow_local_agent_execution`, у хоста нет политики, которая ограничивала
+  бы выбор `cwd` в цепочке или разрешение `workspace-write`. Если вы запускаете
+  чужие цепочки, проверьте эти два поля, прежде чем давать флаг.
 - `cache` для этого типа шага отклоняется.
 
 ## Результат
@@ -122,6 +127,7 @@ CodexStepConfig(
 
 Шаг возвращает `success=False` с `error_message`, когда:
 
+- хост не выставил `allow_local_agent_execution`;
 - SDK не установлен (`Optional dependency 'openai_codex' not found…`);
 - `cwd` не существующий каталог;
 - у `{placeholder}` нет записи в `input_mapping` или отрисованная задача превышает
@@ -145,4 +151,4 @@ CodexStepConfig(
 
 - [Шаг Claude Code](/ru/carl/steps/claude-code/): та же идея через CLI `claude`, со стримингом.
 - [Agent-шаг](/ru/carl/steps/agent/): ограниченный цикл над вашими зарегистрированными инструментами.
-- [Пример](https://github.com/Glazkoff/carl/blob/pre-release/examples/agents/codex_step_example.py) в репозитории.
+- [Пример](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/agents/codex_step_example.py) в репозитории.

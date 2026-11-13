@@ -74,7 +74,7 @@ ToolDiscoveryStepDescription(
 
 | Field | Type | Default | Purpose |
 | --- | --- | --- | --- |
-| `source` | `ModuleToolSource \| CallableToolSource \| DictToolSource` | (required) | Where to discover tools. |
+| `source` | `ModuleToolSource \| CallableToolSource \| DictToolSource \| GitToolSource` | (required) | Where to discover tools. |
 | `output_memory_key` | `str` | `""` | If set, the sorted list of tool names is written to `memory["tools"][output_memory_key]`, i.e. `$memory.tools.<key>`. |
 | `tool_timeout` | `float \| None` | `None` | Per-call timeout applied to discovered **sync** tools. No effect on async tools. |
 
@@ -87,6 +87,7 @@ The step's `result_data` is `{"tool_names": [...]}`.
 | `ModuleToolSource(module, name_prefix="", tag="", strip_prefix=False)` | Imports `module` and takes its public callables, filtered as described below. |
 | `CallableToolSource(factory)` | Calls `factory()`, which must return `{name: callable}`. |
 | `DictToolSource(tools)` | An explicit `{name: callable}` dict. |
+| `GitToolSource(git_url, module_file, git_ref="HEAD", git_subdirectory=None, function=None, sha256=None)` | Clones a Git repository and imports one module file from it. Takes the `@carl_tool`-decorated functions, or only `function` when it is set. New in 0.5.0. |
 
 `ModuleToolSource` filters:
 
@@ -104,7 +105,49 @@ only tools.
 :::
 
 `CallableToolSource` and `DictToolSource` hold Python callables, so a chain using
-them cannot be fully described in JSON. `ModuleToolSource` holds only a module path.
+them cannot be fully described in JSON. `ModuleToolSource` holds only a module
+path, and `GitToolSource` only a repository, a revision and digests.
+
+## Tools from a pinned Git commit
+
+`GitToolSource` loads tool code from a Git checkout. Pin it two ways: set
+`git_ref` to a full commit SHA, and list the expected SHA-256 of each file you
+rely on in `sha256` (paths relative to `git_subdirectory`).
+
+```python
+from mmar_carl import ToolDiscoveryStepConfig, ToolDiscoveryStepDescription
+from mmar_carl.models.config import GitToolSource
+
+ToolDiscoveryStepDescription(
+    number=1,
+    title="Load pinned text tools",
+    config=ToolDiscoveryStepConfig(
+        source=GitToolSource(
+            git_url="https://github.com/acme/text-tools.git",
+            git_ref="<40-char commit sha>",
+            module_file="tools.py",
+            sha256={"tools.py": "<sha256 of tools.py>"},
+        ),
+        output_memory_key="git_tools",   # → $memory.tools.git_tools
+    ),
+)
+```
+
+- A full 40- or 64-hex `git_ref` is fetched with `--depth=1` and checked out
+  exactly; any other value is cloned as a branch or tag (`HEAD` = the default
+  branch). Only a commit SHA pins the code.
+- Checkouts are cached under `~/.cache/mmar_carl/skills/git/`, keyed by URL,
+  ref and subdirectory. The digests are checked on every load, cache hits
+  included. A mismatch fails the step (`SHA256 mismatch for tools.py: …`).
+- `module_file` and the `sha256` paths must stay inside the checkout.
+- Without `function`, only callables marked by `@carl_tool` are registered,
+  with their tags. With `function`, just that one callable is registered.
+- Loading executes the module in the host process. Pin only code you trust.
+  `GitToolSource` is not a top-level export; import it from
+  `mmar_carl.models.config`.
+
+AgentSkills use the same Git loader and digest check; see
+[skill resolvers](/carl/skills/resolvers/).
 
 ## See also
 

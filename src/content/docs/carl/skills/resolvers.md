@@ -25,7 +25,8 @@ for a memory card.
 :::note
 The AgentSkill **step** does not call `resolve_skill`. It loads skills through
 `SkillLoader`, which handles `github://` the same way but treats other
-`https://` URLs as git repositories, and ignores `trust_policy`. See
+`https://` URLs as git repositories. Since 0.5.0 the step applies
+`trust_policy="sha_pinned"` itself to the `SKILL.md` it parses. See
 [AgentSkills overview](/carl/skills/overview/#skill-identity).
 :::
 
@@ -79,7 +80,7 @@ What is checked depends on the resolver:
 | --- | --- |
 | `github://` | With `trust_policy="sha_pinned"`, compares `sha256` to the digest of the extracted `SKILL.md`, on fresh downloads and cache hits. If `sha256` is `None`, nothing is checked and no error is raised. |
 | `local://`, plain paths, `module://` | Compares `sha256` to `SKILL.md` whenever `sha256` is given; `trust_policy` is ignored. |
-| `https://` | `sha_pinned` without a digest raises `SkillIntegrityError`. On a fresh download the same digest is compared to both the archive bytes and `SKILL.md`, so pinning a fresh download fails in 0.5.0 whichever digest you pass. |
+| `https://` | `sha_pinned` without a digest raises `SkillIntegrityError`. On a fresh download the same digest is compared to both the archive bytes and `SKILL.md`, so pinning a fresh download fails in 0.5.2 whichever digest you pass. |
 
 Only `SKILL.md` is hashed. Scripts, references and assets next to it are not
 covered by the pin.
@@ -116,4 +117,4 @@ Fetch them at runtime; don't redistribute them.
 ## See also
 
 - [AgentSkills overview](/carl/skills/overview/) · [Sandboxing](/carl/skills/sandbox/)
-- [Resolver example](https://github.com/Glazkoff/carl/blob/main/examples/skills/skill_resolver_example.py)
+- [Resolver example](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/skills/skill_resolver_example.py)

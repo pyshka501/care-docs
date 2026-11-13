@@ -95,7 +95,7 @@ stops the run before RE-PLAN can retry or roll back.
 
 ## Example
 
-The repo's [deterministic RE-PLAN example](https://github.com/Glazkoff/carl/blob/main/examples/replan/replan_deterministic_example.py)
+The repo's [deterministic RE-PLAN example](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/replan/replan_deterministic_example.py)
 (mock client, no API key) runs a 3-step memo chain. Step 2 emits `NEEDS_REPLAN`
 on its first attempt; a rule-based checker matches that substring, retries the
 step with feedback, and the second attempt succeeds.
@@ -128,4 +128,4 @@ action, the checker vote tally (`event.aggregation`), and any rollback target.
 ## See also
 
 - [Checkers & aggregation](/carl/replan/checkers/)
-- [RE-PLAN examples](https://github.com/Glazkoff/carl/tree/main/examples/replan) in the repo (deterministic / LLM / voting / checkpoint / budget).
+- [RE-PLAN examples](https://github.com/AIRI-MAESTRO/carl/tree/v0.5.2/examples/replan) in the repo (deterministic / LLM / voting / checkpoint / budget).

@@ -25,11 +25,13 @@ It is an `async` classmethod.
 
 ## What the planner can produce
 
-The planning prompt offers four step types: `llm`, `tool`, `memory` and
-`transform`. When you pass `available_skills`, it also allows `agent_skill` steps
-with those names. Other step types (agents, code, commands, orchestration) are
-not planned by this helper. For full chain generation with those, Maestro uses
-its own generator.
+Since 0.5.0 the planning prompt is rendered from the live step catalog
+(`get_step_catalog().generation_prompt(...)`), so it describes **every**
+registered step type, with a compact card per type and the `$...` reference
+grammar. `available_tools` and `available_skills` are listed for `tool` and
+`agent_skill` steps. `capability_library` (a `CapabilityLibrary`) adds a
+curated list of tools and skills to the prompt. Maestro does not use this
+helper; it has its own generator.
 
 ## Parameters
 
@@ -39,6 +41,7 @@ its own generator.
 | `llm_client` | `Any` | required | An `LLMClientBase`, or any object with async `get_response_with_retries(prompt, retries=…)` or `get_response(prompt)`. |
 | `available_skills` | `list[str] \| None` | `None` | Skill names the planner may use in `agent_skill` steps. |
 | `available_tools` | `list[str] \| None` | `None` | Tool names the planner is told to use in `tool` steps. |
+| `capability_library` | `CapabilityLibrary \| None` | `None` | Extra tool and skill descriptions for the prompt (EvoC). |
 | `max_steps` | `int` | `10` | Upper bound on planned steps (`ValueError` if exceeded). |
 | `max_workers` | `int \| str` | `"auto"` | Worker setting on the resulting chain. |
 | `extra_instructions` | `str` | `""` | Free text appended to the planning prompt. |
@@ -61,5 +64,5 @@ entry per attempt with its prompt, reply and validation error), and
 
 ## See also
 
-- [chain_from_description example](https://github.com/Glazkoff/carl/blob/main/examples/skills/chain_from_description_example.py) in the repo.
+- [chain_from_description example](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/skills/chain_from_description_example.py) in the repo.
 - [ChainBuilder](/carl/chains/builder/) · [Preflight](/carl/care-integration/preflight/)

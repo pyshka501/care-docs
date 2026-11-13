@@ -25,7 +25,8 @@ skill.resolved_version  # "anthropics/skills@main"
 :::note
 **Шаг** AgentSkill не вызывает `resolve_skill`. Он загружает навыки через
 `SkillLoader`. `github://` там обрабатывается так же, но остальные `https://`
-считаются git-репозиториями, а `trust_policy` игнорируется. См.
+считаются git-репозиториями. С 0.5.0 шаг сам применяет
+`trust_policy="sha_pinned"` к разобранному `SKILL.md`. См.
 [обзор AgentSkills](/ru/carl/skills/overview/).
 :::
 
@@ -79,7 +80,7 @@ except SkillIntegrityError:
 | --- | --- |
 | `github://` | С `trust_policy="sha_pinned"` сравнивает `sha256` с хэшем распакованного `SKILL.md`, и при скачивании, и при попадании в кэш. Если `sha256` равен `None`, проверки нет и ошибки тоже. |
 | `local://`, обычные пути, `module://` | Сравнивает `sha256` с `SKILL.md`, если `sha256` передан. `trust_policy` игнорируется. |
-| `https://` | `sha_pinned` без хэша даёт `SkillIntegrityError`. При свежем скачивании один и тот же хэш сравнивается и с байтами архива, и с `SKILL.md`. Поэтому в 0.5.0 пиннинг свежего скачивания падает с любым хэшем. |
+| `https://` | `sha_pinned` без хэша даёт `SkillIntegrityError`. При свежем скачивании один и тот же хэш сравнивается и с байтами архива, и с `SKILL.md`. Поэтому в 0.5.2 пиннинг свежего скачивания падает с любым хэшем. |
 
 Хэшируется только `SKILL.md`. Скрипты, справочники и ассеты рядом с ним пин не
 покрывает.
@@ -117,4 +118,4 @@ SkillLoader().catalog_all(payloads=True)  # list of memory-card dicts
 ## См. также
 
 - [Обзор AgentSkills](/ru/carl/skills/overview/) · [Песочница](/ru/carl/skills/sandbox/)
-- [Пример резолвера](https://github.com/Glazkoff/carl/blob/main/examples/skills/skill_resolver_example.py)
+- [Пример резолвера](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/skills/skill_resolver_example.py)

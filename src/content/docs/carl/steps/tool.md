@@ -159,9 +159,14 @@ fallbacks never run with a missing input.
 
 On success the step result has:
 
-- `result_data`: the tool's return value as is (read it later with
-  `$steps.<n>.result_data` or `$metadata.step_<n>`);
-- `result`: the same value as a string (JSON for non-strings);
+- `result_data`: the tool's return value (read it later with
+  `$steps.<n>.result_data` or `$metadata.step_<n>`). Since 0.5.0 a string
+  whose whole content is a JSON object or array is decoded, so a tool that
+  returns JSON text can feed `$steps.<n>.result_data.<field>` downstream;
+- `result`: the value as a string (JSON for non-strings, the raw text for
+  strings);
+- `tool_name`: the tool that actually answered, i.e. the fallback's name when
+  `ToolErrorRecovery` switched to one;
 - a history entry `Step N. <title> [TOOL: <name>]` with the result.
 
 A timeout or exception gives `success=False` with `error_message`. Whether
@@ -170,14 +175,66 @@ dependent steps still run depends on [fail-fast](/carl/chains/run-controls/).
 ## Tools that are chains
 
 A [chain tool](/carl/steps/chain-tools/) is registered under its own name and is
-called by a tool step like any function. It returns a typed envelope; the tool
-step succeeds even when the nested chain did not, so check the envelope's
-`status`.
+called by a tool step like any function. It returns a typed envelope. Since
+0.5.0 the tool step fails when the envelope's `status` is not `completed`; the
+envelope stays in `result_data`.
+
+## Eager scheduling (experimental)
+
+`execute_eager_tools()` (new in 0.5.0, experimental) runs a static graph of
+tool steps without the batch scheduler. A tool starts as soon as its declared
+dependencies have succeeded and a worker is free. Results come back in
+declaration order.
+
+```python
+import asyncio
+from mmar_carl import ToolStepConfig, ToolStepDescription
+from mmar_carl.eager_tools import execute_eager_tools
+
+async def add_one(value):
+    return {"value": value + 1}
+
+async def double(value):
+    return {"value": value * 2}
+
+steps = [
+    ToolStepDescription(number=1, title="Add one", config=ToolStepConfig(
+        tool_name="add_one", input_mapping={"value": "$outer_context.value"})),
+    ToolStepDescription(number=2, title="Double", dependencies=[1], config=ToolStepConfig(
+        tool_name="double", input_mapping={"value": "$steps.1.result_data.value"})),
+]
+results = asyncio.run(execute_eager_tools(
+    steps,
+    tools={"add_one": add_one, "double": double},
+    outer_context={"value": 20},
+    max_concurrency=2,
+))
+# [step 1 → {'value': 21}, step 2 → {'value': 42}]
+```
+
+It is a host API, not a step type, and it is imported from
+`mmar_carl.eager_tools` (it is not a top-level export). Rules:
+
+- Tools are an explicit mapping of trusted `async def` functions. They must be
+  stateless, safe in any order the dependencies allow, and responsive to
+  cancellation.
+- A step reads only JSON from `$outer_context`, from its declared ancestors'
+  results, or quoted literals. Each step gets its own copy, so a tool that
+  mutates its input cannot change another step's input. The graph and the
+  reference scope are validated before any tool runs.
+- A failed step blocks its descendants; they come back with `success=False`
+  and `skipped=True`. Unrelated branches still finish. `ToolStepConfig.timeout`
+  fails one step; the overall `timeout` cancels in-flight tools, waits for
+  their cleanup and raises `TimeoutError`.
+
+Use `ReasoningChain.execute_async()` for anything with memory, history, events,
+conditional routing, checkpoints, dynamic steps or RE-PLAN.
 
 ## Registering many tools at once
 
 Use the [`@carl_tool` decorator and dynamic discovery](/carl/steps/tool-discovery/)
-to register tools in bulk (from a module, a glob, or a factory).
+to register tools in bulk (from a module, a glob, a factory, or a pinned Git
+commit).
 
 ## See also
 

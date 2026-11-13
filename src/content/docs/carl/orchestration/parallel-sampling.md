@@ -45,7 +45,7 @@ ParallelSamplingStepDescription(
 `base_step` is a required `LLMStepDescription`. Every sample runs the same base
 step, including its `llm_config`, so all samples use one model. To compare
 different models, run several LLM steps in parallel instead (see the
-[LLM council example](https://github.com/Glazkoff/carl/blob/main/examples/agents/llm_council_example.py)).
+[LLM council example](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/agents/llm_council_example.py)).
 
 ## ParallelSamplingStepConfig
 

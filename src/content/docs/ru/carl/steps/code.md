@@ -132,7 +132,7 @@ completed {'sum': 10, 'count': 4} 3.12.13
 `docker image inspect python:3.12-slim --format '{{json .RepoDigests}}'`.
 
 Более длинная версия с режимом пробного запуска лежит в
-[`examples/agents/code_step_example.py`](https://github.com/Glazkoff/carl/blob/main/examples/agents/code_step_example.py).
+[`examples/agents/code_step_example.py`](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/agents/code_step_example.py).
 
 ## Поля
 
@@ -210,8 +210,8 @@ context.code_execution_policy = CodeExecutionPolicy(profiles={...})
 подтвердить, что сетевая изоляция включена, а монтирование вывода рабочей области
 доступно только для чтения.
 
-Из рантаймов, которые поставляются с CARL, проходит только **`docker`**. Проверено на
-CARL 0.5.0:
+Из рантаймов, которые поставляются с CARL, проходит только **`docker`**. Сверено с
+заявленными возможностями рантаймов в CARL 0.5.2:
 
 | Рантайм | Результат | Каких контролей нет |
 | --- | --- | --- |
@@ -302,7 +302,7 @@ Preflight проверяет только, что **имя** разрешает�
 ## Сериализация
 
 - Тип в формате цепочки — `"code"`. Он появился в формате цепочки с
-  `format_version` 7. Цепочки, сохранённые CARL 0.5.0, имеют `format_version` 11.
+  `format_version` 7. Цепочки, сохранённые CARL 0.5.2, имеют `format_version` 15.
   См. [миграцию](/ru/carl/serialization/migration/).
 - Весь `CodeStepConfig` проходит круг через `to_dict()` / `from_dict()` без потерь.
   Политика намеренно не сериализуется.

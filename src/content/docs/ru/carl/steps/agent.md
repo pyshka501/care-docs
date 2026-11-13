@@ -282,7 +282,7 @@ True completed finish
   [preflight](/ru/carl/care-integration/preflight/) сообщает о незарегистрированных
   в `missing_tools`.
 - Тип в формате цепочки — `"agent"`. Он появился в формате цепочки с
-  `format_version` 4. Цепочки, сохранённые CARL 0.5.0, имеют `format_version` 11.
+  `format_version` 4. Цепочки, сохранённые CARL 0.5.2, имеют `format_version` 15.
   См. [миграцию](/ru/carl/serialization/migration/).
 - У `ChainBuilder` нет хелпера `add_agent_step`. Создайте `AgentStepDescription` и
   передайте его в `ReasoningChain(steps=[...])`.

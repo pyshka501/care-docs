@@ -93,7 +93,7 @@ CARL также пишет в лог `UserWarning`, потому что ни о�
 и сводный результат со всеми тремя исходами всё равно записан в память.
 
 Ещё один рабочий пример:
-[`examples/orchestration/map_step_example.py`](https://github.com/Glazkoff/carl/blob/main/examples/orchestration/map_step_example.py).
+[`examples/orchestration/map_step_example.py`](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/orchestration/map_step_example.py).
 
 ## Поля
 
@@ -196,7 +196,7 @@ CARL также пишет в лог `UserWarning`, потому что ни о�
   [preflight](/ru/carl/care-integration/preflight/) сообщает об отсутствующем
   инструменте в `missing_tools`.
 - Тип в формате цепочки — `"map"`. Он появился в формате цепочки с
-  `format_version` 8. Цепочки, сохранённые CARL 0.5.0, имеют `format_version` 11.
+  `format_version` 8. Цепочки, сохранённые CARL 0.5.2, имеют `format_version` 15.
   См. [миграцию](/ru/carl/serialization/migration/).
 - Весь конфиг проходит круг через `to_dict()` / `from_dict()` без потерь.
 - У `ChainBuilder` нет хелпера `add_map_step`. Создавайте `MapStepDescription`

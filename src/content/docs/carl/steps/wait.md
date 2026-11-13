@@ -173,7 +173,7 @@ if the run is cancelled, the step returns the normal cancelled result
 ## Serialization
 
 - The wire type is `"wait"`. It entered the chain format at `format_version` 5.
-  Chains saved by CARL 0.5.0 carry `format_version` 11. See
+  Chains saved by CARL 0.5.2 carry `format_version` 15. See
   [migration](/carl/serialization/migration/).
 - The full config round-trips through `to_dict()` / `from_dict()`.
 - `ChainBuilder` has no `add_wait_step` helper. Build `WaitStepDescription` directly.

@@ -11,7 +11,7 @@ sidebar:
 ## 1. Установка
 
 ```bash
-pip install 'mmar-carl==0.5.0'
+pip install 'mmar-carl==0.5.2'
 ```
 
 OpenAI-совместимый клиент входит в базовый пакет. Нужен Python 3.12+.
@@ -120,5 +120,5 @@ print(result.get_final_output())
 
 - [Что такое CARL?](/ru/carl/getting-started/overview/): общая картина и extras.
 - [Основные понятия](/ru/carl/concepts/what-is-carl/): цепочки, шаги, DAG, контекст.
-- [Обзор шагов](/ru/carl/steps/overview/): все 25 типов шагов.
+- [Обзор шагов](/ru/carl/steps/overview/): все 29 типов шагов.
 - [Управление запуском](/ru/carl/chains/run-controls/): fail-fast, пауза, отмена.

@@ -84,7 +84,7 @@ and reports the gap. For real isolation use `docker`, `e2b` or `firejail`.
 :::
 
 A complete runnable demo is in
-[`examples/orchestration/command_steps_example.py`](https://github.com/Glazkoff/carl/blob/main/examples/orchestration/command_steps_example.py).
+[`examples/orchestration/command_steps_example.py`](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/orchestration/command_steps_example.py).
 
 ## CommandStepConfig
 

@@ -34,11 +34,12 @@ meta = chain.get_care_metadata()   # -> CareChainMetadata | None
 `mage_metadata`, `display_name`, `description`, `tags`.
 
 :::caution
-`set_care_metadata()` **заменяет** весь блок `care` типизированными полями.
-Ключи, которых нет в `CareChainMetadata`, пропадают, в том числе
-`runtime_input_schema` Maestro. Непереданные именованные поля тоже
-сбрасываются (проверено на 0.5.0). Чтобы поменять одно значение в цепочке из
-Maestro, правьте `chain.metadata["care"]` напрямую.
+`set_care_metadata()` перезаписывает типизированные поля блока `care`. Ключи,
+которых нет в `CareChainMetadata`, например `runtime_input_schema` Maestro,
+сохраняются. Описанные в модели поля, которые вы не передали, сбрасываются, а
+пустые выпадают: вызов только с `display_name=` убирает существующие `tags`
+(проверено на 0.5.2). Чтобы поменять одно значение, правьте
+`chain.metadata["care"]` напрямую.
 :::
 
 ## Контракт входа Maestro

@@ -40,4 +40,4 @@ async for item in chain.stream_async(context):
 ## Смотрите также
 
 - [Асинхронное выполнение](/ru/carl/async/overview/) — параллелизм, колбэки, таймауты.
-- [Пример с OpenRouter](https://github.com/Glazkoff/carl/blob/main/examples/llm_inference/openrouter_example.py) в репозитории (нужен API-ключ).
+- [Пример с OpenRouter](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/llm_inference/openrouter_example.py) в репозитории (нужен API-ключ).

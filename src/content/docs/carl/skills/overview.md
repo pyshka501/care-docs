@@ -34,7 +34,7 @@ pip install 'mmar-carl[skills]'         # agent-skills + pdf + pptx (the PDF -> 
 ```
 
 :::caution[Skills run on the host]
-In CARL 0.5.0 an AgentSkill step executes scripts only with `runtime="local"`,
+In CARL 0.5.2 an AgentSkill step executes scripts only with `runtime="local"`,
 which is a host subprocess with no isolation. Choosing `docker`, `e2b` or
 `firejail` makes script execution fail. Run only skills you trust. To run
 untrusted code in a sandbox, use a fixed [CommandStep](/carl/steps/command/).
@@ -82,7 +82,7 @@ runtime does not enforce either.
 
 ## Config fields
 
-All fields of `AgentSkillStepConfig` with their defaults in 0.5.0:
+All fields of `AgentSkillStepConfig` with their defaults in 0.5.2:
 
 | Field | Default | Purpose |
 | --- | --- | --- |
@@ -113,18 +113,21 @@ All fields of `AgentSkillStepConfig` with their defaults in 0.5.0:
 | `output_files_glob` | `["*"]` | `LLM_AGENT`: which files from `out/` are collected. |
 | `runtime` | `"local"` | Script runtime. Only `local` works for this step, see [sandboxing](/carl/skills/sandbox/). |
 | `runtime_config` | `{}` | Network policy keys (`network`, `network_allowlist`); validated, not enforced on `local`. |
-| `trust_policy` | `"any"` | `"any"` or `"sha_pinned"`. **Not checked by the step**, see below. |
-| `skill_sha256` | `None` | Expected `SKILL.md` digest. **Not checked by the step.** |
+| `trust_policy` | `"any"` | `"any"` or `"sha_pinned"`. With `sha_pinned` the step verifies `SKILL.md` before it uses it, see below. |
+| `skill_sha256` | `None` | Expected SHA-256 of `SKILL.md` (64 hex chars). Required with `sha_pinned`. |
 | `extra_pip` | `[]` | Packages installed with `pip install --target` into a temporary overlay put on `PYTHONPATH`. Runs on the host. |
 | `output_schema` | `None` | `LLM_AGENT` only: light JSON-schema check of the final answer (`type`, `properties`, `required`, `items`). |
 | `output_schema_strict` | `True` | Fail the step on a parse or schema error; `False` records `schema_warnings` instead. |
 
-:::caution[Integrity pinning is not applied by the step]
-`trust_policy` and `skill_sha256` are stored and serialized, but the step
-executor never reads them: a step with `trust_policy="sha_pinned"` and a wrong
-digest still runs. To pin a skill, call
-[`resolve_skill(..., sha256=..., trust_policy="sha_pinned")`](/carl/skills/resolvers/)
-yourself before building the chain, and pass the verified local path as `skill`.
+:::note[Pinning is enforced since 0.5.0]
+With `trust_policy="sha_pinned"` the step hashes the same `SKILL.md` bytes it
+parses and fails on a mismatch (`Skill SKILL.md SHA256 mismatch`). A missing or
+malformed `skill_sha256` fails the step too. The pinned load bypasses the
+in-memory skill cache. Only `SKILL.md` is covered; for scripts next to it, pin
+the source itself, e.g. an `AgentSkillSource(git_url=..., git_ref=<commit sha>,
+sha256={"scripts/run.py": "<digest>"})`, whose per-file digests are checked on
+every load, cache hits included. Before 0.5.0 the step stored these fields but
+never checked them.
 :::
 
 ## Result
@@ -149,4 +152,4 @@ preflight. See [Preflight](/carl/care-integration/preflight/).
 ## See also
 
 - [Skill resolvers](/carl/skills/resolvers/) · [Sandboxing & LLM_AGENT](/carl/skills/sandbox/)
-- [AgentSkill example](https://github.com/Glazkoff/carl/blob/main/examples/agents/agent_skill_example.py) (PDF -> analysis -> PPTX).
+- [AgentSkill example](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/agents/agent_skill_example.py) (PDF -> analysis -> PPTX).

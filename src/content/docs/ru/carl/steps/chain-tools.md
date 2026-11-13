@@ -89,10 +89,12 @@ else:
 ничего не делает. Конфликт имени с другим инструментом вызывает ошибку, если не
 передан `replace=True`.
 
-:::caution
-Tool-шаг, который вызывает инструмент-цепочку, **завершается успешно, даже если
-вложенная цепочка упала**: инструмент вернул корректный конверт. Всегда проверяйте
-`ChainToolOutcome.status` (или `success`). Успехом считается только `completed`.
+:::note[Изменилось в 0.5.0]
+Tool-шаг, который вызывает инструмент-цепочку, теперь **падает**, если вызов
+закончился не `completed`. В `result_data` шага остаётся полный
+`ChainToolOutcome`, а `error_message` берёт его сообщение. До 0.5.0 шаг считался
+успешным с упавшим конвертом внутри, так что код хоста, который смотрел только
+на `ChainToolOutcome.status`, теперь должен обрабатывать и упавший шаг.
 :::
 
 ## ChainToolDefinition
@@ -109,7 +111,6 @@ Tool-шаг, который вызывает инструмент-цепочку
 | `output_schema` | `dict` | обязательно | Схема значения, которое читается из дочерней цепочки после её завершения. |
 | `output_reference` | `str` | обязательно | Ссылка в дочерней цепочке, откуда читать: `$history…`, `$memory.…`, `$metadata.…`, `$steps.…` или `$outer_context…`. |
 | `allowed_tools` | `list[str]` | `[]` | Инструменты хоста, которые копируются в дочерний контекст. Имена уникальны. Инструмент не может указать сам себя. |
-| `required_tool_revisions` | `dict[str, str]` | `{}` | Закреплённые ревизии инструментов хоста (см. ниже). |
 | `tags` | `list[str]` | `["chain"]` | Теги зарегистрированного инструмента (для `allowed_tool_tags`). |
 | `max_depth` | `int` | `4` | Предел вложенности, 1–32. |
 | `timeout_seconds` | `float` | `120.0` | Бюджет на один вызов, конечный, не больше 86 400. |
@@ -153,31 +154,10 @@ Tool-шаг, который вызывает инструмент-цепочку
 контексте. Иначе выполнение останавливается с `Embedded chain tools require missing host
 tools: …`. Имя, уже занятое другим инструментом, считается ошибкой.
 
-## Версии инструментов хоста
-
-`required_tool_revisions` закрепляет инструменты хоста, от которых зависит
-инструмент-цепочка. Ключи должны быть в `allowed_tools`, значения — hex-дайджесты
-SHA-256. Перед каждым вызовом рантайм сравнивает каждое значение с атрибутом
-`__carl_tool_revision__` вызываемого объекта. Если у инструмента другая ревизия (или её
-нет), вызов получает статус `unavailable` с `error_code="missing_host_tools"`.
-
-```python
-def normalize(payload):
-    return {"normalized": payload["text"].strip().lower()}
-
-normalize.__carl_tool_revision__ = "<sha256 of this tool version>"
-
-pinned = ChainToolDefinition.model_validate({
-    **normalizer.model_dump(),
-    "required_tool_revisions": {"normalize": "<sha256 of this tool version>"},
-})
-```
-
-У `from_chain` нет параметра для ревизий, поэтому добавляйте их, как показано выше.
-
 ## ChainToolOutcome
 
-Каждый вызов возвращает этот конверт (как словарь в `result_data` tool-шага):
+Каждый вызов возвращает этот конверт (как словарь в `result_data` tool-шага,
+и при успехе, и при сбое):
 
 | Поле | Значение |
 | --- | --- |
@@ -211,4 +191,4 @@ JSON цепочек, созданный до появления поля `chain_
 
 - [Handoff](/ru/carl/orchestration/handoff/): запуск подцепочки, которая делит состояние с родителем.
 - [Tool-шаг](/ru/carl/steps/tool/) · [Agent-шаг](/ru/carl/steps/agent/) · [Map-шаг](/ru/carl/steps/map/)
-- [Пример](https://github.com/Glazkoff/carl/blob/main/examples/agents/chain_as_tool_example.py) в репозитории.
+- [Пример](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/agents/chain_as_tool_example.py) в репозитории.

@@ -48,7 +48,7 @@ pricing=...)` — это умножает оценку одной цепочки
 
 ## Пример
 
-[Пример использования токенов](https://github.com/Glazkoff/carl/blob/main/examples/llm_inference/token_usage_example.py)
+[Пример использования токенов](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/llm_inference/token_usage_example.py)
 из репозитория (mock-клиент, без API-ключа) проходит три уровня детализации:
 предварительную оценку, **фактическое** использование токенов по шагам после
 запуска и агрегацию по батчу.
