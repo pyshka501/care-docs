@@ -35,8 +35,8 @@ is prepared and waits for publication; until it is on PyPI, everything after
 - The v3 generator, generation memory, the IdeaL loop and the forges stay in
   `evaluation/`: experimental, not part of the package API.
 
-Checked offline only: lint, types and 2514 tests on Python 3.12 and 3.13
-against CARL 0.5.2 (2527 tests), and a clean install of the wheel. No live generation run.
+Checked offline only: lint, types and 2527 tests on Python 3.12 and 3.13
+against CARL 0.5.2, and a clean install of the wheel. No live generation run.
 
 ## Experimental: v3 branches (not released)
 
