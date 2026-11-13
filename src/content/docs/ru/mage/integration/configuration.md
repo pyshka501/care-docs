@@ -6,16 +6,19 @@ sidebar:
 ---
 
 Все настройки живут в одной модели Pydantic, `MAGEConfig`. Значения по
-умолчанию ниже взяты из ветки разработки (`mmar_mage/schemas.py`); большая
-часть верна и для 0.1.3.
+умолчанию ниже взяты из кандидата 0.2.0 (`mmar_mage/schemas.py` на
+`prep/mage-0.2.0`); большая часть верна и для 0.1.3, и для ревизий, которые
+закрепляет Maestro. Главное исключение: `generation_strategy`. В 0.2.0 это
+`v3`, раньше было `legacy`.
 
 ## Загрузка
 
 ```python
 from mmar_mage import MAGEConfig
 
-MAGEConfig(mode="fast", api_key="sk-...", model="gpt-4o")
-MAGEConfig.from_toml("configs/deep_local.toml")   # все поля в секции [mage]
+MAGEConfig(api_key="sk-...", model="gpt-4o")                                  # 0.2.0: v3
+MAGEConfig(generation_strategy="legacy", mode="fast", api_key="sk-...", model="gpt-4o")
+MAGEConfig.from_toml("configs/deep_local.toml")   # все поля в секции [mage]; пресеты 0.2.0 задают "legacy"
 MAGEConfig.from_env()                             # переменные MAGE_*, см. ниже
 MAGEConfig.for_openrouter(api_key="sk-or-...", model="anthropic/claude-3.5-sonnet")
 MAGEConfig.for_local(base_url="http://localhost:8000/v1")   # api_key "EMPTY", модель "__auto__"
@@ -25,16 +28,16 @@ MAGEConfig.for_local(base_url="http://localhost:8000/v1")   # api_key "EMPTY", �
 
 | Поле | По умолчанию | Заметки |
 | --- | --- | --- |
-| `mode` | `deep` | `fast` или `deep`. |
-| `generation_strategy` | `legacy` | 0.2: `semantic` пускает `generate()` через `compile()`; кандидат 0.2.0: `v3` запускает [генератор v3](/ru/mage/concepts/v3-generator/), см. [ниже](#стратегия-v3). |
+| `generation_strategy` | `v3` | По умолчанию в кандидате 0.2.0: `v3` запускает [генератор v3](/ru/mage/concepts/v3-generator/), см. [ниже](#стратегия-v3). `legacy` запускает [конвейер](/ru/mage/concepts/pipeline/) fast/deep, он по умолчанию в ревизиях, которые закрепляет Maestro. `semantic` (0.2) пускает `generate()` через `compile()`. `benchmark_profile` выбирает `legacy`, если стратегия не задана. В 0.1.3 такого поля нет. |
+| `mode` | `deep` | `fast` или `deep`. Только для стратегии legacy, v3 его не читает. |
 | `provider` | `openai` | `openai`, `openrouter`, `local`, `custom`. |
 | `base_url`, `api_key`, `model` | не задан, не задан, `gpt-4o` | `model="__auto__"` берёт первую модель из списка сервера `/v1/models`. |
 | `temperature` | `0.2` | |
 | `max_retries` | `2` | На один вызов модели. |
 | `http_timeout`, `ssl_verify` | `60.0`, `true` | |
 | `stage_llm_overrides` | `{}` | Модель или температура для отдельной стадии, ключ это имя стадии. |
-| `allowed_step_types` | все типы MAGE | Ограничить, что может быть в цепочке. |
-| `enable_domain_analysis`, `enable_step_planning`, `enable_dag_optimization`, `enable_step_descriptions` | `true` | Четыре стадии deep. |
+| `allowed_step_types` | все типы MAGE | Ограничить, что может быть в цепочке. В v3 проверяется при допуске (кандидат 0.2.0). |
+| `enable_domain_analysis`, `enable_step_planning`, `enable_dag_optimization`, `enable_step_descriptions` | `true` | Четыре стадии deep (только legacy). |
 | `enable_contract_compiler` | `true` | 0.2: детерминированные цепочки из одного инструмента. |
 | `enable_memory`, `memory_base_url` | `true`, `http://localhost:8002` | Неявное сохранение, см. [Память и переиспользование](/ru/mage/concepts/memory/). |
 | `enable_memory_research`, `memory_search_mode` | `false`, `hybrid` | Поиск до планирования. |
@@ -47,8 +50,8 @@ MAGEConfig.for_local(base_url="http://localhost:8000/v1")   # api_key "EMPTY", �
 
 ## Стратегия v3
 
-**Кандидат 0.2.0.** Эти поля читаются только при
-`generation_strategy="v3"`. Значения по умолчанию взяты из измеренной
+**Кандидат 0.2.0.** Эти поля читает только стратегия v3, а там она стоит
+по умолчанию. Значения по умолчанию взяты из измеренной
 конфигурации v3.4.
 
 | Поле | По умолчанию | Заметки |
@@ -88,13 +91,16 @@ MAGEConfig.for_local(base_url="http://localhost:8000/v1")   # api_key "EMPTY", �
 при `MAGE_MODE=fast` `from_env().mode` остаётся `deep`.
 :::
 
-CLI `mage` вообще не вызывает `from_env()` и читает только `MAGE_API_KEY`.
-См. [CLI](/ru/mage/integration/cli/).
+CLI `mage` вообще не вызывает `from_env()` и читает только `MAGE_API_KEY`,
+так что `MAGE_GENERATION_STRATEGY` на него не влияет. В 0.2.0 есть
+`mage generate --strategy`. См. [CLI](/ru/mage/integration/cli/).
 
 ## Пресеты
 
 TOML-файлы в каталоге `configs/` репозитория, загружаются через
-`from_toml`:
+`from_toml`. В кандидате 0.2.0 каждый пресет задаёт
+`generation_strategy = "legacy"`: его режим и переключатели стадий
+управляют конвейером legacy.
 
 | Файл | Что задаёт |
 | --- | --- |

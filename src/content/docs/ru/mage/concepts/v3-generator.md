@@ -1,17 +1,18 @@
 ---
-title: Генератор v3 (включается явно)
-description: "Генератор «план, автор, компилятор, сухой прогон». В кандидате mmar-mage 0.2.0 он входит в пакет как generation_strategy=\"v3\": как устроен, как включить, известные ограничения и что пока остаётся экспериментом."
+title: Генератор v3 (по умолчанию)
+description: "Генератор «план, автор, компилятор, сухой прогон», стратегия по умолчанию в кандидате mmar-mage 0.2.0: как устроен, как выбрать его или legacy, что меняется для хоста, известные ограничения и что пока остаётся экспериментом."
 sidebar:
   order: 4
 ---
 
-:::caution[Кандидат 0.2.0, включается явно, проверен только смоуком]
-`MAGEConfig(generation_strategy="v3")` запускает генератор v3.4 из
-`mmar_mage/authoring/`. Он входит в кандидат `mmar-mage` 0.2.0 (ветка
-`prep/mage-0.2.0`, черновик PR `Glazkoff/carl-mage#21`), которого **пока нет
-на PyPI**. Стратегия по умолчанию по-прежнему `legacy`. Стратегию из пакета
+:::caution[Кандидат 0.2.0, стратегия по умолчанию, проверен только смоуком]
+В кандидате `mmar-mage` 0.2.0 (ветка `prep/mage-0.2.0`, черновик PR
+`Glazkoff/carl-mage#21`), которого **пока нет на PyPI**, v3 стоит **по
+умолчанию**: `MAGEConfig()`, `MAGEConfig.from_env()` и `mage generate` без
+`--strategy` запускают генератор v3.4 из `mmar_mage/authoring/`. Старый
+конвейер fast/deep остаётся: `generation_strategy="legacy"`. Стратегию из пакета
 проверяли офлайн-тестами, сценарным смоук-тестом колеса и живым смоуком на
-модели Codex; заново на MAGEBench её не замеряли. Живой смоук 13 ноября 2026 на локальной модели Codex CLI (`gpt-6-luna`; это проверка работоспособности, не замер): через `MAGEGenerator` с исполнением в CARL 0.5.2 три задачи хоста из трёх дали верный ответ; рукав бенчмарка на 7 задачах lite сгенерировал и допустил 7 цепочек из 7, оценку прошли 3 из 7. Maestro её не использует. Память генерации, цикл
+модели Codex; заново на MAGEBench её не замеряли. Живой смоук 13 ноября 2026 на локальной модели Codex CLI (`gpt-6-luna`; это проверка работоспособности, не замер): через `MAGEGenerator` с исполнением в CARL 0.5.2 три задачи хоста из трёх дали верный ответ; рукав бенчмарка на 7 задачах lite сгенерировал и допустил 7 цепочек из 7, оценку прошли 3 из 7. Maestro закрепляет более старый MAGE и её не использует. Память генерации, цикл
 IdeaL и кузницы инструментов остаются экспериментом, см.
 [Что остаётся экспериментом](#что-остаётся-экспериментом).
 :::
@@ -67,19 +68,45 @@ flowchart TB
 выключен, температура 0. Поля перечислены в
 [Настройках](/ru/mage/integration/configuration/#стратегия-v3).
 
-## Как включить
+## Как выбрать стратегию
 
 ```python
 from mmar_mage import MAGEConfig, MAGEGenerator
 
-generator = MAGEGenerator(MAGEConfig(generation_strategy="v3", api_key="sk-..."))
+generator = MAGEGenerator(MAGEConfig(api_key="sk-..."))   # v3, по умолчанию
 result = await generator.generate(request, capabilities=..., runtime_features=...)
+
+legacy = MAGEGenerator(MAGEConfig(generation_strategy="legacy", api_key="sk-..."))
 ```
 
 Полный пример с инструментом и контрактом выхода есть в
 [Быстром старте](/ru/mage/getting-started/quick-start/#стратегия-v3).
-`MAGE_GENERATION_STRATEGY=v3` работает через `MAGEConfig.from_env()`; у CLI
-`mage` опции для стратегии нет.
+
+| Где | v3 (по умолчанию) | legacy |
+| --- | --- | --- |
+| Python | `MAGEConfig()` | `MAGEConfig(generation_strategy="legacy")` |
+| Окружение, через `MAGEConfig.from_env()` | не задано или `MAGE_GENERATION_STRATEGY=v3` | `MAGE_GENERATION_STRATEGY=legacy` |
+| CLI | `mage generate "..."` | `mage generate "..." --strategy legacy` |
+
+Кое-где `legacy` выбирается сам. `benchmark_profile` включает его, если
+стратегия не задана: настройки профиля управляют планировщиком legacy.
+Готовые пресеты `configs/*.toml` и примеры задают
+`generation_strategy = "legacy"`, а `mage evolve` и исследовательские рукава
+в `evaluation/` закрепляют его, чтобы прежние замеры воспроизводились на том
+же конвейере.
+
+### Что меняется для хоста, который полагался на старое значение
+
+- `mode` (`fast` / `deep`) и переключатели стадий deep действуют только в
+  `legacy`, v3 их не читает. Один `MAGEConfig(mode="fast")` теперь запускает
+  v3.
+- Без `capabilities` у v3 нет инструментов (закрытый мир). Путь legacy
+  находил инструменты и навыки в памяти и в локальном каталоге.
+- v3 отклоняет задачи с приватным входом (см.
+  [Известные ограничения](#известные-ограничения)); для них берите `legacy`.
+- Генерация стоит больше вызовов модели: план, автор, починки и сухой прогон.
+- `allowed_step_types` проверяется при допуске, так что список разрешённых
+  шагов хоста работает и в v3.
 
 Что делает `generate()` при `generation_strategy="v3"`:
 
@@ -99,7 +126,8 @@ result = await generator.generate(request, capabilities=..., runtime_features=..
   расхода работают.
 - **Тот же финальный допуск.** Цепочка проходит `validate_runtime_chain` со
   схемой входа, контрактом выхода и `human_input_callback_available` из
-  запроса, затем загрузку в CARL. Если цепочка так и не прошла допуск,
+  запроса и с `allowed_step_types` (его проверяют и в каждом раунде
+  починки), затем загрузку в CARL. Если цепочка так и не прошла допуск,
   выбрасывается `MAGEValidationError`.
 - **Сохранение** по правилу legacy: только для задачи строкой или
   `PersistencePolicy(mode="safe_projection_only")`, при включённом
@@ -197,6 +225,6 @@ python -m evaluation.magebench_runner run \
 
 ## См. также
 
-- [Конвейер генерации](/ru/mage/concepts/pipeline/): путь `legacy` по умолчанию.
+- [Конвейер генерации](/ru/mage/concepts/pipeline/): путь `legacy`.
 - [Типизированные запросы и допуск](/ru/mage/concepts/typed-authoring/)
 - [Журнал изменений](/ru/mage/reference/changelog/)

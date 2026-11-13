@@ -6,15 +6,18 @@ sidebar:
 ---
 
 All settings live in one Pydantic model, `MAGEConfig`. Defaults below are
-from the development line (`mmar_mage/schemas.py`); most also hold for 0.1.3.
+from the 0.2.0 candidate (`mmar_mage/schemas.py` on `prep/mage-0.2.0`); most
+also hold for 0.1.3 and the revisions Maestro pins. The big exception is
+`generation_strategy`: `v3` in 0.2.0, `legacy` before.
 
 ## Loading
 
 ```python
 from mmar_mage import MAGEConfig
 
-MAGEConfig(mode="fast", api_key="sk-...", model="gpt-4o")
-MAGEConfig.from_toml("configs/deep_local.toml")   # every field under [mage]
+MAGEConfig(api_key="sk-...", model="gpt-4o")                                  # 0.2.0: v3
+MAGEConfig(generation_strategy="legacy", mode="fast", api_key="sk-...", model="gpt-4o")
+MAGEConfig.from_toml("configs/deep_local.toml")   # every field under [mage]; 0.2.0 presets set "legacy"
 MAGEConfig.from_env()                             # MAGE_* variables, see below
 MAGEConfig.for_openrouter(api_key="sk-or-...", model="anthropic/claude-3.5-sonnet")
 MAGEConfig.for_local(base_url="http://localhost:8000/v1")   # api_key "EMPTY", model "__auto__"
@@ -24,16 +27,16 @@ MAGEConfig.for_local(base_url="http://localhost:8000/v1")   # api_key "EMPTY", m
 
 | Field | Default | Notes |
 | --- | --- | --- |
-| `mode` | `deep` | `fast` or `deep`. |
-| `generation_strategy` | `legacy` | 0.2: `semantic` routes `generate()` through `compile()`; 0.2.0 candidate: `v3` runs the [v3 generator](/mage/concepts/v3-generator/), see [below](#v3-strategy). |
+| `generation_strategy` | `v3` | 0.2.0 candidate default: `v3` runs the [v3 generator](/mage/concepts/v3-generator/), see [below](#v3-strategy). `legacy` runs the fast/deep [pipeline](/mage/concepts/pipeline/), the default in the revisions Maestro pins. `semantic` (0.2) routes `generate()` through `compile()`. A `benchmark_profile` selects `legacy` unless a strategy is given. 0.1.3 has no such field. |
+| `mode` | `deep` | `fast` or `deep`. Legacy strategy only; v3 ignores it. |
 | `provider` | `openai` | `openai`, `openrouter`, `local`, `custom`. |
 | `base_url`, `api_key`, `model` | unset, unset, `gpt-4o` | `model="__auto__"` takes the first model the server lists at `/v1/models`. |
 | `temperature` | `0.2` | |
 | `max_retries` | `2` | Per model call. |
 | `http_timeout`, `ssl_verify` | `60.0`, `true` | |
 | `stage_llm_overrides` | `{}` | Per-stage model or temperature, keyed by stage name. |
-| `allowed_step_types` | all MAGE types | Restrict what the chain may contain. |
-| `enable_domain_analysis`, `enable_step_planning`, `enable_dag_optimization`, `enable_step_descriptions` | `true` | The four deep stages. |
+| `allowed_step_types` | all MAGE types | Restrict what the chain may contain. With v3 it is enforced at admission (0.2.0 candidate). |
+| `enable_domain_analysis`, `enable_step_planning`, `enable_dag_optimization`, `enable_step_descriptions` | `true` | The four deep stages (legacy only). |
 | `enable_contract_compiler` | `true` | 0.2: deterministic single-tool chains. |
 | `enable_memory`, `memory_base_url` | `true`, `http://localhost:8002` | Implicit save, see [Memory and reuse](/mage/concepts/memory/). |
 | `enable_memory_research`, `memory_search_mode` | `false`, `hybrid` | Recall before planning. |
@@ -46,8 +49,8 @@ list is in [Generation pipeline](/mage/concepts/pipeline/#deep-mode).
 
 ## v3 strategy
 
-**0.2.0 candidate.** Read only with `generation_strategy="v3"`. The defaults
-are the measured v3.4 configuration.
+**0.2.0 candidate.** Read only by the v3 strategy, which is the default
+there. The defaults are the measured v3.4 configuration.
 
 | Field | Default | Notes |
 | --- | --- | --- |
@@ -87,11 +90,14 @@ count them. None of the `v3_*` fields has an environment variable.
 :::
 
 The `mage` CLI does not call `from_env()` at all; it reads only
-`MAGE_API_KEY`. See [CLI](/mage/integration/cli/).
+`MAGE_API_KEY`, so `MAGE_GENERATION_STRATEGY` has no effect there. On 0.2.0
+use `mage generate --strategy`. See [CLI](/mage/integration/cli/).
 
 ## Presets
 
-TOML files in `configs/` of the repository, loaded with `from_toml`:
+TOML files in `configs/` of the repository, loaded with `from_toml`. In the
+0.2.0 candidate every preset sets `generation_strategy = "legacy"`, because
+its mode and stage switches drive the legacy pipeline:
 
 | File | What it sets |
 | --- | --- |

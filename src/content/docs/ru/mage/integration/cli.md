@@ -1,6 +1,6 @@
 ---
 title: CLI
-description: Команда mage (generate, edit, validate, evolve, version), её параметры и то, чего каждая команда не делает.
+description: Команда mage (generate, в 0.2.0 с --strategy, edit, validate, evolve, version), её параметры и то, чего каждая команда не делает.
 sidebar:
   order: 2
 ---
@@ -12,26 +12,32 @@ sidebar:
 ## `mage generate "<задача>"`
 
 ```bash
-mage generate "Analyze a financial report" --mode fast -o chain.json --no-memory
+mage generate "Analyze a financial report" -o chain.json --no-memory                              # 0.2.0: v3
+mage generate "Analyze a financial report" --strategy legacy --mode fast -o chain.json --no-memory
 ```
 
 | Параметр | По умолчанию | Заметки |
 | --- | --- | --- |
-| `--mode`, `-m` | `deep` | `fast` или `deep`. |
+| `--strategy`, `-s` | не задан: значение из конфига, `v3` | Только кандидат 0.2.0. `v3`, `legacy` (конвейер fast/deep) или `semantic`; любое другое значение даёт ошибку. |
+| `--mode`, `-m` | `deep` | `fast` или `deep`. Действует только в `legacy`; в 0.2.0 добавьте `--strategy legacy`. |
 | `--model` | `gpt-4o` | |
 | `--api-key` | переменная `MAGE_API_KEY` | |
 | `--base-url` | не задан | Любой OpenAI-совместимый эндпоинт. |
 | `--temperature`, `-t` | `0.2` | |
 | `--output`, `-o` | не задан | Записать JSON цепочки сюда; иначе он печатается. |
 | `--no-memory` | выкл. | Без него MAGE пробует сохранить цепочку в GigaEvo Memory. |
-| `--skills` | выкл. | Поиск навыков во встроенном реестре. |
+| `--skills` | выкл. | Поиск навыков во встроенном реестре (стадия deep у legacy). |
 | `--skills-web` | выкл. | Разрешить поиску навыков уходить в веб. |
-| `--benchmark-profile` | не задан | Пресет под бенчмарк: `bfcl`, `seal_tools`, `rotbench`, `toolalpaca`, `custom`. |
+| `--benchmark-profile` | не задан | Пресет под бенчмарк: `bfcl`, `seal_tools`, `rotbench`, `toolalpaca`, `custom`. Выбирает `legacy`, если не задан `--strategy`. |
 
 CLI собирает `MAGEConfig` только из этих параметров. `MAGEConfig.from_env()`
-он не вызывает, поэтому всегда работает со стратегией `legacy` и
-переключателями стадий по умолчанию и принимает задачу строкой
-(типизированного запроса нет).
+он не вызывает, так что `MAGE_GENERATION_STRATEGY` ни на что не влияет,
+переключатели стадий остаются по умолчанию, а задача передаётся строкой
+(типизированного запроса нет). Поэтому в 0.2.0 стратегия берётся из
+`--strategy` или из значения пакета по умолчанию, `v3`; в 0.1.3 и в ревизиях,
+которые закрепляет Maestro, это всегда `legacy`. Каталог инструментов CLI не
+передаёт, поэтому цепочка v3 из `mage generate` обходится без инструментов
+(для v3 `capabilities` это закрытый мир).
 
 ## `mage edit "<инструкция>"`
 
@@ -70,7 +76,8 @@ mage validate chain.json
 `--plateau` (2), `--seed`, `--model`, `--execution-model`,
 `--memory/--no-memory`, `--web`, `--output`, `--benchmark-output`.
 
-Это собственный, более старый цикл эволюции MAGE. Maestro эволюционирует
+Это собственный, более старый цикл эволюции MAGE. Он всегда работает на
+стратегии `legacy`, в 0.2.0 тоже. Maestro эволюционирует
 цепочки на платформе GigaEvo, см. [Эволюцию](/ru/care/workflows/evolution/).
 
 ## `mage version`
@@ -79,5 +86,7 @@ mage validate chain.json
 `mmar-mage 0.2.0` на ветке разработки.
 
 `mage version`, `mage validate` и `mage --help` запускались на
-`feat/v3-ideal-loop` (acf7091). `generate`, `edit` и `evolve` делают платные
-вызовы модели и для этой страницы не запускались.
+`feat/v3-ideal-loop` (acf7091). На `prep/mage-0.2.0` (5a38672)
+`mage generate --help` показывает `--strategy`, а неизвестная стратегия
+завершается с кодом 1 ещё до вызова модели. `generate`, `edit` и `evolve`
+делают платные вызовы модели и для этой страницы не запускались.

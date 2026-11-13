@@ -20,13 +20,34 @@ development line in `pyproject.toml` (`[tool.uv.sources]`):
 | `feat/dataset-studio` (development, after 0.5.0) | `b7a6e27` (2 Nov 2026), branch `maestro/step-field-refs` | The commit above plus fixes from `feat/v3-phase0`: saved input contracts survive edit and repair, typed literal bindings, `$steps.N.tool_name`, estimated usage when a provider reports none, and an export fix (a field of a step result is `$steps.N.result_data.<field>`, not `$history[N].<field>`). |
 
 Both report version `0.2.0+ideal.20261005.1`. Both run `MAGEGenerator` with
-the default `legacy` strategy. Neither revision has the
+`legacy`, the default strategy in those revisions. Neither revision has the
 [`v3` strategy](/mage/concepts/v3-generator/): it ships only in the 0.2.0
 candidate (`prep/mage-0.2.0`), which Maestro does not pin, so Maestro does
 **not use** v3. The memory loop and the forges are not in either revision.
 On the development branch of the desktop app the chat agent writes chains
 itself by default, so MAGE is not called at all unless you ask for it (see
 below).
+
+:::caution[Moving Maestro to MAGE 0.2.0 switches it to v3]
+Maestro builds `MAGEConfig` without `generation_strategy` (`care/generation.py`
+on `feat/dataset-studio`). With the pinned revisions that means `legacy`;
+with 0.2.0 it means `v3`. Unless Maestro then sets
+`generation_strategy="legacy"`, in code or as a `[mage]` field (it is
+forwarded, since MAGE declares it), the upgrade changes generation:
+
+- `mode` and the deep-stage and research switches from `[mage]` no longer
+  apply.
+- Only the tools in Maestro's `capabilities` are available.
+- A task whose input schema has a private field fails admission: v3 rejects
+  every `llm` step there.
+- The recalled context and IdeaL hints Maestro passes are not read by the
+  v3.4 prompts.
+- Each generation costs more model calls (plan, author, repairs, dry run).
+- The deployable allow-list (`allowed_step_types` without `human_input`) is
+  enforced at admission.
+
+This is read from the code; Maestro has not been run on 0.2.0.
+:::
 
 Maestro's dependency line still says `mmar-mage>=0.1.4`, a version that was
 never published, so Maestro installs only from a checkout where the git pins

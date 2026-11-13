@@ -56,7 +56,7 @@ Sources of truth (docs refresh 2026-11):
   *development line*.
 - CARL → the released tag `v0.5.2` of `AIRI-MAESTRO/carl` (`mmar-carl` 0.5.2 on PyPI).
 - MAGE → `Glazkoff/carl-mage` branch `prep/mage-0.2.0` (draft PR #21, release prep for
-  `mmar-mage` 0.2.0 on CARL 0.5.2); the v3 strategy ships opt-in from
+  `mmar-mage` 0.2.0 on CARL 0.5.2); the v3 strategy is the default, shipped from
   `mmar_mage/authoring/`; its research extensions under `evaluation/` are
   documented as experimental.
 - IdeaL → `Glazkoff/gigaevo-memory` branch `dev`.

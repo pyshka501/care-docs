@@ -44,7 +44,7 @@ A request cannot be mixed with the legacy `context_files`, `user_context` or
   appear under opaque labels. Maestro uses the last mode to pass IdeaL hints.
 
 :::caution[Known limitation]
-The default `legacy` strategy does not fully enforce
+The `legacy` strategy does not fully enforce
 `generation_model_context`: in `safe_contract_only` its planning prompt still
 includes project instructions, preferences and retrieved context bodies. Only
 the selected mode filters it. The semantic strategy honours all three modes.

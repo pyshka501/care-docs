@@ -1,17 +1,19 @@
 ---
-title: v3 Generator (opt-in)
-description: "The plan, author, compile and dry-run generator. It ships in the mmar-mage 0.2.0 candidate as generation_strategy=\"v3\": how it works, how to enable it, its known limits and what stays experimental."
+title: v3 Generator (default)
+description: "The plan, author, compile and dry-run generator, the default strategy of the mmar-mage 0.2.0 candidate: how it works, how to choose it or legacy, what changes for hosts, its known limits and what stays experimental."
 sidebar:
   order: 4
 ---
 
-:::caution[0.2.0 candidate, opt-in, smoke-tested only]
-`MAGEConfig(generation_strategy="v3")` runs the v3.4 generator from
-`mmar_mage/authoring/`. It is in the `mmar-mage` 0.2.0 candidate (branch
-`prep/mage-0.2.0`, draft PR `Glazkoff/carl-mage#21`), which is **not on PyPI
-yet**. The default strategy stays `legacy`. The shipped strategy was checked
+:::caution[0.2.0 candidate, default strategy, smoke-tested only]
+In the `mmar-mage` 0.2.0 candidate (branch `prep/mage-0.2.0`, draft PR
+`Glazkoff/carl-mage#21`), which is **not on PyPI yet**, v3 is the **default**:
+`MAGEConfig()`, `MAGEConfig.from_env()` and `mage generate` without
+`--strategy` run the v3.4 generator from `mmar_mage/authoring/`. The `legacy`
+fast/deep pipeline stays available with `generation_strategy="legacy"`. The
+shipped strategy was checked
 with offline tests, a scripted smoke test of the wheel and a live smoke run on
-a Codex model; it was not re-measured on MAGEBench. Live smoke on 2026-11-13 with a local Codex CLI model (`gpt-6-luna`; smoke, not a measurement): through `MAGEGenerator` and executed in CARL 0.5.2, 3 of 3 host tasks gave correct answers; the benchmark arm on 7 lite tasks generated and admitted 7 of 7, and 3 of 7 passed scoring. Maestro does not use it. Generation memory, the IdeaL loop
+a Codex model; it was not re-measured on MAGEBench. Live smoke on 2026-11-13 with a local Codex CLI model (`gpt-6-luna`; smoke, not a measurement): through `MAGEGenerator` and executed in CARL 0.5.2, 3 of 3 host tasks gave correct answers; the benchmark arm on 7 lite tasks generated and admitted 7 of 7, and 3 of 7 passed scoring. Maestro pins an older MAGE and does not use it. Generation memory, the IdeaL loop
 and the tool forges are still experimental, see
 [What stays experimental](#what-stays-experimental).
 :::
@@ -64,19 +66,44 @@ The shipped defaults are the measured **v3.4**: one dry-run round on two
 test inputs, up to two dry-run repairs, reviewer off, temperature 0. The
 fields are listed in [Configuration](/mage/integration/configuration/#v3-strategy).
 
-## Enabling it
+## Choosing the strategy
 
 ```python
 from mmar_mage import MAGEConfig, MAGEGenerator
 
-generator = MAGEGenerator(MAGEConfig(generation_strategy="v3", api_key="sk-..."))
+generator = MAGEGenerator(MAGEConfig(api_key="sk-..."))   # v3, the default
 result = await generator.generate(request, capabilities=..., runtime_features=...)
+
+legacy = MAGEGenerator(MAGEConfig(generation_strategy="legacy", api_key="sk-..."))
 ```
 
 A full example with a tool and an output contract is in the
 [Quick start](/mage/getting-started/quick-start/#generate-with-the-v3-strategy).
-`MAGE_GENERATION_STRATEGY=v3` works through `MAGEConfig.from_env()`; the
-`mage` CLI has no option for the strategy.
+
+| Where | v3 (default) | legacy |
+| --- | --- | --- |
+| Python | `MAGEConfig()` | `MAGEConfig(generation_strategy="legacy")` |
+| Environment, through `MAGEConfig.from_env()` | unset or `MAGE_GENERATION_STRATEGY=v3` | `MAGE_GENERATION_STRATEGY=legacy` |
+| CLI | `mage generate "..."` | `mage generate "..." --strategy legacy` |
+
+Some entry points still pick `legacy`. A `benchmark_profile` selects it
+unless a strategy is given, because its knobs drive the legacy planner. The
+bundled `configs/*.toml` presets and the examples set
+`generation_strategy = "legacy"`, and `mage evolve` and the research arms in
+`evaluation/` pin it, so earlier measurements reproduce with the same
+pipeline.
+
+### What changes for a host that relied on the old default
+
+- `mode` (`fast` / `deep`) and the deep-stage switches apply to `legacy`
+  only; v3 ignores them. `MAGEConfig(mode="fast")` alone now runs v3.
+- Without `capabilities`, v3 sees no tools (closed world). The legacy path
+  discovered tools and skills from memory and the local catalogue.
+- v3 rejects tasks with private runtime input (see
+  [Known limits](#known-limits)); use `legacy` for them.
+- A generation costs more model calls: plan, author, repairs and the dry run.
+- `allowed_step_types` is enforced at admission, so a host allow-list holds
+  under v3 too.
 
 What `generate()` does with `generation_strategy="v3"`:
 
@@ -94,8 +121,9 @@ What `generate()` does with `generation_strategy="v3"`:
   generator's `LLMClient`, so budgets, cancellation, retries and usage
   accounting apply.
 - **Same final gate.** The chain passes `validate_runtime_chain` with the
-  request's runtime input schema, output contract and
-  `human_input_callback_available`, then a CARL load. A chain that never
+  request's runtime input schema, output contract,
+  `human_input_callback_available` and `allowed_step_types` (also checked in
+  every repair round), then a CARL load. A chain that never
   passes admission raises `MAGEValidationError`.
 - **Persistence** follows the legacy rule: only for a plain string task or
   `PersistencePolicy(mode="safe_projection_only")`, with `enable_memory` on
@@ -192,6 +220,6 @@ tasks. The shipped strategy has not been measured on host requests.
 
 ## See also
 
-- [Generation pipeline](/mage/concepts/pipeline/): the default `legacy` path.
+- [Generation pipeline](/mage/concepts/pipeline/): the `legacy` path.
 - [Typed requests and admission](/mage/concepts/typed-authoring/)
 - [Changelog](/mage/reference/changelog/)

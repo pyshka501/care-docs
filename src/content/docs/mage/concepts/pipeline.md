@@ -1,13 +1,15 @@
 ---
 title: Generation Pipeline
-description: What MAGEGenerator does in fast and deep mode, which stages are on by default, and the assembly tail that lints, repairs and admits every chain.
+description: What the legacy strategy of MAGEGenerator does in fast and deep mode, which stages are on by default, the assembly tail that lints, repairs and admits every chain, and how the semantic and v3 strategies differ.
 sidebar:
   order: 1
 ---
 
-This page describes the default `legacy` path of `MAGEGenerator.generate()`,
-the one every host uses today, Maestro included. The opt-in `v3` strategy of
-the 0.2.0 candidate is a separate path, see
+This page describes the `legacy` path of `MAGEGenerator.generate()`. It is
+the default in 0.1.3 and in the revisions Maestro pins, so it is what
+Maestro runs today. In the 0.2.0 candidate it is no longer the default: there
+`MAGEConfig()` runs `v3`, and the legacy path needs
+`generation_strategy="legacy"` (`mage generate --strategy legacy`). See
 [v3 strategy](#v3-strategy) below and [v3 generator](/mage/concepts/v3-generator/).
 
 ```mermaid
@@ -45,7 +47,7 @@ same assembly tail as deep mode. Stage name: `fast_generation`.
 
 ## Deep mode
 
-**Released** (the default mode). Four model stages, each with a deterministic
+**Released** (the default mode of the legacy strategy). Four model stages, each with a deterministic
 fallback when switched off:
 
 | Stage | Output | Switch (default) |
@@ -118,22 +120,24 @@ declaration the result fails closed.
 | `NeedsUserInput` | `requirements`: missing input, capability, credential, runtime feature, permission or clarification. |
 | `Unsupported` | `reasons` the task cannot be compiled. |
 
-`compile()` never writes Memory. Maestro uses the default `legacy` strategy.
+`compile()` never writes Memory. Maestro uses the `legacy` strategy.
 
 ## v3 strategy
 
-**0.2.0 candidate, opt-in.** With `generation_strategy="v3"`, `generate()`
+**0.2.0 candidate, the default there.** With `generation_strategy="v3"`,
+or with no strategy set on 0.2.0, `generate()`
 skips the modes and the optional stages above, and the tail's repair and
 CARL export: the v3 chain is already final CARL JSON. It runs the
 v3.4 pipeline from `mmar_mage/authoring/`: a data-flow plan, one author call
 that writes CARL, a deterministic compiler, admission with up to
 `v3_max_repairs` repairs, and a dry run in real CARL with the declared tools
 simulated. The final chain passes the same lint and `validate_runtime_chain`
-admission, gets a heuristic name, and persistence follows the rule in step 6
+admission, including `allowed_step_types`, gets a heuristic name, and persistence follows the rule in step 6
 of the tail. Use the
 legacy strategy for tasks with private runtime input: v3 rejects every `llm`
 step there. Details, limits and what stays experimental:
-[v3 generator](/mage/concepts/v3-generator/). Maestro does not use it.
+[v3 generator](/mage/concepts/v3-generator/). Maestro pins an older MAGE
+and does not use it.
 
 ## Budgets and cancellation
 

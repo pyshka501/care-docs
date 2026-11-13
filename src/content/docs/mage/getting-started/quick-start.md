@@ -1,13 +1,15 @@
 ---
 title: Quick Start
-description: Install MAGE (the released 0.1.3, the 0.2.0 candidate or the development line Maestro pins), generate a first chain from Python and from the CLI, try the opt-in v3 strategy, and check the result.
+description: Install MAGE (the released 0.1.3, the 0.2.0 candidate or the development line Maestro pins), generate a first chain from Python and from the CLI with the legacy strategy or with v3, the 0.2.0 default, and check the result.
 sidebar:
   order: 2
 ---
 
 You need Python 3.12 or 3.13 and an OpenAI-compatible endpoint with a key
 (OpenAI, OpenRouter, a local vLLM or Ollama server). MAGE makes real model
-calls; `fast` mode makes one, `deep` mode at least four.
+calls. The legacy strategy makes one in `fast` mode and at least four in
+`deep` mode. v3, the 0.2.0 default, makes more: a plan, an author call,
+repairs and the dry run.
 
 ## Install
 
@@ -31,10 +33,12 @@ The release candidate is the branch `prep/mage-0.2.0` (draft PR
 so only MAGE itself comes from git:
 
 ```bash
-pip install "mmar-mage @ git+https://github.com/Glazkoff/carl-mage@651b8deb8781c72f82d12e025dfd001ee950f30d"
+pip install "mmar-mage @ git+https://github.com/Glazkoff/carl-mage@5a38672648d97ed825562b0da572546e221dea64"
 ```
 
-This is the only line with the [v3 strategy](#generate-with-the-v3-strategy).
+This is the only line with the [v3 strategy](#generate-with-the-v3-strategy),
+and v3 is its default. The legacy fast/deep pipeline needs
+`generation_strategy="legacy"` here.
 
 ### Development line: what Maestro pins
 
@@ -69,14 +73,15 @@ uv run mage version          # mmar-mage 0.2.0
 
 ## Generate a chain from Python
 
-This works on all three.
+This example uses the legacy strategy and works on all three lines.
 
 ```python
 import asyncio
 from mmar_mage import MAGEConfig, generate_chain
 
 config = MAGEConfig(
-    mode="fast",            # one model call; "deep" is the default
+    generation_strategy="legacy",   # needed on 0.2.0, where the default is "v3"
+    mode="fast",            # one model call; "deep" is the default mode
     api_key="sk-...",
     model="gpt-4o",
     enable_memory=False,    # do not try to save to GigaEvo Memory
@@ -90,6 +95,12 @@ print(result.chain_json)                       # CARL chain JSON
 print(result.metadata.num_steps, result.metadata.suggested_display_name)
 ```
 
+On 0.2.0 without `generation_strategy="legacy"` this config runs v3, and v3
+ignores `mode`. The revisions Maestro pins already default to `legacy`. 0.1.3
+has no `generation_strategy` field; its `MAGEConfig` does not forbid unknown
+keywords, so the line is dropped there (read from the `v0.1.3` source, not
+run).
+
 `enable_memory` is `True` by default: with a plain string task MAGE tries to
 save the chain to the Memory service at `memory_base_url`
 (`http://localhost:8002`). A failed save does not fail the generation, but it
@@ -100,8 +111,8 @@ Other endpoints:
 ```python
 MAGEConfig.for_openrouter(api_key="sk-or-...", model="anthropic/claude-3.5-sonnet")
 MAGEConfig.for_local(base_url="http://localhost:8000/v1")   # model "__auto__": read from /v1/models
-MAGEConfig.from_toml("configs/fast.toml")                    # all fields under [mage]
-MAGEConfig.from_env()                                        # MAGE_* variables
+MAGEConfig.from_toml("configs/fast.toml")                    # all fields under [mage]; 0.2.0 presets set "legacy"
+MAGEConfig.from_env()                                        # MAGE_* variables; 0.2.0: v3 unless MAGE_GENERATION_STRATEGY
 ```
 
 ## Generate with a typed request
@@ -139,7 +150,7 @@ request = GenerationRequest(
     persistence_policy=PersistencePolicy(mode="deny"),
 )
 
-generator = MAGEGenerator(MAGEConfig(mode="fast", api_key="sk-..."))
+generator = MAGEGenerator(MAGEConfig(generation_strategy="legacy", mode="fast", api_key="sk-..."))
 result = asyncio.run(generator.generate(request))
 print([s["step_type"] for s in result.chain_dict["steps"]])   # ends with "structured_output"
 ```
@@ -152,10 +163,10 @@ else, MAGE reports the mismatch, tries one repair and otherwise raises
 
 ## Generate with the v3 strategy
 
-0.2.0 candidate only, opt-in. `generation_strategy="v3"` plans the data flow,
-lets the model write CARL, repairs it against admission and dry-runs it in
-CARL with the declared tools simulated. See
-[v3 generator](/mage/concepts/v3-generator/).
+0.2.0 candidate only, where v3 is the default strategy: a `MAGEConfig`
+without `generation_strategy` runs it. It plans the data flow, lets the model
+write CARL, repairs it against admission and dry-runs it in CARL with the
+declared tools simulated. See [v3 generator](/mage/concepts/v3-generator/).
 
 ```python
 import asyncio
@@ -199,8 +210,7 @@ request = GenerationRequest(
     ),
 )
 
-config = MAGEConfig(
-    generation_strategy="v3",   # opt-in; the default is "legacy"
+config = MAGEConfig(          # no generation_strategy: "v3" is the 0.2.0 default
     api_key="sk-...",
     model="gpt-4o",
     enable_memory=False,
@@ -222,16 +232,22 @@ print(result.intermediate_artifacts["v3"]["attempts"])        # authoring and re
   `verification_passed=False`. A chain that never passes admission raises
   `MAGEValidationError`.
 - With a private field in `runtime_input_schema`, v3 rejects every `llm`
-  step. Use the default strategy for such tasks.
+  step. Use `generation_strategy="legacy"` for such tasks.
 
 ## Generate from the CLI
 
 ```bash
 export MAGE_API_KEY=sk-...
-mage generate "Classify support tickets by urgency" --mode fast --no-memory -o chain.json
+mage generate "Classify support tickets by urgency" --no-memory -o chain.json    # 0.2.0: v3
+mage generate "Classify support tickets by urgency" --strategy legacy --mode fast --no-memory -o chain.json
 mage generate "Summarise a quarterly report" --base-url http://localhost:8000/v1 --model my-model
 mage validate chain.json
 ```
+
+`--strategy` exists only in the 0.2.0 candidate. On 0.1.3 and the revisions
+Maestro pins, drop it: they run `legacy` anyway. On 0.2.0, `--mode` matters
+only with `--strategy legacy`, and the CLI does not read
+`MAGE_GENERATION_STRATEGY`.
 
 `mage validate` runs MAGE's structural check, the strict CARL type check and
 `ReasoningChain.from_json`. It is not full admission: lint and
@@ -239,16 +255,17 @@ mage validate chain.json
 
 ## What was checked
 
-The two Python examples and `mage validate` were run on the development branch
-`feat/v3-ideal-loop` (acf7091) with the OpenAI client replaced by a stub that
-returns a fixed chain: no network, no key. The chains loaded in CARL. A real
-endpoint was not called.
-
-The v3 example was run on `prep/mage-0.2.0` (651b8de) against `mmar-carl`
-0.5.2, with the provider replaced by scripted replies (the same ones as
+The three Python examples were run on `prep/mage-0.2.0` (5a38672) against
+`mmar-carl` 0.5.2 on Python 3.13, with the OpenAI client replaced by scripted
+replies: no network, no key. Both legacy examples reported
+`metadata.generation_strategy == "legacy"`, and the typed one ended in
+`structured_output`.
+The v3 example, with no strategy set, ran v3 (replies as in
 `tests/test_v3_strategy.py`): the chain was admitted and its dry run passed.
-No real endpoint was called, and the `pip install` from git above was not
-run.
+`mage generate --strategy` with an unknown value exits with an error. Earlier,
+`mage validate` and the legacy examples were run the same way on
+`feat/v3-ideal-loop` (acf7091). No real endpoint was called, and the
+`pip install` from git above was not run.
 
 ## Next
 

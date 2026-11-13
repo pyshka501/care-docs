@@ -27,19 +27,21 @@ flowchart LR
 
 ## What it gives you
 
-- **Two modes.** `fast`: one model call writes the chain. `deep` (the
-  default): four model stages (domain analysis, step plan, DAG, step
-  descriptions), plus optional research and quality stages.
+- **v3 strategy** (0.2.0 candidate, the default there). Plans the data
+  flow, lets the model write CARL, repairs it against admission and dry-runs
+  it in CARL with simulated tools. See
+  [v3 generator](/mage/concepts/v3-generator/).
+- **Legacy strategy with two modes** (the default in 0.1.3 and in the
+  revisions Maestro pins; in 0.2.0 `generation_strategy="legacy"`). `fast`:
+  one model call writes the chain. `deep` (the default mode): four model
+  stages (domain analysis, step plan, DAG, step descriptions), plus optional
+  research and quality stages.
 - **Admission before return.** Every chain passes deterministic lint and a
   typed load by the installed CARL runtime. One repair attempt is allowed;
   a chain that still fails is rejected, not returned.
 - **Typed requests** (development line). A `GenerationRequest` separates the
   safe task from private context, carries an input schema and an exact output
   contract, and states what may leave the machine and what may be saved.
-- **v3 strategy** (0.2.0 candidate, opt-in). `generation_strategy="v3"`
-  plans the data flow, lets the model write CARL, repairs it against
-  admission and dry-runs it in CARL with simulated tools. See
-  [v3 generator](/mage/concepts/v3-generator/).
 - **Natural-language edits** of an existing chain, applied to a copy and
   admitted the same way.
 - **Optional memory**: recall of related saved chains from GigaEvo Memory and
@@ -63,18 +65,19 @@ What Maestro actually runs is described in
 [Capability status](/mage/reference/status/) and the
 [changelog](/mage/reference/changelog/).
 
-:::caution[The v3 strategy is opt-in and not released]
-The plan, author, compile and dry-run generator called "v3" ships in the
-0.2.0 candidate as `MAGEConfig(generation_strategy="v3")`. The default stays
-`legacy`, 0.2.0 is not on PyPI yet, and the shipped strategy has been checked
-offline only, not in a live run with a real model. Maestro does not use it.
-Its research extensions (IdeaL loop, code-tool forge and others) remain
-experimental. See [v3 generator](/mage/concepts/v3-generator/).
+:::caution[v3 is the default in 0.2.0, which is not released]
+The plan, author, compile and dry-run generator called "v3" is the default
+strategy of the 0.2.0 candidate: `MAGEConfig()` and `mage generate` run it,
+and `generation_strategy="legacy"` brings back the fast/deep pipeline. 0.2.0
+is not on PyPI yet. The shipped strategy has passed offline tests and a live
+smoke run on one Codex model, not a measurement. Maestro pins an older MAGE
+and does not use it. Its research extensions (IdeaL loop, code-tool forge and
+others) remain experimental. See [v3 generator](/mage/concepts/v3-generator/).
 :::
 
 ## What MAGE emits
 
-With the default `legacy` strategy, `MAGEGenerator` writes 16 CARL step types: `llm`, `structured_output`, `tool`,
+With the `legacy` strategy, `MAGEGenerator` writes 16 CARL step types: `llm`, `structured_output`, `tool`,
 `mcp`, `mcp_resource`, `memory`, `transform`, `conditional`, `agent_skill`,
 `evaluation`, `human_input`, `tool_discovery`, `agent_handoff`,
 `parallel_sampling`, `supervisor`, `debate`. It does not write `code`,
@@ -86,8 +89,9 @@ With the default `legacy` strategy, `MAGEGenerator` writes 16 CARL step types: `
 
 - [Quick start](/mage/getting-started/quick-start/): install and generate a
   first chain.
-- [Generation pipeline](/mage/concepts/pipeline/): what happens inside
-  `fast` and `deep`.
+- [Generation pipeline](/mage/concepts/pipeline/): what happens inside the
+  legacy `fast` and `deep` modes.
+- [v3 generator](/mage/concepts/v3-generator/): the 0.2.0 default.
 - [Typed requests and admission](/mage/concepts/typed-authoring/).
 - [Python API](/mage/integration/python-api/) and
   [Configuration](/mage/integration/configuration/).

@@ -1,6 +1,6 @@
 ---
 title: Python API
-description: MAGEGenerator and its generate, compile and edit methods, the opt-in v3 strategy and build_v3_contract, progress callbacks, cancellation, MAGEResult, the exceptions, and the admission helpers a host imports directly.
+description: MAGEGenerator and its generate, compile and edit methods, the v3 strategy (the 0.2.0 default) and build_v3_contract, progress callbacks, cancellation, MAGEResult, the exceptions, and the admission helpers a host imports directly.
 sidebar:
   order: 1
 ---
@@ -14,7 +14,7 @@ not in the released 0.1.3.
 from mmar_mage import MAGEConfig, MAGEGenerator
 
 generator = MAGEGenerator(
-    config,                              # MAGEConfig | None (defaults: deep, gpt-4o)
+    config,                              # MAGEConfig | None (None = MAGEConfig(): v3 on 0.2.0, gpt-4o)
     progress,                            # MAGEProgressCallback | None
     capability_discovery_sources=None,   # 0.2: approved discovery sources
     capability_runtime_probe=None,       # 0.2: side-effect-free probe
@@ -60,16 +60,19 @@ and do not wrap the output in a `MAGEResult`.
 
 ## v3 strategy
 
-**0.2.0 candidate, opt-in.** With `MAGEConfig(generation_strategy="v3")`,
-`generate()` runs the [v3 generator](/mage/concepts/v3-generator/) and still
-returns a `MAGEResult`. Pass the tools as `capabilities` (without them the
+**0.2.0 candidate, the default there.** With a plain `MAGEConfig()` (or
+`generation_strategy="v3"`), `generate()` runs the
+[v3 generator](/mage/concepts/v3-generator/) and still returns a
+`MAGEResult`. For the fast/deep pipeline pass
+`generation_strategy="legacy"`; `mode`, per-topology `return_candidates` and
+the per-stage wrappers above belong to it. Pass the tools as `capabilities` (without them the
 chain may use none) and declare `human_input_callback_available` in
 `runtime_features` (undeclared means nobody can answer `human_input`).
 
 ```python
 from mmar_mage import MAGEConfig, MAGEGenerator, build_v3_contract
 
-generator = MAGEGenerator(MAGEConfig(generation_strategy="v3", api_key="sk-..."))
+generator = MAGEGenerator(MAGEConfig(api_key="sk-..."))   # v3, the 0.2.0 default
 result = await generator.generate(request, capabilities=caps, runtime_features=features)
 
 contract = build_v3_contract(request, caps, features)   # what the v3 model reads; no model call
@@ -117,7 +120,7 @@ calls; the call in flight finishes and its result is discarded. MAGE raises
 | `chain_json`, `chain_dict` | The admitted CARL chain. |
 | `code` | `ChainBuilder` Python for the chain, when generated. |
 | `memory_key`, `memory_keys` | Ids of what was saved, if anything. |
-| `mode` | `fast` or `deep`. |
+| `mode` | `fast` or `deep`. A v3 result copies `MAGEConfig.mode`, which v3 does not use; the strategy is in `metadata.generation_strategy`. |
 | `metadata` | `MAGEMetadata`: domain, step count, time, model, stages completed, memory and web hits used, suggested name, description and tags, token usage per stage, provider attempts. |
 | `intermediate_artifacts` | Dumps of the stages that ran: `domain_analysis`, `step_plan`, `dag`, `described_steps` and others. With v3, one `v3` entry: the process trace (plan, compiler actions, attempts, dry runs). |
 | `quality_report` | Execution feedback or benchmark mode report, when enabled. |

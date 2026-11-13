@@ -1,6 +1,6 @@
 ---
 title: Python API
-description: MAGEGenerator и его методы generate, compile и edit, стратегия v3 и build_v3_contract, обратные вызовы прогресса, отмена, MAGEResult, исключения и функции допуска, которые хост импортирует напрямую.
+description: MAGEGenerator и его методы generate, compile и edit, стратегия v3 (по умолчанию в 0.2.0) и build_v3_contract, обратные вызовы прогресса, отмена, MAGEResult, исключения и функции допуска, которые хост импортирует напрямую.
 sidebar:
   order: 1
 ---
@@ -14,7 +14,7 @@ sidebar:
 from mmar_mage import MAGEConfig, MAGEGenerator
 
 generator = MAGEGenerator(
-    config,                              # MAGEConfig | None (по умолчанию deep, gpt-4o)
+    config,                              # MAGEConfig | None (None = MAGEConfig(): в 0.2.0 v3, gpt-4o)
     progress,                            # MAGEProgressCallback | None
     capability_discovery_sources=None,   # 0.2: одобренные источники возможностей
     capability_runtime_probe=None,       # 0.2: проба без побочных эффектов
@@ -61,9 +61,12 @@ edited = await edit_chain("Rename to 'Invoice QA'", chain=chain_dict, config=con
 
 ## Стратегия v3
 
-**Кандидат 0.2.0, включается явно.** С `MAGEConfig(generation_strategy="v3")`
-`generate()` запускает [генератор v3](/ru/mage/concepts/v3-generator/) и
-по-прежнему возвращает `MAGEResult`. Инструменты передайте в `capabilities`
+**Кандидат 0.2.0, там она по умолчанию.** С обычным `MAGEConfig()` (или с
+`generation_strategy="v3"`) `generate()` запускает
+[генератор v3](/ru/mage/concepts/v3-generator/) и по-прежнему возвращает
+`MAGEResult`. Для конвейера fast/deep передайте
+`generation_strategy="legacy"`; `mode`, `return_candidates` по топологиям и
+обёртки стадий выше относятся к нему. Инструменты передайте в `capabilities`
 (без них у цепочки инструментов нет), а в `runtime_features` объявите
 `human_input_callback_available` (без объявления считается, что на
 `human_input` ответить некому).
@@ -71,7 +74,7 @@ edited = await edit_chain("Rename to 'Invoice QA'", chain=chain_dict, config=con
 ```python
 from mmar_mage import MAGEConfig, MAGEGenerator, build_v3_contract
 
-generator = MAGEGenerator(MAGEConfig(generation_strategy="v3", api_key="sk-..."))
+generator = MAGEGenerator(MAGEConfig(api_key="sk-..."))   # v3, по умолчанию в 0.2.0
 result = await generator.generate(request, capabilities=caps, runtime_features=features)
 
 contract = build_v3_contract(request, caps, features)   # что прочитает модель v3; без вызова модели
@@ -119,7 +122,7 @@ class Progress:
 | `chain_json`, `chain_dict` | Допущенная цепочка CARL. |
 | `code` | Python-код `ChainBuilder` для цепочки, если сгенерирован. |
 | `memory_key`, `memory_keys` | Id сохранённого, если что-то сохранялось. |
-| `mode` | `fast` или `deep`. |
+| `mode` | `fast` или `deep`. Результат v3 просто копирует `MAGEConfig.mode`, которым v3 не пользуется; стратегия лежит в `metadata.generation_strategy`. |
 | `metadata` | `MAGEMetadata`: область, число шагов, время, модель, пройденные стадии, использованные находки в памяти и вебе, предложенные имя, описание и теги, токены по стадиям, попытки провайдера. |
 | `intermediate_artifacts` | Дампы отработавших стадий: `domain_analysis`, `step_plan`, `dag`, `described_steps` и другие. У v3 одна запись `v3`: трасса процесса (план, действия компилятора, попытки, сухие прогоны). |
 | `quality_report` | Отчёт обратной связи исполнения или режима бенчмарка, если включены. |
