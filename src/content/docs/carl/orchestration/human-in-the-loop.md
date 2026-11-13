@@ -126,7 +126,7 @@ asyncio.run(main())
 ```
 
 The repository has a longer
-[human-in-the-loop example](https://github.com/Glazkoff/carl/blob/main/examples/agents/human_in_the_loop_example.py)
+[human-in-the-loop example](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/agents/human_in_the_loop_example.py)
 (no API key) that also shows a timeout, a missing provider and an explicit fake
 human for tests.
 

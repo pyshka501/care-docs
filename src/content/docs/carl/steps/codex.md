@@ -22,6 +22,11 @@ pip install 'mmar-carl[codex]'     # openai-codex>=0.147.0, also in mmar-carl[al
 codex login                        # authentication stays in the host's Codex install
 ```
 
+The host must also allow local agents for the run:
+`ReasoningContext(..., allow_local_agent_execution=True)`. The flag defaults to
+`False` and is never serialized; without it the step fails before Codex
+starts. This gate is new in 0.5.0.
+
 Check the host before running:
 
 ```python
@@ -87,9 +92,9 @@ Unknown fields are rejected (`extra="forbid"`).
   ask for more authority.
 - Credentials, environment overrides, arbitrary launch arguments and the approval
   policy are **not** part of the serialized config.
-- There is no host-side policy yet that limits which `cwd` a chain may choose or
-  whether `workspace-write` is allowed. If you run chains you did not write,
-  check these two fields.
+- Beyond `allow_local_agent_execution` there is no host-side policy that limits
+  which `cwd` a chain may choose or whether `workspace-write` is allowed. If you
+  run chains you did not write, check these two fields before granting the flag.
 - `cache` is rejected on this step type.
 
 ## Result
@@ -122,6 +127,7 @@ CodexStepConfig(
 
 The step returns `success=False` with `error_message` when:
 
+- the host did not set `allow_local_agent_execution`;
 - the SDK is not installed (`Optional dependency 'openai_codex' not found…`);
 - `cwd` is not an existing directory;
 - a `{placeholder}` has no `input_mapping` entry, or the rendered task exceeds
@@ -144,4 +150,4 @@ Error text is cut to 500 characters.
 
 - [Claude Code step](/carl/steps/claude-code/): the same idea through the `claude` CLI, with streaming.
 - [Agent step](/carl/steps/agent/): a bounded loop over your own registered tools.
-- [Example](https://github.com/Glazkoff/carl/blob/pre-release/examples/agents/codex_step_example.py) in the repo.
+- [Example](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/agents/codex_step_example.py) in the repo.

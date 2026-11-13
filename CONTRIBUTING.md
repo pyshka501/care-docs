@@ -49,10 +49,15 @@ Three topics (Maestro, CARL, IdeaL), three sidebars, via `starlight-sidebar-topi
 
 ## Source of truth
 
-Release 0.5.0:
+Sources of truth (docs refresh 2026-11):
 
-- Maestro → `Glazkoff/care` branch `feat/maestro-library` (+ STARM solvers, PR #34).
-- CARL 0.5.0 → `Glazkoff/carl` `main` (0.4.0) plus the PRs and Maestro contracts listed
-  in [the changelog](src/content/docs/carl/reference/changelog.md).
+- Maestro app and Autobench → `Glazkoff/care` branch `feat/dataset-studio` (draft PR #41
+  on top of `feat/maestro-brand`, PR #40). Features not in a released build are marked
+  *development line*.
+- CARL → the released tag `v0.5.2` of `AIRI-MAESTRO/carl` (`mmar-carl` 0.5.2 on PyPI).
+- MAGE → `Glazkoff/carl-mage` branch `prep/mage-0.2.0` (draft PR #21, release prep for
+  `mmar-mage` 0.2.0 on CARL 0.5.2); the v3 strategy is the default, shipped from
+  `mmar_mage/authoring/`; its research extensions under `evaluation/` are
+  documented as experimental.
 - IdeaL → `Glazkoff/gigaevo-memory` branch `dev`.
 - The roadmap + status is in [`todo.md`](./todo.md).

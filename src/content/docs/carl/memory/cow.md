@@ -42,7 +42,7 @@ count). After the batch, CARL merges per step, in step declaration order:
    exception: its configured aggregate output is merged even when some items
    failed.
 
-Example, verified on 0.5.0: two parallel memory steps write `k1` and `k2`
+Example, verified on 0.5.2: two parallel memory steps write `k1` and `k2`
 into a namespace that already holds `k1 = "old"`. The result is
 `{"k1": "v1", "k2": "v2"}`.
 

@@ -93,7 +93,7 @@ One item failed, so the step is not successful. The other two items still ran, a
 the aggregate with all three outcomes was still written to memory.
 
 Another runnable example is
-[`examples/orchestration/map_step_example.py`](https://github.com/Glazkoff/carl/blob/main/examples/orchestration/map_step_example.py).
+[`examples/orchestration/map_step_example.py`](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/orchestration/map_step_example.py).
 
 ## Fields
 
@@ -193,7 +193,7 @@ step's snapshot.
   [preflight](/carl/care-integration/preflight/) reports a missing tool in
   `missing_tools`.
 - The wire type is `"map"`. It entered the chain format at `format_version` 8.
-  Chains saved by CARL 0.5.0 carry `format_version` 11. See
+  Chains saved by CARL 0.5.2 carry `format_version` 15. See
   [migration](/carl/serialization/migration/).
 - The full config round-trips through `to_dict()` / `from_dict()`.
 - `ChainBuilder` has no `add_map_step` helper. Build `MapStepDescription` directly.

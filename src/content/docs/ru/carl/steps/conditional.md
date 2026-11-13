@@ -96,7 +96,7 @@ ConditionalStepDescription(
 )
 ```
 
-[Пример условий](https://github.com/Glazkoff/carl/blob/main/examples/orchestration/conditions_example.py)
+[Пример условий](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/orchestration/conditions_example.py)
 в репозитории (без API-ключа) собирает маршрутизатор по тональности через
 `ChainBuilder`. Инструмент классифицирует текст, затем conditional-шаг направляет
 его в один из трёх обработчиков по шаблонам `contains:`. В фрагменте ниже к

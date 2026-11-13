@@ -126,7 +126,7 @@ asyncio.run(main())
 ```
 
 В репозитории есть более длинный
-[пример human-in-the-loop](https://github.com/Glazkoff/carl/blob/main/examples/agents/human_in_the_loop_example.py)
+[пример human-in-the-loop](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/agents/human_in_the_loop_example.py)
 (без API-ключа). Там же показаны таймаут, отсутствие провайдера и явный
 «поддельный человек» для тестов.
 

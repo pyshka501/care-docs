@@ -176,7 +176,7 @@ event
 ## Сериализация
 
 - Тип в формате цепочки — `"wait"`. Он появился в формате цепочки с
-  `format_version` 5. Цепочки, сохранённые CARL 0.5.0, имеют `format_version` 11.
+  `format_version` 5. Цепочки, сохранённые CARL 0.5.2, имеют `format_version` 15.
   См. [миграцию](/ru/carl/serialization/migration/).
 - Весь конфиг проходит круг через `to_dict()` / `from_dict()` без потерь.
 - У `ChainBuilder` нет хелпера `add_wait_step`. Создавайте `WaitStepDescription`

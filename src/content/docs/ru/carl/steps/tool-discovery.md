@@ -75,7 +75,7 @@ ToolDiscoveryStepDescription(
 
 | Поле | Тип | По умолчанию | Назначение |
 | --- | --- | --- | --- |
-| `source` | `ModuleToolSource \| CallableToolSource \| DictToolSource` | (обязательное) | Где искать инструменты. |
+| `source` | `ModuleToolSource \| CallableToolSource \| DictToolSource \| GitToolSource` | (обязательное) | Где искать инструменты. |
 | `output_memory_key` | `str` | `""` | Если задан, отсортированный список имён инструментов записывается в `memory["tools"][output_memory_key]`, то есть в `$memory.tools.<key>`. |
 | `tool_timeout` | `float \| None` | `None` | Таймаут на вызов для найденных **синхронных** инструментов. На async-инструменты не влияет. |
 
@@ -88,6 +88,7 @@ ToolDiscoveryStepDescription(
 | `ModuleToolSource(module, name_prefix="", tag="", strip_prefix=False)` | Импортирует `module` и берёт его публичные вызываемые объекты с фильтрами, описанными ниже. |
 | `CallableToolSource(factory)` | Вызывает `factory()`, которая должна вернуть `{name: callable}`. |
 | `DictToolSource(tools)` | Явный словарь `{name: callable}`. |
+| `GitToolSource(git_url, module_file, git_ref="HEAD", git_subdirectory=None, function=None, sha256=None)` | Клонирует Git-репозиторий и импортирует из него один файл модуля. Берёт функции с `@carl_tool` или только `function`, если она задана. Появился в 0.5.0. |
 
 Фильтры `ModuleToolSource`:
 
@@ -106,7 +107,49 @@ ToolDiscoveryStepDescription(
 
 `CallableToolSource` и `DictToolSource` хранят Python-объекты, поэтому цепочку с
 ними нельзя полностью описать в JSON. `ModuleToolSource` хранит только путь к
-модулю.
+модулю, а `GitToolSource` только репозиторий, ревизию и хэши.
+
+## Инструменты из закреплённого коммита Git
+
+`GitToolSource` загружает код инструментов из Git. Закрепляйте его двумя
+способами: в `git_ref` укажите полный SHA коммита, а в `sha256` перечислите
+ожидаемые SHA-256 файлов, на которые полагаетесь (пути считаются от
+`git_subdirectory`).
+
+```python
+from mmar_carl import ToolDiscoveryStepConfig, ToolDiscoveryStepDescription
+from mmar_carl.models.config import GitToolSource
+
+ToolDiscoveryStepDescription(
+    number=1,
+    title="Load pinned text tools",
+    config=ToolDiscoveryStepConfig(
+        source=GitToolSource(
+            git_url="https://github.com/acme/text-tools.git",
+            git_ref="<40-char commit sha>",
+            module_file="tools.py",
+            sha256={"tools.py": "<sha256 of tools.py>"},
+        ),
+        output_memory_key="git_tools",   # → $memory.tools.git_tools
+    ),
+)
+```
+
+- `git_ref` из 40 или 64 hex-символов скачивается через `--depth=1` и
+  выбирается точно. Любое другое значение клонируется как ветка или тег
+  (`HEAD` = ветка по умолчанию). Код закрепляет только SHA коммита.
+- Копии кэшируются в `~/.cache/mmar_carl/skills/git/` по ключу из URL, ревизии и
+  подкаталога. Хэши проверяются при каждой загрузке, и при попадании в кэш
+  тоже. Несовпадение валит шаг (`SHA256 mismatch for tools.py: …`).
+- `module_file` и пути в `sha256` должны оставаться внутри копии.
+- Без `function` регистрируются только функции с `@carl_tool`, вместе с их
+  тегами. С `function` регистрируется ровно эта функция.
+- Загрузка выполняет модуль в процессе хоста. Закрепляйте только код, которому
+  доверяете. `GitToolSource` не экспортируется с верхнего уровня, импортируйте
+  его из `mmar_carl.models.config`.
+
+AgentSkill использует тот же Git-загрузчик и ту же проверку хэшей, см.
+[резолверы навыков](/ru/carl/skills/resolvers/).
 
 ## См. также
 

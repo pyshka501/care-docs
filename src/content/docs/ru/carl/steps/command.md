@@ -85,7 +85,7 @@ print(step.result_data["approval"])      # "not_required"
 :::
 
 Полный запускаемый пример:
-[`examples/orchestration/command_steps_example.py`](https://github.com/Glazkoff/carl/blob/main/examples/orchestration/command_steps_example.py).
+[`examples/orchestration/command_steps_example.py`](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/orchestration/command_steps_example.py).
 
 ## CommandStepConfig
 

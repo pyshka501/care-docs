@@ -2,15 +2,18 @@
 title: Runs, pause and repair
 description: Running a chain in the Maestro app — input, pause, resume and stop, repair after a failure, and background jobs.
 sidebar:
-  order: 4
+  order: 6
 ---
 
 ## Running a chain
 
-Ask the agent to run a chain: one just generated, one staged in this session,
-or a saved one from the Library. Maestro runs **exactly** that chain artifact
-(pinned by its SHA-256) with the input you gave. Execution calls the chat model
-for every model step, so it asks for one confirmation (unless the session uses
+Ask the agent to run a chain: one just built, one staged in this session,
+or a saved one from [My agents](/care/app/library/). You can paste the input
+or attach files; the agent reads attached documents first (see
+[Attaching files](/care/app/chat/#attaching-files)). Maestro runs **exactly** that chain artifact
+(pinned by its SHA-256) with the input you gave. Execution calls the model
+for every model step (the chat model, or the custom chain model from
+Settings), so it asks for one confirmation (unless the session uses
 the **Full access** preset).
 
 **Input.** If the chain declares an input contract, your input is checked
@@ -23,14 +26,26 @@ cannot be resolved stops before any paid call.
 output or error (up to 4,000 characters of output and 1,000 of error per step,
 12,000 per chain). These are previews, not full outputs.
 
-**Stop on first failure.** A chain can set `fail_fast: true`. Then the first
-final step failure stops all steps that have not started yet; running steps
-finish and are not rolled back.
+**Stop on first failure.** *Development line:* in the app a run stops at the
+first failed step by default, so later steps do not spend model calls on an
+empty result. The saved chain is not changed; this applies to the run only.
+A chain that sets `fail_fast` itself, or asks for a replan policy, keeps its
+own choice. Running steps finish and are not rolled back.
+
+**Failed run card.** A failed run is shown as failed even if some final
+output exists. The card says in plain words what went wrong at the failed
+step (for example, which parameter did not get a value), colours the progress
+red and marks later steps as **Skipped** (*Пропущен*). **More** (*Подробнее*)
+shows the error code, the redacted error text, the request id and the call
+log.
+
+**Checked by a run.** A chain card says *Checked by a run* (*Проверена
+запуском*) only after a successful run of that exact chain in the session.
 
 ## Pause, resume, stop
 
-A running execution has **Pause** (*Пауза*), **Resume** (*Продолжить*) and
-**Stop** (*Остановить*) on its card.
+A running execution has **Pause** (*Ⅱ Пауза*), **Resume** (*▶ Продолжить*)
+and **Stop** (*Остановить*) on its card.
 
 - Pause works **between steps**. A model call already in progress is not
   interrupted. *Pause requested* means running steps are finishing; *paused*
@@ -48,15 +63,22 @@ These controls are free and need no dialog.
 
 ## Repair after a failure
 
-When a run fails, ask the agent to repair the chain. Repair:
+When a run fails at a precise step, the agent **proposes one repair right
+away**, without waiting to be asked (*development line*). The run card also
+has **Repair chain** (*Исправить цепочку*), which drafts the same request.
+Repair:
 
 - takes the failed run's receipt from the same session;
 - proposes a corrected chain (paid: one model call, one confirmation);
 - **never runs** the proposal and **never changes** the original chain.
 
-The proposal is marked as unverified. Running it is a separate execution with
-its own confirmation. Keep the original chain and the failed result for
-comparison.
+The proposal is marked as unverified. The agent shows what changed and offers
+to run the new version; that run is a separate execution with its own
+confirmation. Keep the original chain and the failed result for comparison.
+
+The agent does not repair provider, network or cancellation errors, and does
+not repair a run that succeeded but gave an unsatisfying answer. Describe
+what to change instead.
 
 ## Background jobs
 
@@ -71,6 +93,9 @@ the progress dock.
   until the platform has assigned the run id and then cancels the evolution.
 - A repair job's result is a proposal; it is never executed automatically.
 - Jobs live in the app process and are lost on restart.
+- The chat hides the bookkeeping of Maestro jobs (status polls, completion
+  notices); the operation's own card shows the result. The progress dock has
+  **Stop** (*Остановить*) for a running background job.
 
 ## Timeouts and duplicates
 
@@ -86,7 +111,7 @@ the progress dock.
 ## Saving
 
 Ask the agent to save a chain. Saving writes a **new version** to memory and is
-free (no dialog). The chain then appears in the [Library](/care/app/library/).
+free (no dialog). The chain then appears in [My agents](/care/app/library/).
 With read-only memory, saving is refused.
 
 ## Known limits

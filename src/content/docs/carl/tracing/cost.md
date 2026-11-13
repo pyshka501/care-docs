@@ -47,7 +47,7 @@ pricing=...)` instead — it multiplies a single chain estimate by the run size.
 
 ## Example
 
-The repo's [token-usage example](https://github.com/Glazkoff/carl/blob/main/examples/llm_inference/token_usage_example.py)
+The repo's [token-usage example](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/llm_inference/token_usage_example.py)
 (mock client, no API key) walks three granularities: a pre-flight estimate, the
 **actual** per-step token usage after a run, and aggregation across a batch.
 

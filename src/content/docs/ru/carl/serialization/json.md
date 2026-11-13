@@ -28,10 +28,13 @@ typed = ReasoningChain.from_dict_typed(d)       # типизированный �
 | **По умолчанию** | `load()`, `from_json()`, `from_dict(data)` | Legacy `StepDescription` для `llm`, `tool`, `mcp`, `memory`, `transform`, `conditional`, `structured_output`, `command`, `shell_session`. Для остальных типов — типизированные классы. |
 | **Типизированный** | `from_dict_typed(data)` = `from_dict(data, use_typed_steps=True)` | Типизированный класс для каждого типа шага (`LLMStepDescription`, `ToolStepDescription`, …). |
 
-Оба пути загружают **все** типы шагов CARL 0.5.0. Мы проверили это так:
-сохранили по одной цепочке на каждый `StepType` (25 типов) и загрузили через
-`from_json`, `load` и `from_dict_typed`. Всё загрузилось, а типизированный путь
-дал в точности исходный `to_dict()`.
+Оба пути загружают **все** типы шагов CARL 0.5.2. Мы проверили это так:
+собрали по минимальной цепочке на каждый `StepType` через
+`auto_generate_minimal_step` и загрузили через `from_json` и `from_dict_typed`.
+Все 28 одношаговых фикстур загрузились, а типизированный путь дал в точности
+исходный `to_dict()`. (29-му типу, `evaluation`, нужен второй шаг, который он
+проверяет, поэтому одношаговой фикстуры у него нет; его покрывают собственные
+тесты CARL.)
 
 На пути по умолчанию шаг legacy-типа возвращается как `StepDescription`. При
 запуске он ведёт себя так же. Но его `to_dict()` получает пустые LLM-поля
@@ -55,13 +58,15 @@ chain = ReasoningChain.from_dict_typed(ReasoningChain.migrate(raw))
 
 Уровень цепочки: `format_version`, `carl_version`, `max_workers`,
 `enable_progress`, `metadata` (Maestro хранит свой блок в
-`metadata["care"]`), `timeout`, `fail_fast`, `replan_policy`,
-`search_config`, `default_llm_config`, `trace_name`, `session_id`,
-`chain_tools`, `steps`.
+`metadata["care"]`), `timeout`, `fail_fast`, `max_injections`,
+`memory_schema`, `step_groups`, `replan_policy`, `search_config`,
+`default_llm_config`, `trace_name`, `session_id`, `chain_tools`, `steps`.
+`max_injections`, `memory_schema` и `step_groups` сохраняются с формата 12
+(CARL 0.5.0).
 
 Каждый шаг: `number`, `title`, `dependencies`, `step_type`, `checkpoint`,
 `checkpoint_name`, `replan_enabled`, `triggered_by`, `loop_back_to`,
-`loop_config`. LLM-шаги добавляют `aim`, `reasoning_questions`,
+`loop_config`, `frozen`. `metadata` шага не пишется. LLM-шаги добавляют `aim`, `reasoning_questions`,
 `step_context_queries`, `stage_action`, `example_reasoning`, `llm_config`,
 `retry_max`, `timeout`. Остальные шаги пишут полный `*StepConfig` в
 `step_config`.
@@ -79,36 +84,36 @@ chain = ReasoningChain.from_dict_typed(ReasoningChain.migrate(raw))
 
 | Поле | После загрузки |
 | --- | --- |
-| `max_injections` | значение по умолчанию `50` |
-| `memory_schema` | `None`, передайте заново |
-| `step_groups` | пусто. `llm_config` группы вливается в шаги при сборке цепочки, поэтому итоговые настройки шагов сохраняются. |
 | `metrics` (цепочки и шагов) | нет, подключите объекты `MetricBase` заново |
 | `cache` (`StepCache`) | нет, подключите заново |
 | `prompt_template` | шаблон по умолчанию |
-| Полномочия хоста (`CommandPolicy`, `CommandCapabilityRegistry`, `NetworkEnforcer`, `CodeExecutionPolicy`) | никогда не входят в JSON цепочки, хост кладёт их в `ReasoningContext` |
+| Полномочия хоста (`CommandPolicy`, `CommandCapabilityRegistry`, `NetworkEnforcer`, `CodeExecutionPolicy`, `allow_local_agent_execution`, `decision_endpoints`, `allow_code_tools`) | никогда не входят в JSON цепочки, хост кладёт их в `ReasoningContext` |
+| `ClaudeCodeStepConfig.env` | с 0.5.0 не пишется, хост задаёт его на доверенных шагах. Если в словаре `env` есть, он загрузится. |
 
 ## Версии
 
 `to_dict()` записывает:
 
-- `format_version: int` — это `ReasoningChain.FORMAT_VERSION`, в CARL 0.5.0
-  он равен `11`. Каждый новый тип шага или изменение формата добавляет одну
-  ступень в `ReasoningChain.migrate()`.
+- `format_version: int` — это `ReasoningChain.FORMAT_VERSION`: `13` в CARL
+  0.5.0, `14` в 0.5.1, `15` в 0.5.2. Каждый новый тип шага или изменение
+  формата добавляет одну ступень в `ReasoningChain.migrate()`.
 - `carl_version: str` — только для информации.
 
 | Ситуация | Поведение |
 | --- | --- |
 | Формат старше | `migrate()` проходит лестницу, цепочка загружается. |
-| Формат новее | `from_dict()` бросает `ChainFormatNewerError(required_version, this_version)`. Maestro показывает сообщение «обновите CARL». |
+| Формат новее | `from_dict()` бросает `ChainFormatNewerError(required_version, this_version)`. Хост может поймать её и попросить обновить `mmar-carl`. |
 | Неизвестный `step_type` | Цепочка не загружается целиком (`ValueError`). Ничего не пропускается молча. |
 
 :::caution[Цепочки из сборки CARL внутри Maestro]
-Сборка CARL, которая поставляется в приложении Maestro
-(`0.3.0+maestro.contracts.*`), нумерует форматы отдельно: формат 2 там
-означает chain tools. Её JSON содержит `fail_fast`, а для chain tools ещё и
-`required_tool_revisions`. Лестница миграций не покрывает перенос JSON между
-этой сборкой и средой с `FORMAT_VERSION = 11`. Проверяйте такие цепочки через
-`maestro validate` перед запуском.
+Приложение Maestro пока не работает на релизе 0.5.x. Оно закрепляет
+`mmar-carl 0.3.0+maestro.contracts.3`, у которой `FORMAT_VERSION` равен `1`
+(см. [какой CARL запускает Maestro](/ru/carl/care-integration/overview/#какой-carl-запускает-maestro)).
+
+- Цепочка, сохранённая в Maestro (формат 1, часто с `fail_fast`), загружается в
+  0.5.2: `migrate()` поднимает её до 15 и сохраняет `fail_fast`.
+- Цепочку, сохранённую в 0.5.2 (формат 15), сборка Maestro отклоняет с
+  `ChainFormatNewerError`, даже если в ней только знакомые этой сборке типы шагов.
 :::
 
 ## Сериализация результатов

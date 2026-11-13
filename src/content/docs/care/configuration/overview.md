@@ -10,15 +10,21 @@ sidebar:
 Two sources matter:
 
 1. **Settings → Chat model** (harness settings): provider, key and models.
-   In the app this model does all of Maestro's model work: generation,
-   execution, repair, data generation, workshop drafts, idea translation.
-2. **Settings → MAESTRO**: memory, IdeaL, web research, evolution platform,
-   app lock. It writes the `CareConfig` fields below and Keychain references.
-   Every save needs a full restart. See [Settings](/care/app/settings/).
+   By default this model does all of Maestro's model work in the app:
+   writing and running chains, generation, repair, dataset work, workshop
+   drafts, idea translation.
+2. **Settings → MAESTRO**: who writes chains, clarifications, the chain
+   model, memory and IdeaL, web research, evolution platform, app lock. It
+   writes the `CareConfig` fields below into `~/.config/care/config.toml` and
+   the app's `.env`. Every save needs a full restart. See
+   [Settings](/care/app/settings/).
 
-The `CARE_MAGE__*` provider, URL, model and key are **not** used by the
-desktop app for generation; they configure the CLI, the TUI and the legacy
-workbench. `CARE_MAGE__MODE` and the research switches do apply in the app.
+The `CARE_MAGE__*` provider, URL, model and key are used by the desktop app
+only when `CARE_DEFAULTS__CHAIN_MODEL=custom` (*development line*); then
+chain generation, execution and repair run on that endpoint. Otherwise they
+configure the CLI, the TUI and the legacy workbench, and serve as the
+evolution platform's fallback model. `CARE_MAGE__MODE` and the research
+switches apply in the app either way.
 
 ## The four layers
 
@@ -62,14 +68,14 @@ CARE_MEMORY__IDEAL_NAMESPACE=my-team
 | Section | Env prefix | Purpose |
 | --- | --- | --- |
 | `mage` | `CARE_MAGE__*` | Chain generator: mode, research, limits, topology. Provider/URL/model/key for CLI, TUI, legacy workbench. |
-| `memory` | `CARE_MEMORY__*` | GigaEvo Memory URL and key, read-only mode, chain memory backend, IdeaL namespace. |
+| `memory` | `CARE_MEMORY__*` | GigaEvo Memory URL and key, read-only mode, chain memory backend, IdeaL namespace and project. |
 | `platform` | `CARE_PLATFORM__*` | Evolution platform URLs and key, mutation and validation models. |
 | `hub` | `CARE_HUB__*` | Agent hub for `/deploy` and `maestro deploy`. |
 | `upload` | `CARE_UPLOAD__*` | External chain-upload target (`/upload`). |
 | `sandbox` | `CARE_SANDBOX__*` | Skill sandbox: backend (`docker` default, `e2b`, `firejail`, `local`), limits, network policy. |
 | `tools` | `CARE_TOOLS__*` | `@carl_tool` directory, bundled builtins, web search, code execution, tool synthesis, STARM solvers. |
 | `telemetry` | `CARE_TELEMETRY__*` | Opt-in event sink (Langfuse). |
-| `defaults` | `CARE_DEFAULTS__*` | Answer language, TUI language, DAG display, history size, reduced motion. |
+| `defaults` | `CARE_DEFAULTS__*` | Answer language, TUI language, DAG display, history size, reduced motion; in the app: who writes chains, clarify mode, chain model. |
 | `chat` | `CARE_CHAT__*` | TUI modes and stage policies. |
 | `context` | `CARE_CONTEXT__*` | `CARE.md` standing context and long-term memory. |
 | `artifacts` | `CARE_ARTIFACTS__*` | Where files produced by chains are copied. |
@@ -81,7 +87,9 @@ annotated list of variables is `.env.example` in the Maestro repository.
 
 | Variable | Meaning |
 | --- | --- |
-| `CARE_BENCHMARK_FACTORY_DB` | SQLite file of the evolution data generator. Default `~/.local/state/care/benchmark-factory/factory.sqlite3`. |
+| `CARE_SECRET_STORE` | *Development line.* Where the app keeps keys: `file` (default; values in the app's `.env` and `config.toml`, mode `0600`) or `keychain` (`keystore://` references, values in the macOS Keychain). See [Where keys are stored](/care/app/settings/#where-keys-are-stored). |
+| `CARE_DESKTOP_WORKSPACE` | An absolute folder the packaged app uses for its `.env` and relative paths. Default: the current folder, or `~/Documents/Maestro` when started from Finder. |
+| `CARE_BENCHMARK_FACTORY_DB` | SQLite file of the dataset studio. Default `~/.local/state/care/benchmark-factory/factory.sqlite3`. |
 | `MAESTRO_APP_LOCK_MODE` | Force the app lock for one launch: `disabled` or `touch-id`. |
 | `CARE_LOG_FILE`, `CARE_LOG_LEVEL` | Write a log file; level (default `INFO`). |
 | `CARE_CHAT__LOOP_MAX_ITER` | TUI Interactive loop cap (default 5). |
@@ -94,8 +102,12 @@ its data directory; see `maestro app --help`. The app sets further internal
 
 ## Secrets
 
-- In the desktop app, keys are entered in native dialogs and stored in the
-  macOS Keychain. Config files hold only `keystore://` references.
+- In the desktop app, keys are entered in native dialogs (the IdeaL key on
+  the IdeaL sign-in page). With the default `CARE_SECRET_STORE=file` they are
+  written as values into the app's `.env` and `~/.config/care/config.toml`,
+  both owner-only. Any process running as your user can read them. With
+  `CARE_SECRET_STORE=keychain` the files hold only `keystore://` references
+  and the values live in the macOS Keychain.
 - `maestro init` writes the generator key **in plain text** to `.env`.
 - `maestro migrate-secrets` moves literal `*_api_key` values from
   `~/.config/care/config.toml` into the OS keystore and rewrites the file

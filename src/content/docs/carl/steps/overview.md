@@ -1,6 +1,6 @@
 ---
 title: Steps Overview
-description: All 25 CARL step types, the fields every step shares, and the typed vs legacy API.
+description: All 29 CARL step types, the fields every step shares, and the typed vs legacy API.
 sidebar:
   order: 1
 ---
@@ -33,10 +33,12 @@ All step classes extend `StepDescriptionBase` and inherit these fields:
 | `checkpoint` | `bool` | `False` | Mark as a RE-PLAN rollback checkpoint. |
 | `checkpoint_name` | `str \| None` | `None` | Optional checkpoint label. |
 | `replan_enabled` | `bool \| None` | `None` | Per-step RE-PLAN override (`None` = use the chain policy). |
+| `frozen` | `bool` | `False` | Evolution helpers must not change, retype or delete this step. Honoured by the `mmar_carl.meta` mutation helpers, not by `ChainMutator` (see [EvoC primitives](/carl/evolution/overview/#evoc-primitives)). |
+| `metadata` | `dict` | `{}` | Free-form step metadata; the executor records provenance here. |
 | `metrics` | `list[MetricBase]` | `[]` | Metrics evaluated after the step runs. |
 | `loop_back_to` | `int \| None` | `None` | Step to loop back to. See [loops](/carl/steps/loops/). |
 | `loop_config` | `LoopConfig \| None` | `None` | Loop condition and budget guard. |
-| `cache` | `StepCache \| None` | `None` | Result memoization. See [caching](/carl/steps/caching/). `command`, `shell_session`, `command_plan`, `claude_code` and `codex` reject it. |
+| `cache` | `StepCache \| None` | `None` | Result memoization. See [caching](/carl/steps/caching/). `command`, `shell_session`, `command_plan`, `planner`, `claude_code` and `codex` reject it. |
 
 :::note
 `retry_max` and `timeout` are **not** on every step. They live on
@@ -47,7 +49,9 @@ their own budgets in their config: tool steps use `ToolStepConfig.timeout` and
 
 ## The step types
 
-`StepType` has 25 values. `"bash"` from old chain JSON still loads as `command`.
+`StepType` has 29 values in 0.5.2. `"bash"` from old chain JSON still loads as `command`.
+New since 0.4.0: `claude_code`, `codex`, `selection` and `planner` (0.5.0),
+`decision` (0.5.1) and `terminate` (0.5.2).
 
 ### Reasoning and data
 
@@ -61,12 +65,15 @@ their own budgets in their config: tool steps use `ToolStepConfig.timeout` and
 | `conditional` | [`ConditionalStepDescription`](/carl/steps/conditional/) | Routes to one branch; the others are skipped. |
 | `tool_discovery` | [`ToolDiscoveryStepDescription`](/carl/steps/tool-discovery/) | Discovers and registers tools at runtime. |
 | `evaluation` | `EvaluationStepDescription` | Inline quality gate on another step's output. See [metrics](/carl/evaluation/metrics/). |
+| `selection` | [`SelectionStepDescription`](/carl/steps/selection/) | Picks items from a list (top-k, weighted, random, filter) with no LLM call. |
+| `decision` | [`DecisionStepDescription`](/carl/steps/decision/) | Asks a decision model typed questions (predicate, choice, score) through a host-granted endpoint. |
 
 ### Agents and delegation
 
 | Type | Class | What it does |
 | --- | --- | --- |
 | `agent` | [`AgentStepDescription`](/carl/steps/agent/) | Bounded ReAct loop over an explicit list of registered tools, with a required `finish`. |
+| `planner` | [`PlannerStepDescription`](/carl/steps/planner/) | A model picks and orders tool actions the chain declared; they run as injected tool steps. |
 | `claude_code` | [`ClaudeCodeStepDescription`](/carl/steps/claude-code/) | Hands a whole subtask to a headless Claude Code CLI agent. |
 | `codex` | [`CodexStepDescription`](/carl/steps/codex/) | Hands a whole subtask to a local Codex agent through the Codex SDK. |
 | `agent_skill` | `AgentSkillStepDescription` | Runs an [AgentSkill](/carl/skills/overview/) folder. |
@@ -89,6 +96,7 @@ it is the top-level `chain_tools` field. See [chain tools](/carl/steps/chain-too
 | `shell_session` | [`ShellSessionStepDescription`](/carl/steps/shell-session/) | Runs a static script in one shell process. |
 | `wait` | [`WaitStepDescription`](/carl/steps/wait/) | Waits for a timer, an absolute time, or a named event. |
 | `map` | [`MapStepDescription`](/carl/steps/map/) | Bounded ordered fan-out of one tool over a JSON array. |
+| `terminate` | [`TerminateStepDescription`](/carl/steps/terminate/) | Returns an explicit answer and stops the chain after the current batch. |
 
 ### MCP
 
@@ -103,18 +111,25 @@ Steps that run code, commands or agents follow one rule: **a serialized chain is
 input, never authority.** The chain says what it wants. The host grants
 permission at run time through objects that are never written to chain JSON:
 `CommandPolicy`, `CommandCapabilityRegistry`, `CodeExecutionPolicy`, the network
-enforcer, the human-input provider, and registered tools.
+enforcer, the human-input provider, registered tools, and two context fields:
 
-Two exceptions are worth knowing. The `claude_code` step serializes its CLI
-flags, including `permission_mode`, `env` and `extra_cli_args`, so the chain
-itself decides how much the agent may do. The `codex` step limits this to a
-`read-only` or `workspace-write` sandbox. Review chains with these steps before
-you run them.
+- `ReasoningContext.allow_local_agent_execution` (default `False`) must be
+  `True` before a `claude_code` or `codex` step may start a local agent.
+  Loading a chain never grants it.
+- `ReasoningContext.decision_endpoints` authorizes the exact URL and key
+  variable for each `decision` provider.
+
+The `claude_code` step still serializes its CLI flags (`permission_mode`,
+`allowed_tools`, `extra_cli_args`, `add_dirs`), so a chain can ask for broad
+agent permissions. Its `env` overrides are runtime-only and never written to
+JSON. The `codex` step limits the sandbox to `read-only` or `workspace-write`.
+Review chains with these steps before you grant local agent execution.
 
 ## Before you run
 
 `chain.preflight(context)` lists what a chain needs and what is missing: tools,
-MCP servers, skills, code profiles, Claude Code CLIs and the Codex runtime. See
+MCP servers, skills, code profiles, Claude Code CLIs, the Codex runtime and
+decision-model credentials. See
 [preflight](/carl/care-integration/preflight/).
 
 ## Cross-cutting features

@@ -46,7 +46,7 @@ ParallelSamplingStepDescription(
 `base_step` — обязательный `LLMStepDescription`. Все копии запускают один и тот же
 шаг вместе с его `llm_config`, то есть одну модель. Чтобы сравнить разные модели,
 запустите несколько LLM-шагов параллельно (см.
-[пример «совета LLM»](https://github.com/Glazkoff/carl/blob/main/examples/agents/llm_council_example.py)).
+[пример «совета LLM»](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/agents/llm_council_example.py)).
 
 ## ParallelSamplingStepConfig
 

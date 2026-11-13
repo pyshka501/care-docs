@@ -80,7 +80,7 @@ default `network="none"` and strict mode the step fails before launch. See the
 [command step caution](/carl/steps/command/#minimal-example).
 
 A two-step example that passes a file between fresh shells through artifacts is in
-[`examples/orchestration/shell_session_artifacts_example.py`](https://github.com/Glazkoff/carl/blob/main/examples/orchestration/shell_session_artifacts_example.py).
+[`examples/orchestration/shell_session_artifacts_example.py`](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/orchestration/shell_session_artifacts_example.py).
 
 ## ShellSessionStepConfig
 

@@ -61,9 +61,8 @@ Idea and tool nodes carry their rating fields (`gain_rate`, `strength`,
 delivered and cited counts). For each chain the graph uses its `evolved`
 channel, falling back to `latest`.
 
-Maestro's Library draws this graph (see
-[Ideas in the Library](/ideal/maestro/library/)). The IdeaL web UI has its own
-graph view behind the **Graph** button on the IdeaL tab.
+In Maestro this graph is shown by the embedded IdeaL panel: the **Graph**
+(*Граф*) button (see [Ideas in Maestro](/ideal/maestro/library/)).
 
 ## Known limits
 

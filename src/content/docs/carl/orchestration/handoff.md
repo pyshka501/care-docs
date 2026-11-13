@@ -38,6 +38,7 @@ fails with an explicit error.
 | `output_namespace` | `"handoff"` | Namespace for `output_memory_key`. |
 | `propagate_failure` | `True` | When `False`, a failed sub-chain is recorded but the step succeeds. |
 | `inherit_tools` | `True` | Copy the parent's tool registry into the sub-context. |
+| `share_memory` | `False` | When `True`, the sub-chain's final memory is merged back into the parent, so its writes are visible after the handoff. When `False`, the sub-chain works on an isolated copy and only `output_memory_key` flows back. |
 | `timeout` | `None` | Seconds for the sub-chain run, `> 0`. A timeout fails the step. |
 
 ## What the sub-chain sees
@@ -45,7 +46,8 @@ fails with an explicit error.
 The sub-context gets the parent's `outer_context`, LLM client, model, retry
 setting, language, system prompt, history limits and command policy. History starts
 empty. Memory is a **deep copy** of the parent memory, so writes inside the
-sub-chain do not leak back. Only `output_memory_key` is written to the parent.
+sub-chain do not leak back. Only `output_memory_key` is written to the parent,
+unless `share_memory=True`.
 
 ## Result
 

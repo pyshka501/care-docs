@@ -132,7 +132,7 @@ Find the digest of a local image with
 `docker image inspect python:3.12-slim --format '{{json .RepoDigests}}'`.
 
 A longer version with a dry-run mode is in
-[`examples/agents/code_step_example.py`](https://github.com/Glazkoff/carl/blob/main/examples/agents/code_step_example.py).
+[`examples/agents/code_step_example.py`](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/agents/code_step_example.py).
 
 ## Fields
 
@@ -209,8 +209,8 @@ output limit, CPU, memory, PID limits, `network="none"`, workspace files and art
 output limits. At prepare time it must also confirm that network isolation is on and
 that the workspace output mount is read-only.
 
-Among the runtimes that ship with CARL, only **`docker`** passes. Checked with CARL
-0.5.0:
+Among the runtimes that ship with CARL, only **`docker`** passes. Checked against
+the declared runtime capabilities in CARL 0.5.2:
 
 | Runtime | Result | Missing controls |
 | --- | --- | --- |
@@ -298,7 +298,7 @@ only then.
 ## Serialization
 
 - The wire type is `"code"`. It entered the chain format at `format_version` 7.
-  Chains saved by CARL 0.5.0 carry `format_version` 11. See
+  Chains saved by CARL 0.5.2 carry `format_version` 15. See
   [migration](/carl/serialization/migration/).
 - The full `CodeStepConfig` round-trips through `to_dict()` / `from_dict()`. The
   policy does not, by design.

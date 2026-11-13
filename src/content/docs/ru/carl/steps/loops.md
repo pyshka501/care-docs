@@ -71,7 +71,7 @@ ToolStepDescription(
 важен, задайте зависимости сами, по номерам, которые назначит помощник.
 :::
 
-[Пример цикла](https://github.com/Glazkoff/carl/blob/main/examples/orchestration/loop_until_example.py)
+[Пример цикла](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/orchestration/loop_until_example.py)
 в репозитории (без API-ключа) показывает исследовательский цикл. Он продолжает
 поиск, пока не наберётся достаточно фактов:
 

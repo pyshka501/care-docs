@@ -10,6 +10,35 @@ engine. This page describes the contract between the two: what Maestro puts on
 a chain and a context, which CARL APIs it calls, and which CARL behaviour it
 relies on. Any other host can use the same pieces.
 
+## Which CARL Maestro runs
+
+The Maestro app does **not** run CARL 0.5.x yet. As of this writing it pins
+`mmar-carl 0.3.0+maestro.contracts.3`, built from Git commit
+`f0afe4620d72dbf13e59b372ec3e550195a19d61` of the `Glazkoff/carl` development
+fork, dated 2026-10-05, about a month before the 0.5.0 release on 2026-11-09. That build is CARL 0.3.0 plus a backport of the host contracts
+Maestro needs: `fail_fast`, acknowledged pause and resume, `runtime_input`,
+scoped structured-output and human-input inputs, and the
+`CARL_TOOL_INPUT_UNRESOLVED` check. Its `FORMAT_VERSION` is `1` and it knows 16
+step types.
+
+So Maestro does not use these parts of CARL yet:
+
+- the step types added in 0.4.0 and later: `agent`, `code`, `wait`, `map`,
+  `command_plan`, `command`, `shell_session`, `claude_code`, `codex`,
+  `selection`, `planner`, `decision`, `terminate`;
+- embedded [chain tools](/carl/steps/chain-tools/), [Git tool
+  sources](/carl/steps/tool-discovery/#tools-from-a-pinned-git-commit),
+  enforced skill pinning, eager tool scheduling, and the EvoC primitives;
+- the 0.5.0 behaviour changes: tool failures that fail the step, decoded JSON
+  tool results, `allow_local_agent_execution`, the shared chain deadline;
+- chain formats above 1. Maestro's build rejects any chain saved by 0.5.x
+  (format 13–15) with `ChainFormatNewerError`. The other direction works: 0.5.2
+  migrates Maestro's format-1 chains and keeps their `fail_fast`.
+
+Moving Maestro to a 0.5.x release has not happened yet. Until it does, the
+rest of this page describes the contract as Maestro uses it with its pinned
+build; the CARL APIs named here exist in 0.5.2 as well.
+
 | Piece | What it's for |
 | --- | --- |
 | [Preflight](/carl/care-integration/preflight/) | Ask what a chain needs (tools, MCP servers, skills, code profiles, external agents) and what is missing in a context. |
@@ -21,14 +50,15 @@ relies on. Any other host can use the same pieces.
 The desktop app runs a saved chain through one execution boundary
 (`care/harness_execution.py` in the Maestro repository). In order:
 
-1. **Strict parse.** The chain JSON is loaded with
-   `ReasoningChain.from_dict(data, use_typed_steps=True)`. CARL's warnings
-   about unresolvable `$history[...]` references are promoted to errors.
-   A chain with `"fail_fast": true` is refused if the installed CARL would
-   drop the field.
+1. **Strict parse.** A chain without an explicit `fail_fast` and without a
+   RE-PLAN policy gets `fail_fast: true` for the run. The chain JSON is then
+   loaded with `ReasoningChain.from_dict(data, use_typed_steps=True)`. CARL's
+   warnings about unresolvable `$history[...]` references are promoted to
+   errors.
 2. **Input contract.** The chain carries a JSON Schema in
-   `metadata["care"]["runtime_input_schema"]`. Maestro validates the user's
-   input against it before any provider call.
+   `metadata["care"]["runtime_input_schema"]`, bound to the chain's content
+   digest. Maestro validates the user's input against it before any provider
+   call.
 3. **Context.** Maestro builds the `ReasoningContext` with
    - `runtime_input` = the validated input object, and
    - `outer_context` = the task text plus the same input as JSON, wrapped in
@@ -88,9 +118,9 @@ the scoped input mappings of structured-output and human-input steps.
 
 ## Known limits
 
-- Maestro's own preflight wrapper does not look at
-  `missing_code_profiles`, `missing_claude_code_clis` or
-  `missing_codex_runtimes`; those surface when the step runs.
-- `ReasoningChain.set_care_metadata(...)` replaces the whole `care` block,
-  including Maestro's `runtime_input_schema`. See
-  [chain metadata](/carl/care-integration/metadata/).
+- Maestro's preflight wrapper checks `missing_tools`, `missing_mcp_servers` and
+  `missing_skills` only. Its pinned CARL has no code-profile, Claude Code,
+  Codex or decision-credential lists.
+- In 0.5.2, `ReasoningChain.set_care_metadata(...)` keeps keys it does not
+  model, such as `runtime_input_schema`, but resets the modelled fields you do
+  not pass. See [chain metadata](/carl/care-integration/metadata/).

@@ -88,18 +88,20 @@ legacy = ReasoningChain.from_dict(d)        # legacy StepDescription where possi
 s = chain.to_json();  ReasoningChain.from_json(s)
 ```
 
-- В каждом dict есть `format_version` (сейчас `11`) и `carl_version`. Если
+- В каждом dict есть `format_version` (`15` в CARL 0.5.2) и `carl_version`. Если
   `format_version` новее, чем знает библиотека, будет `ChainFormatNewerError`.
-  Старые dict поднимаются через `ReasoningChain.migrate(raw)`.
+  Старые dict поднимаются через `ReasoningChain.from_dict(ReasoningChain.migrate(raw))`.
 - `from_dict`, `from_json` и `load` для классических типов шагов строят legacy
   `StepDescription`. Чтобы везде получить типизированные классы, используйте
   `from_dict_typed`.
-- Сохраняются и читаются обратно: `fail_fast`, `chain_tools`, циклы
-  (`loop_back_to`, `loop_config`), `triggered_by` и топология коллабораций
-  (`sub_chain`, `agents`, `base_step`).
-- Не сериализуются: `metrics` и `cache` у шагов, `memory_schema`,
-  `step_groups`, `max_injections` и все полномочия хоста (инструменты,
-  политики, обработчики, enforcer'ы). После загрузки их нужно подключить заново.
+- Сохраняются и читаются обратно: `fail_fast`, `max_injections`,
+  `memory_schema`, `step_groups`, `chain_tools`, циклы (`loop_back_to`,
+  `loop_config`), `triggered_by` и топология коллабораций (`sub_chain`,
+  `agents`, `base_step`).
+- Не сериализуются: `metrics` и `cache` у шагов, шаблон промпта и все
+  полномочия хоста (инструменты, политики, обработчики, enforcer'ы,
+  `allow_local_agent_execution`, `decision_endpoints`). После загрузки их нужно
+  подключить заново.
 
 Подробнее: [формат JSON](/ru/carl/serialization/json/) и
 [миграция](/ru/carl/serialization/migration/).

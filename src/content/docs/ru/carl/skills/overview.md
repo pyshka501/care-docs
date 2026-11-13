@@ -35,7 +35,7 @@ pip install 'mmar-carl[skills]'         # agent-skills + pdf + pptx (the PDF -> 
 ```
 
 :::caution[Навыки выполняются на хосте]
-В CARL 0.5.0 шаг AgentSkill запускает скрипты только с `runtime="local"`. Это
+В CARL 0.5.2 шаг AgentSkill запускает скрипты только с `runtime="local"`. Это
 подпроцесс на хосте без изоляции. С `docker`, `e2b` или `firejail` запуск
 скрипта падает. Запускайте только навыки, которым доверяете. Недоверенный код
 запускайте в песочнице через фиксированный [CommandStep](/ru/carl/steps/command/).
@@ -83,7 +83,7 @@ git-адресом. Архивы скачивайте через [`resolve_skill
 
 ## Поля конфига
 
-Все поля `AgentSkillStepConfig` и их значения по умолчанию в 0.5.0:
+Все поля `AgentSkillStepConfig` и их значения по умолчанию в 0.5.2:
 
 | Поле | По умолчанию | Назначение |
 | --- | --- | --- |
@@ -114,18 +114,22 @@ git-адресом. Архивы скачивайте через [`resolve_skill
 | `output_files_glob` | `["*"]` | `LLM_AGENT`: какие файлы из `out/` собирать. |
 | `runtime` | `"local"` | Рантайм скриптов. Для этого шага работает только `local`, см. [песочницу](/ru/carl/skills/sandbox/). |
 | `runtime_config` | `{}` | Ключи сетевой политики (`network`, `network_allowlist`). Проверяются, но на `local` не применяются. |
-| `trust_policy` | `"any"` | `"any"` или `"sha_pinned"`. **Шаг это не проверяет**, см. ниже. |
-| `skill_sha256` | `None` | Ожидаемый хэш `SKILL.md`. **Шаг это не проверяет.** |
+| `trust_policy` | `"any"` | `"any"` или `"sha_pinned"`. С `sha_pinned` шаг проверяет `SKILL.md` до использования, см. ниже. |
+| `skill_sha256` | `None` | Ожидаемый SHA-256 `SKILL.md` (64 hex-символа). Обязателен при `sha_pinned`. |
 | `extra_pip` | `[]` | Пакеты ставятся через `pip install --target` во временную папку, которая добавляется в `PYTHONPATH`. Работает на хосте. |
 | `output_schema` | `None` | Только `LLM_AGENT`: упрощённая проверка финального ответа по JSON-схеме (`type`, `properties`, `required`, `items`). |
 | `output_schema_strict` | `True` | Ошибка разбора или схемы роняет шаг. С `False` она пишется в `schema_warnings`. |
 
-:::caution[Шаг не проверяет пиннинг]
-`trust_policy` и `skill_sha256` хранятся и сериализуются, но исполнитель шага их
-не читает. Шаг с `trust_policy="sha_pinned"` и неверным хэшем всё равно
-выполнится. Чтобы закрепить навык, вызовите
-[`resolve_skill(..., sha256=..., trust_policy="sha_pinned")`](/ru/carl/skills/resolvers/)
-сами до сборки цепочки и передайте проверенный локальный путь в `skill`.
+:::note[Пиннинг проверяется с 0.5.0]
+С `trust_policy="sha_pinned"` шаг хэширует те же байты `SKILL.md`, которые
+разбирает, и падает при несовпадении (`Skill SKILL.md SHA256 mismatch`).
+Отсутствующий или кривой `skill_sha256` тоже валит шаг. Закреплённая загрузка
+идёт мимо кэша навыков в памяти. Проверяется только `SKILL.md`. Чтобы закрепить
+скрипты рядом с ним, закрепите сам источник, например
+`AgentSkillSource(git_url=..., git_ref=<sha коммита>,
+sha256={"scripts/run.py": "<хэш>"})`: хэши файлов проверяются при каждой
+загрузке, и при попадании в кэш тоже. До 0.5.0 шаг хранил эти поля, но не
+проверял.
 :::
 
 ## Результат
@@ -150,4 +154,4 @@ git-адресом. Архивы скачивайте через [`resolve_skill
 ## См. также
 
 - [Резолверы навыков](/ru/carl/skills/resolvers/) · [Песочница и LLM_AGENT](/ru/carl/skills/sandbox/)
-- [Пример AgentSkill](https://github.com/Glazkoff/carl/blob/main/examples/agents/agent_skill_example.py) (PDF → анализ → PPTX).
+- [Пример AgentSkill](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/agents/agent_skill_example.py) (PDF → анализ → PPTX).

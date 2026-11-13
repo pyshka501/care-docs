@@ -10,6 +10,38 @@ sidebar:
 цепочку и контекст, какие API CARL вызывает и на какое поведение CARL
 опирается. Любой другой хост может использовать те же части.
 
+## Какой CARL запускает Maestro
+
+Приложение Maestro пока **не** работает на CARL 0.5.x. Сейчас оно закрепляет
+`mmar-carl 0.3.0+maestro.contracts.3`, собранную из коммита
+`f0afe4620d72dbf13e59b372ec3e550195a19d61` в форке для разработки
+`Glazkoff/carl` от 2026-10-05, примерно за месяц до релиза 0.5.0
+(2026-11-09). Это CARL 0.3.0 плюс бэкпорт контрактов хоста, которые нужны
+Maestro: `fail_fast`, подтверждённая пауза и возобновление, `runtime_input`,
+ограниченные входы structured output и ввода человека и проверка
+`CARL_TOOL_INPUT_UNRESOLVED`. `FORMAT_VERSION` у этой сборки `1`, типов шагов
+она знает 16.
+
+Поэтому вот чем из CARL Maestro пока не пользуется:
+
+- типами шагов из 0.4.0 и новее: `agent`, `code`, `wait`, `map`,
+  `command_plan`, `command`, `shell_session`, `claude_code`, `codex`,
+  `selection`, `planner`, `decision`, `terminate`;
+- встроенными [инструментами-цепочками](/ru/carl/steps/chain-tools/),
+  [Git-источниками инструментов](/ru/carl/steps/tool-discovery/#инструменты-из-закреплённого-коммита-git),
+  проверкой пиннинга навыков, ранним запуском инструментов и примитивами EvoC;
+- изменениями поведения 0.5.0: сбой инструмента валит шаг, JSON-результаты
+  инструментов раскладываются, `allow_local_agent_execution`, общий дедлайн
+  цепочки;
+- форматами цепочек выше 1. Сборка Maestro отклоняет любую цепочку,
+  сохранённую в 0.5.x (форматы 13–15), с `ChainFormatNewerError`. В обратную
+  сторону всё работает: 0.5.2 поднимает цепочки Maestro формата 1 и сохраняет
+  их `fail_fast`.
+
+Переход Maestro на релиз 0.5.x пока не сделан. До тех пор остальная часть
+страницы описывает контракт так, как Maestro использует его со своей
+закреплённой сборкой. Названные здесь API CARL есть и в 0.5.2.
+
 | Часть | Для чего |
 | --- | --- |
 | [Preflight](/ru/carl/care-integration/preflight/) | Узнать, что нужно цепочке (инструменты, MCP-серверы, навыки, профили кода, внешние агенты) и чего не хватает в контексте. |
@@ -21,14 +53,14 @@ sidebar:
 Приложение запускает сохранённую цепочку через одну границу исполнения
 (`care/harness_execution.py` в репозитории Maestro). По порядку:
 
-1. **Строгий разбор.** JSON цепочки загружается через
+1. **Строгий разбор.** Цепочка без явного `fail_fast` и без политики RE-PLAN
+   получает на этот запуск `fail_fast: true`. Затем JSON загружается через
    `ReasoningChain.from_dict(data, use_typed_steps=True)`. Предупреждения
-   CARL о неразрешимых ссылках `$history[...]` становятся ошибками. Цепочку с
-   `"fail_fast": true` Maestro отклоняет, если установленный CARL потеряет это
-   поле.
+   CARL о неразрешимых ссылках `$history[...]` становятся ошибками.
 2. **Контракт входа.** В цепочке лежит JSON Schema:
-   `metadata["care"]["runtime_input_schema"]`. Maestro проверяет по ней вход
-   пользователя до любого вызова провайдера.
+   `metadata["care"]["runtime_input_schema"]`, привязанная к хэшу содержимого
+   цепочки. Maestro проверяет по ней вход пользователя до любого вызова
+   провайдера.
 3. **Контекст.** Maestro собирает `ReasoningContext` так:
    - `runtime_input` — проверенный объект входа;
    - `outer_context` — текст задачи и тот же вход в JSON внутри конверта
@@ -90,9 +122,10 @@ assert getattr(mmar_carl, "HOST_RUNTIME_INPUT_ABI", 0) >= 1
 
 ## Известные ограничения
 
-- Обёртка preflight в Maestro не смотрит на `missing_code_profiles`,
-  `missing_claude_code_clis` и `missing_codex_runtimes`. Такие проблемы
-  всплывают, когда шаг начинает работу.
-- `ReasoningChain.set_care_metadata(...)` заменяет весь блок `care`, включая
-  `runtime_input_schema` Maestro. См.
+- Обёртка preflight в Maestro проверяет только `missing_tools`,
+  `missing_mcp_servers` и `missing_skills`. В её закреплённом CARL списков для
+  профилей кода, Claude Code, Codex и ключей decision-моделей нет.
+- В 0.5.2 `ReasoningChain.set_care_metadata(...)` сохраняет ключи, которые не
+  описаны в модели, например `runtime_input_schema`, но сбрасывает описанные
+  поля, которые вы не передали. См.
   [метаданные цепочки](/ru/carl/care-integration/metadata/).

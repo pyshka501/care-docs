@@ -42,4 +42,4 @@ completed steps.
 ## See also
 
 - [Async execution](/carl/async/overview/) — parallelism, callbacks, timeouts.
-- [OpenRouter example](https://github.com/Glazkoff/carl/blob/main/examples/llm_inference/openrouter_example.py) in the repo (needs an API key).
+- [OpenRouter example](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/llm_inference/openrouter_example.py) in the repo (needs an API key).

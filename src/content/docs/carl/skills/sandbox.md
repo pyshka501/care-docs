@@ -12,7 +12,7 @@ commands lives in [CommandStep](/carl/steps/command/),
 
 ## Where skill scripts run
 
-`AgentSkillStepConfig.runtime` defaults to `"local"`. In CARL 0.5.0 this is the
+`AgentSkillStepConfig.runtime` defaults to `"local"`. In CARL 0.5.2 this is the
 only runtime an AgentSkill step can execute scripts with. `LocalSkillRuntime`
 starts a host subprocess: the script sees the host filesystem, the host network
 and, unless `extra_pip` is set, the full host environment including credentials.

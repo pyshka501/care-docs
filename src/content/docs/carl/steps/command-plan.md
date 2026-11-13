@@ -126,7 +126,7 @@ print(result.step_results[1].result)  # "hello\n"
 
 The callback prints `planned text.echo r1 ('/bin/echo', 'hello')`, and step 2 prints
 `hello`. A hermetic variant with a recording runtime (no subprocess at all) is in
-[`examples/orchestration/command_plan_capabilities_example.py`](https://github.com/Glazkoff/carl/blob/main/examples/orchestration/command_plan_capabilities_example.py).
+[`examples/orchestration/command_plan_capabilities_example.py`](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/orchestration/command_plan_capabilities_example.py).
 
 ## CommandPlanStepConfig
 

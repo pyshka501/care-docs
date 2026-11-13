@@ -95,7 +95,7 @@ chain = ReasoningChain(steps=steps, replan_policy=policy)
 
 ## Пример
 
-[Детерминированный пример RE-PLAN](https://github.com/Glazkoff/carl/blob/main/examples/replan/replan_deterministic_example.py)
+[Детерминированный пример RE-PLAN](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/replan/replan_deterministic_example.py)
 из репозитория (mock-клиент, без API-ключа) запускает цепочку из 3 шагов для
 служебной записки. Шаг 2 на первой попытке выдаёт `NEEDS_REPLAN`; основанный на
 правилах чекер находит эту подстроку, повторяет шаг с обратной связью, и вторая
@@ -129,4 +129,4 @@ for event in result.replan_events:
 ## Смотрите также
 
 - [Чекеры и агрегация](/ru/carl/replan/checkers/)
-- [Примеры RE-PLAN](https://github.com/Glazkoff/carl/tree/main/examples/replan) в репозитории (детерминированный / LLM / голосование / контрольная точка / бюджет).
+- [Примеры RE-PLAN](https://github.com/AIRI-MAESTRO/carl/tree/v0.5.2/examples/replan) в репозитории (детерминированный / LLM / голосование / контрольная точка / бюджет).

@@ -20,6 +20,8 @@ JSON по объявленной JSON Schema. Исполнитель прове�
 | `schema_name` | `str` | `"StructuredOutput"` | Читаемое имя схемы, которое видит модель. |
 | `instruction` | `str` | `""` | Строка задачи для модели (если пусто, берётся название шага). |
 | `strict_json` | `bool` | `True` | Просить модель вернуть только чистый JSON. |
+| `repair_retries` | `int` | `1` | Сколько раз переспросить после невалидного ответа, каждый раз с текстом ошибки (≥ 0). |
+| `validate_output` | `bool` | `True` | Устаревшее поле, оставлено ради загрузки старых спецификаций. Проверка включена всегда. |
 
 Промпт содержит задачу, имя схемы, саму схему, блок `Input` и инструкцию про JSON.
 Ответ разбирается как чистый JSON, как блок кода в ограждении или как первый
@@ -156,5 +158,5 @@ context.on_llm_chunk = on_chunk   # structured-output steps now stream
 
 ## См. также
 
-- [Пример структурированного вывода](https://github.com/Glazkoff/carl/blob/main/examples/tool_calling/structured_output_example.py) в репозитории.
+- [Пример структурированного вывода](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/tool_calling/structured_output_example.py) в репозитории.
 - [Потоковая передача токенов](/ru/carl/async/streaming/): callback `on_llm_chunk`.

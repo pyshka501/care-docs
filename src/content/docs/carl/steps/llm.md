@@ -147,7 +147,7 @@ the step.
 
 ### Example
 
-The repo's [execution-modes example](https://github.com/Glazkoff/carl/blob/main/examples/orchestration/execution_modes_mock_example.py)
+The repo's [execution-modes example](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/orchestration/execution_modes_mock_example.py)
 (mock client, no API key) runs a 3-step chain: a `FAST` pass, a `SELF_CRITIC` step
 with the default `"llm"` evaluator, and a `SELF_CRITIC` step whose evaluator chain
 adds a custom keyword guard.
@@ -190,4 +190,4 @@ out.
 
 - [Dynamic references](/carl/chains/dynamic-references/) for wiring step outputs together.
 - [Context extraction](/carl/concepts/what-is-carl/) for how `step_context_queries` work.
-- [LLM clients](/carl/llm/clients/) and the [token usage example](https://github.com/Glazkoff/carl/blob/main/examples/llm_inference/token_usage_example.py).
+- [LLM clients](/carl/llm/clients/) and the [token usage example](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/llm_inference/token_usage_example.py).

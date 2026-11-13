@@ -20,6 +20,8 @@ reliably shaped data.
 | `schema_name` | `str` | `"StructuredOutput"` | Human-readable schema name shown to the model. |
 | `instruction` | `str` | `""` | Task line for the model (the step title is used when empty). |
 | `strict_json` | `bool` | `True` | Ask the model to return only raw JSON. |
+| `repair_retries` | `int` | `1` | Re-prompts after an invalid reply, each carrying the validation error (≥ 0). |
+| `validate_output` | `bool` | `True` | Legacy field kept so old specs load. Validation is always on. |
 
 The prompt contains the task, the schema name, the schema itself, the `Input`
 block, and the JSON instruction. The answer is parsed from raw JSON, from a
@@ -154,5 +156,5 @@ context.on_llm_chunk = on_chunk   # structured-output steps now stream
 
 ## See also
 
-- [Structured output example](https://github.com/Glazkoff/carl/blob/main/examples/tool_calling/structured_output_example.py) in the repo.
+- [Structured output example](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/tool_calling/structured_output_example.py) in the repo.
 - [Token-level streaming](/carl/async/streaming/): the `on_llm_chunk` callback.

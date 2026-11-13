@@ -69,7 +69,7 @@ dependencies run in parallel within one batch. If order matters inside the body,
 set the dependencies yourself using the numbers the helper will assign.
 :::
 
-The repo's [loop example](https://github.com/Glazkoff/carl/blob/main/examples/orchestration/loop_until_example.py)
+The repo's [loop example](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/orchestration/loop_until_example.py)
 (no API key) shows a research loop that keeps searching until enough facts are
 gathered:
 

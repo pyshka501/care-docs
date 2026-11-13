@@ -102,4 +102,4 @@ Cases run sequentially here too.
 ## See also
 
 - [Metrics](/carl/evaluation/metrics/)
-- [Dataset evaluator example](https://github.com/Glazkoff/carl/blob/main/examples/evaluation/dataset_evaluator_example.py) in the repo.
+- [Dataset evaluator example](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/evaluation/dataset_evaluator_example.py) in the repo.

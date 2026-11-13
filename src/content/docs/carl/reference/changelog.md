@@ -6,126 +6,176 @@ sidebar:
 ---
 
 Release notes per version. The repository keeps the long form in
-[`RELEASE.md`](https://github.com/Glazkoff/carl/blob/main/RELEASE.md).
+[`RELEASE.md`](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/RELEASE.md).
+0.5.0, 0.5.1 and 0.5.2 were all published to PyPI as `mmar-carl` on
+2026-11-09. Install the latest with `pip install 'mmar-carl==0.5.2'`
+(Python 3.12+).
+
+:::note
+The Maestro app still runs an older pinned CARL build, not these releases. See
+[which CARL Maestro runs](/carl/care-integration/overview/#which-carl-maestro-runs).
+:::
+
+## 0.5.2
+
+Adds the [terminate step](/carl/steps/terminate/). Chain format 14 → 15.
+
+- `TerminateStepDescription` (`terminate`) with `TerminateStepConfig`: exactly
+  one of `output` (a literal JSON value, `null` included) or `output_source` (a
+  `$` reference; a missing reference fails the step), plus a `reason`.
+- The current batch settles, siblings waiting for a worker slot included. When
+  several terminate steps succeed, the lowest number selects the output. Later
+  steps are reported as skipped; the batch schedules no new planner actions,
+  loop iterations or RE-PLAN work.
+- Earlier failures still count against the verdict. Host cancellation and
+  fail-fast win over termination. `result.metadata["terminated"]` and the trace
+  record the step number and reason. `ReasoningResult.get_final_output()`
+  returns the selected answer even after history trimming.
+
+**Migration from 0.5.1.** Lift saved JSON with
+`ReasoningChain.from_dict(ReasoningChain.migrate(raw))`; rung 15 rewrites
+nothing. Readers older than 0.5.2 reject format 15. A saved snapshot that
+already executed a terminate step cannot resume past it.
+
+## 0.5.1
+
+Adds the [decision step](/carl/steps/decision/). Chain format 13 → 14.
+
+- `DecisionStepDescription` (`decision`) asks a decision model typed
+  questions about one text or JSON state: `predicate` (thresholded
+  probability), `choice` (one of 2–255 options) and `score` (an ordered
+  rubric of 2–10 levels). Per-question `fallback` and `min_confidence`
+  handle refusals and low confidence; the step fails closed otherwise.
+- Provider adapters for OpenRouter Decisions and the direct OpenAI and Azure
+  OpenAI Decisions APIs, with one answer shape in `result_data["answers"]`.
+  Usage and cost are recorded when the provider reports them.
+- Answers can be written to memory (`output_memory_key`, namespace
+  `decision`) for conditional routing. State templates use explicit
+  `input_mapping` and a byte limit.
+- **Host grant.** `ReasoningContext.decision_endpoints` authorizes the exact
+  request URL and the key's env var per provider. Neither the grant nor the
+  key is ever in chain JSON. `PreflightReport` gains
+  `required_decision_credentials` / `missing_decision_credentials`.
+- Transient errors are retried within `max_retries`; provider error bodies are
+  kept out of step errors. `httpx` is now a core dependency.
+
+**Migration from 0.5.0.** Lift saved JSON with `migrate()`; rung 14 rewrites
+nothing. Grant the endpoint and credential before running a decision step.
+Chains without decision steps need no new configuration. Execution-trace
+replay does not support decision steps. Live checks ran on OpenRouter; the
+direct OpenAI and Azure adapters have offline tests only.
 
 ## 0.5.0
 
-CARL 0.5.0 is the version released together with Maestro 0.5.0. It combines
-three lines of work: the 0.4.0 runtime release, the pull requests listed below,
-and the host contracts that Maestro needs to run chains.
+The collaboration and execution-control release. Chain format 9 → 13.
 
-### Step types
+### New step types
 
-- `ClaudeCodeStepDescription` (`claude_code`) delegates a step to a headless
-  Claude Code CLI agent; `check_claude_code_cli()` reports whether the CLI is
-  installed (#24). See [Claude Code step](/carl/steps/claude-code/).
-- `CodexStepDescription` (`codex`) delegates a step to a local Codex SDK agent;
-  `check_codex_runtime()` reports whether the runtime is available (#25).
-  See [Codex step](/carl/steps/codex/).
-- Chain format 10 records these two step types. `PreflightReport` gains
-  `required_claude_code_clis` / `missing_claude_code_clis` and
-  `required_codex_runtimes` / `missing_codex_runtimes`.
-- The step types that landed in 0.4.0 are part of this release as well: `wait`
-  (#19), the typed `human_input` lifecycle (#20), embedded chain tools (#21),
-  bounded `map` (#22), strict `code` (#23). See [0.4.0](#040) below.
+| Class | `StepType` | Purpose |
+| --- | --- | --- |
+| [`ClaudeCodeStepDescription`](/carl/steps/claude-code/) | `claude_code` | Delegate to the local Claude Code CLI. |
+| [`CodexStepDescription`](/carl/steps/codex/) | `codex` | Delegate to a local Codex SDK agent. |
+| [`SelectionStepDescription`](/carl/steps/selection/) | `selection` | Pick items from a collection with no LLM call. |
+| [`PlannerStepDescription`](/carl/steps/planner/) | `planner` | Select and order a bounded set of declared tool actions. |
 
-### Multi-agent steps
+### Local coding agents
 
-- **Sub-agent topology is serialized** (#27). `to_dict()` now writes
-  `AgentHandoffStepDescription.sub_chain`, `SupervisorStepDescription.agents`
-  and `ParallelSamplingStepDescription.base_step` as nested chain snapshots,
-  and loading rebuilds the real objects instead of `__placeholder__` stubs.
-  Nesting is limited to 8 levels; a chain that embeds itself is rejected with
-  `ValueError`. Chain format 11. Chains written at format 10 or earlier still
-  load with the old placeholders.
-- **Aggregation is correct and visible** (#28). `ParallelSamplingStepConfig`
-  gains `answer_extractor`, `vote_normalization` (`VoteNormalization`) and
-  `strict`; every outcome is labelled in `result_data["aggregation_outcome"]`
-  and fallbacks emit a warning. Supervisor routing no longer matches agent
-  names as bare substrings unless `allow_substring_match=True` (the one
-  intentional default change). Debate gains `judge_llm_config`,
-  `stop_when_unchanged`, `convergence_predicate` and reports
-  `rounds_executed`.
+- Claude Code and Codex steps run only when the trusted host sets
+  `ReasoningContext(allow_local_agent_execution=True)`. Loading a chain never
+  grants it.
+- Steps can resume a session or thread and store its id for later steps; both
+  validate structured output.
+- Claude Code `env` overrides are no longer written to chain JSON.
 
-### Evolution
+### Bounded planning
 
-- **Collaboration-topology mutations** (#30): six new `MutationKind` values
-  (`wrap_in_sampling`, `wrap_in_debate`, `wrap_in_handoff`,
-  `split_to_supervisor`, `insert_human_gate`, `unwrap_collaboration`), each
-  enabled only by its own pool or flag on `ChainMutator`.
-- **DAG-aware subgraph crossover** (#31): `ChainCrossover` and
-  `ChainEvolver(crossover_rate=...)`. The default `0.0` keeps seeded runs
-  identical to before. Children are tagged with `CROSSOVER_KIND`.
-- See [Evolution](/carl/evolution/overview/).
+- The planner chooses action IDs; the chain defines the actions, their tool
+  arguments and the budget. Chosen actions run as ordinary tool steps before
+  the planner's dependents.
+- `on_step_event(..., "planner_actions_scheduled", payload)` reports the
+  assigned step numbers.
+- A complete, schema-valid plan survives a trailing transport failure. Token
+  accounting includes usage from compatible streaming providers.
 
-### Tracing
+### Git tools and skills
 
-- `ExecutionTrace` became a per-agent attribution record (#29). `TraceEvent`
-  now carries `inputs` (resolved `input_mapping` values), `model`, opt-in
-  `prompt` (`ReasoningContext(trace_prompts=True)`), measured `started_at` /
-  `ended_at`, and a nested `sub_trace` for handoff and supervisor steps.
-  `ExecutionTrace.from_dict` / `TraceEvent.from_dict` round-trip all of it.
-  See [Tracing](/carl/tracing/overview/).
+- [`GitToolSource`](/carl/steps/tool-discovery/#tools-from-a-pinned-git-commit)
+  registers `@carl_tool` functions or one named function from a Git checkout.
+  Tools and skills can be pinned to a commit and checked against per-file
+  SHA-256 digests, on cache hits too.
+- AgentSkill reads stay inside the skill directory and the staged workspace.
+  With `trust_policy="sha_pinned"` the step verifies the same `SKILL.md` bytes
+  it parses.
 
-### Memory
+### Collaboration and evolution
 
-- Parallel memory merge fixes (#32). The copy-on-write store now tracks the
-  keys a step wrote or deleted, not whole namespaces. A read-only sibling can
-  no longer revert a write, nested values are no longer shared between
-  siblings, and merged writes are checked against `memory_schema`. Same-key
-  conflicts resolve last-write-wins in step declaration order. See
-  [Copy-on-write](/carl/memory/cow/).
+- Handoff sub-chains, supervisor agents and sampling base steps survive a JSON
+  round trip (format 11). Per-agent traces record nested runs and aggregation
+  fallbacks.
+- Writes to different keys of one namespace survive the merge of parallel
+  step results.
+- [EvoC primitives](/carl/evolution/overview/#evoc-primitives): step catalog,
+  spec validation, graph and field mutations, code-tool contracts, evaluation
+  helpers, run descriptors, Pareto helpers.
+- `validate_spec` checks that explicit `$steps.N` inputs refer to declared
+  predecessors; the meta mutation helpers check this before accepting an edit.
 
-### LLM clients
+### Inputs, scheduling and failures
 
-- The executor no longer closes an LLM client it does not own (#33). Per-step
-  context copies now call `ReasoningContext.close_derived_clients()`, which
-  closes only clients the context built for per-step `llm_config` overrides.
-  Before the fix, chains that shared one `OpenAICompatibleClient` (a dataset
-  evaluation, for example) lost in-flight requests with `APIConnectionError`.
+- Host inputs go through `ReasoningContext.runtime_input` and explicit
+  references. Structured-output and human-input prompts can select the fields
+  they need. A missing required tool input fails before dispatch.
+- Opt-in `fail_fast` stops dispatch after a terminal failure. Pause is
+  acknowledged once active steps settle; resume releases queued work without
+  replaying completed steps.
+- Concurrent executions get separate step caches and injection budgets. Active
+  steps share the remaining chain deadline.
+- Experimental [`execute_eager_tools()`](/carl/steps/tool/#eager-scheduling-experimental)
+  starts a tool as soon as its dependencies succeed.
+- After a fallback, `StepExecutionResult.tool_name` names the tool that ran.
+  JSON text results are decoded into `result_data`. Failed embedded chains and
+  MCP `isError` results fail the step. Tool tag restrictions apply to primary
+  and fallback calls.
+- Borrowed LLM clients are no longer closed by the executor. An answerless
+  completion that exhausts its token budget raises `LLMTokenLimitError`. The
+  `mcp` extra is constrained to SDK 1.x.
 
-### Host contracts used by Maestro
+### Breaking changes
 
-- **`fail_fast`** on `ReasoningChain`, `ChainBuilder.with_fail_fast()` and
-  `DAGExecutor`. After the first step that fails for good, no new step starts
-  and the rest are reported as skipped; `result.metadata["fail_fast"]`
-  summarises the stop. Saved by `to_dict()`.
-- **Acknowledged pause.** `is_paused()` is `True` only when the scheduler is
-  waiting and no step is active; `paused_duration()` reports idle time;
-  resuming does not replay completed steps; `cancel()` wakes a paused run; the
-  chain `timeout` counts active time only.
-- **Host input.** `ReasoningContext.runtime_input` holds validated structured
-  input apart from the prompt text. `$outer_context` resolves to it and
-  `$outer_context.<field>` reads a field. `runtime_input` is now copied into
-  the per-step context snapshots, so these references work inside
-  `chain.execute()`. ABI flag `HOST_RUNTIME_INPUT_ABI = 1`.
-- **Input contracts.** A required tool parameter that resolves to `None` fails
-  the step before the tool is called, with
-  `CARL_TOOL_INPUT_UNRESOLVED: required parameter '<name>' resolved to null`.
-  `StructuredOutputStepConfig.input_mapping` and
-  `HumanInputStepConfig.prompt_input_mapping` scope what the model or the
-  human sees (ABI flags `STRUCTURED_OUTPUT_SCOPED_INPUTS_ABI`,
-  `HUMAN_INPUT_SCOPED_PROMPT_ABI`).
-- **Versioned chain tools.** `ChainToolDefinition.required_tool_revisions`
-  pins a host tool to a revision; the runtime compares it with the callable's
-  `__carl_tool_revision__` and reports the child as unavailable on mismatch.
+1. **Chain format 9 → 13.** Format 12 saves `fail_fast`, `max_injections`,
+   `memory_schema` and `step_groups`; format 13 adds the planner. Older readers
+   reject newer snapshots with `ChainFormatNewerError`.
+2. **Local agents need host approval.** Apps that use Claude Code or Codex
+   steps must set `allow_local_agent_execution` in the trusted host context.
+3. **Tool failures affect chain status.** Callers that consumed an MCP error or
+   a failed embedded chain as a successful step must handle step failure.
+4. **Steps own their response format.** The default English and Russian prompt
+   wrappers carry instructions and context only. Define the required output
+   format in the step or pass an explicit `PromptTemplate`.
 
-See [Run controls](/carl/chains/run-controls/),
-[Dynamic references](/carl/chains/dynamic-references/) and
-[Maestro integration](/carl/care-integration/overview/).
+### Migration from 0.4.0
 
-### Known limitations
+1. Lift saved JSON with `ReasoningChain.from_dict(ReasoningChain.migrate(raw))`.
+   If an old file omitted a nested sub-agent, reattach its topology from the
+   original source.
+2. Grant local agent execution for trusted workflows and supply Claude Code
+   environment overrides at run time.
+3. Older Maestro chains: migration removes legacy human-input fallback values;
+   missing providers and timeouts produce typed non-success outcomes.
 
-- The default `from_json()` / `load()` path rebuilds the legacy-capable step
-  types (`llm`, `tool`, `mcp`, `memory`, `transform`, `conditional`,
-  `structured_output`, `command`, `shell_session`) as legacy `StepDescription` objects. Use
-  `from_dict_typed()` for typed objects. See
-  [JSON serialization](/carl/serialization/json/).
-- `max_injections`, `memory_schema`, `step_groups`, metrics and the prompt
-  template are not serialized.
-- `VectorSearchStrategy` ignores `embedding_model`; the embedder is always
-  `sentence-transformers/all-MiniLM-L6-v2`.
+Details: [Migration](/carl/serialization/migration/#upgrading-a-host-to-05x).
+
+### Known limitations (0.5.2)
+
+- The default `from_json()` / `load()` path rebuilds `llm`, `tool`, `mcp`,
+  `memory`, `transform`, `conditional`, `structured_output`, `command` and
+  `shell_session` steps as legacy `StepDescription` objects. Use
+  `from_dict_typed()` for typed objects.
 - `StepDescription.to_typed_step()` drops `retry_max` and `timeout`.
+- `ChainMutator` ignores `StepDescriptionBase.frozen`; only the `mmar_carl.meta`
+  helpers honour it.
+- A `ClaudeCodeStepConfig.env` present in loaded JSON is accepted, although
+  `to_dict()` never writes it.
 
 ## 0.4.0
 

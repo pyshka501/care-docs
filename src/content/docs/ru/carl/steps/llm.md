@@ -146,7 +146,7 @@ LLMStepConfig(
 
 ### Пример
 
-[Пример режимов выполнения](https://github.com/Glazkoff/carl/blob/main/examples/orchestration/execution_modes_mock_example.py)
+[Пример режимов выполнения](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/orchestration/execution_modes_mock_example.py)
 в репозитории (мок-клиент, без API-ключа) запускает цепочку из 3 шагов: проход
 `FAST`, шаг `SELF_CRITIC` со стандартным оценщиком `"llm"` и шаг `SELF_CRITIC`,
 где к оценщикам добавлена своя проверка ключевого слова.
@@ -189,4 +189,4 @@ LLMStepConfig(
 
 - [Динамические ссылки](/ru/carl/chains/dynamic-references/): как связывать результаты шагов.
 - [Извлечение контекста](/ru/carl/concepts/what-is-carl/): как работают `step_context_queries`.
-- [LLM-клиенты](/ru/carl/llm/clients/) и [пример учёта токенов](https://github.com/Glazkoff/carl/blob/main/examples/llm_inference/token_usage_example.py).
+- [LLM-клиенты](/ru/carl/llm/clients/) и [пример учёта токенов](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/llm_inference/token_usage_example.py).

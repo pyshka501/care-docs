@@ -1,6 +1,6 @@
 ---
 title: Обзор шагов
-description: Все 25 типов шагов CARL, общие поля всех шагов, типизированный и legacy API.
+description: Все 29 типов шагов CARL, общие поля всех шагов, типизированный и legacy API.
 sidebar:
   order: 1
 ---
@@ -33,10 +33,12 @@ sidebar:
 | `checkpoint` | `bool` | `False` | Пометить шаг как точку отката для RE-PLAN. |
 | `checkpoint_name` | `str \| None` | `None` | Необязательная метка чекпоинта. |
 | `replan_enabled` | `bool \| None` | `None` | Переопределение RE-PLAN для шага (`None` = политика цепочки). |
+| `frozen` | `bool` | `False` | Помощникам эволюции нельзя менять, перетипизировать или удалять шаг. Учитывают его помощники `mmar_carl.meta`, а `ChainMutator` нет (см. [примитивы EvoC](/ru/carl/evolution/overview/#примитивы-evoc)). |
+| `metadata` | `dict` | `{}` | Произвольные метаданные шага. Сюда исполнитель пишет происхождение шага. |
 | `metrics` | `list[MetricBase]` | `[]` | Метрики, которые считаются после выполнения шага. |
 | `loop_back_to` | `int \| None` | `None` | Шаг, к которому вернуться в цикле. См. [циклы](/ru/carl/steps/loops/). |
 | `loop_config` | `LoopConfig \| None` | `None` | Условие цикла и ограничение на число итераций. |
-| `cache` | `StepCache \| None` | `None` | Мемоизация результата. См. [кэширование](/ru/carl/steps/caching/). `command`, `shell_session`, `command_plan`, `claude_code` и `codex` его не принимают. |
+| `cache` | `StepCache \| None` | `None` | Мемоизация результата. См. [кэширование](/ru/carl/steps/caching/). `command`, `shell_session`, `command_plan`, `planner`, `claude_code` и `codex` его не принимают. |
 
 :::note
 `retry_max` и `timeout` есть **не** у каждого шага. Они объявлены в
@@ -48,8 +50,9 @@ sidebar:
 
 ## Типы шагов
 
-У `StepType` 25 значений. `"bash"` из старого JSON цепочки по-прежнему
-загружается как `command`.
+В 0.5.2 у `StepType` 29 значений. `"bash"` из старого JSON цепочки по-прежнему
+загружается как `command`. Новые с 0.4.0: `claude_code`, `codex`, `selection` и
+`planner` (0.5.0), `decision` (0.5.1) и `terminate` (0.5.2).
 
 ### Рассуждение и данные
 
@@ -63,12 +66,15 @@ sidebar:
 | `conditional` | [`ConditionalStepDescription`](/ru/carl/steps/conditional/) | Направляет выполнение в одну ветку, остальные пропускаются. |
 | `tool_discovery` | [`ToolDiscoveryStepDescription`](/ru/carl/steps/tool-discovery/) | Находит и регистрирует инструменты во время выполнения. |
 | `evaluation` | `EvaluationStepDescription` | Встроенная проверка качества результата другого шага. См. [метрики](/ru/carl/evaluation/metrics/). |
+| `selection` | [`SelectionStepDescription`](/ru/carl/steps/selection/) | Выбирает элементы списка (top-k, взвешенно, случайно, фильтром) без вызова LLM. |
+| `decision` | [`DecisionStepDescription`](/ru/carl/steps/decision/) | Задаёт decision-модели типизированные вопросы (predicate, choice, score) через разрешённый хостом эндпоинт. |
 
 ### Агенты и делегирование
 
 | Тип | Класс | Что делает |
 | --- | --- | --- |
 | `agent` | [`AgentStepDescription`](/ru/carl/steps/agent/) | Ограниченный цикл ReAct по явному списку зарегистрированных инструментов. Завершается обязательным `finish`. |
+| `planner` | [`PlannerStepDescription`](/ru/carl/steps/planner/) | Модель выбирает и упорядочивает объявленные в цепочке действия-инструменты, они выполняются как вставленные tool-шаги. |
 | `claude_code` | [`ClaudeCodeStepDescription`](/ru/carl/steps/claude-code/) | Передаёт целую подзадачу headless-агенту Claude Code CLI. |
 | `codex` | [`CodexStepDescription`](/ru/carl/steps/codex/) | Передаёт целую подзадачу локальному агенту Codex через Codex SDK. |
 | `agent_skill` | `AgentSkillStepDescription` | Запускает папку [AgentSkill](/ru/carl/skills/overview/). |
@@ -91,6 +97,7 @@ sidebar:
 | `shell_session` | [`ShellSessionStepDescription`](/ru/carl/steps/shell-session/) | Выполняет статический скрипт в одном процессе shell. |
 | `wait` | [`WaitStepDescription`](/ru/carl/steps/wait/) | Ждёт таймер, абсолютное время или именованное событие. |
 | `map` | [`MapStepDescription`](/ru/carl/steps/map/) | Ограниченный упорядоченный fan-out одного инструмента по JSON-массиву. |
+| `terminate` | [`TerminateStepDescription`](/ru/carl/steps/terminate/) | Возвращает явный ответ и останавливает цепочку после текущего батча. |
 
 ### MCP
 
@@ -106,17 +113,26 @@ sidebar:
 Цепочка говорит, чего она хочет. Разрешение выдаёт хост во время выполнения
 через объекты, которые никогда не попадают в JSON цепочки: `CommandPolicy`,
 `CommandCapabilityRegistry`, `CodeExecutionPolicy`, сетевой контролёр,
-провайдер человеческого ввода и зарегистрированные инструменты.
+провайдер человеческого ввода, зарегистрированные инструменты и два поля
+контекста:
 
-Есть два исключения. Шаг `claude_code` сериализует свои флаги CLI, включая
-`permission_mode`, `env` и `extra_cli_args`. Значит, сама цепочка решает, сколько
-позволено агенту. Шаг `codex` ограничивает это песочницей `read-only` или
-`workspace-write`. Проверяйте цепочки с такими шагами перед запуском.
+- `ReasoningContext.allow_local_agent_execution` (по умолчанию `False`) должен
+  быть `True`, чтобы шаг `claude_code` или `codex` мог запустить локального
+  агента. Загрузка цепочки этот флаг не ставит.
+- `ReasoningContext.decision_endpoints` разрешает точный URL и переменную с
+  ключом для каждого провайдера шага `decision`.
+
+Шаг `claude_code` по-прежнему сериализует флаги CLI (`permission_mode`,
+`allowed_tools`, `extra_cli_args`, `add_dirs`), так что цепочка может попросить
+для агента широкие права. Переопределения `env` в JSON не пишутся. Шаг `codex`
+ограничивает песочницу режимами `read-only` и `workspace-write`. Проверяйте
+цепочки с такими шагами, прежде чем разрешать локальных агентов.
 
 ## Перед запуском
 
 `chain.preflight(context)` показывает, что нужно цепочке и чего не хватает:
-инструменты, MCP-серверы, навыки, профили кода, Claude Code CLI и рантайм Codex.
+инструменты, MCP-серверы, навыки, профили кода, Claude Code CLI, рантайм Codex
+и ключи decision-моделей.
 См. [preflight](/ru/carl/care-integration/preflight/).
 
 ## Сквозные возможности

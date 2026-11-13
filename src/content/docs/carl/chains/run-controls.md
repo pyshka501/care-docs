@@ -7,7 +7,9 @@ sidebar:
 
 A host (a UI, a job runner, Maestro) often needs to stop or hold a chain while it
 runs. CARL gives four controls: `fail_fast`, pause/resume, cancel, and the chain
-`timeout`. All of them act at step boundaries: a step that has already started
+`timeout`. A chain can also stop itself early with a
+[terminate step](/carl/steps/terminate/) (0.5.2); fail-fast and host
+cancellation take priority over it. All of them act at step boundaries: a step that has already started
 runs to its own end or to its timeout.
 
 ## Fail-fast
@@ -120,9 +122,11 @@ except ExecutionCancelledError as exc:
 | Tool step | `ToolStepConfig.timeout` (default `30.0`) | Per tool call; fallbacks via `ToolErrorRecovery.on_timeout`. |
 | Agent and runtime steps | their own config | E.g. `AgentStepConfig.timeout_seconds`, `ClaudeCodeStepConfig.timeout`, `CodexStepConfig.timeout`, `ChainToolDefinition.timeout_seconds`, command and code runtime limits. |
 
-The chain `timeout` also acts as a **per-step** limit: the executor wraps each
-step in `asyncio.wait_for(step.timeout or chain.timeout)`. A step that runs
-longer fails with `Step timed out after …s`; it does not raise. Only LLM and
+The chain `timeout` also caps every **step**. The executor waits at most for
+the step's own `timeout` (or the chain `timeout` when the step has none), and
+never longer than what is left of the chain deadline. Steps running in parallel
+share that remaining deadline. A step that runs out fails with
+`Step timed out after …s`; it does not raise. Only LLM and
 command-plan steps (and the legacy `StepDescription`) carry a step-level
 `timeout` field, so for other step types the chain value is the cap. Tool and agent steps also apply their own config timeouts inside.
 

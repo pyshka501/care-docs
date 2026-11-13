@@ -73,9 +73,10 @@ execution has side effects or depends on runtime-only state:
 | `command` | Command execution may have side effects. |
 | `shell_session` | Shell execution may have side effects. |
 | `command_plan` | Its host capability registry is runtime-only. |
+| `planner` | It adds steps to the DAG. |
 | `claude_code` | The agent may read or modify the workspace. |
 | `codex` | A Codex turn may read or modify the workspace. |
 
 All other step types accept `cache`. That includes steps that can have side
-effects, such as `tool`, `mcp`, `agent`, `code`, `map`, and `human_input`; only
+effects, such as `tool`, `mcp`, `agent`, `code`, `map`, `decision` and `human_input`; only
 cache them when replaying the earlier result is really what you want.

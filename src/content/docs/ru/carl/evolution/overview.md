@@ -1,6 +1,6 @@
 ---
 title: Обзор эволюции
-description: Эволюционный поиск по вариантам цепочки с ChainEvolver — мутации, кроссовер, многокритериальная приспособленность, оценка стоимости.
+description: Эволюционный поиск по вариантам цепочки с ChainEvolver — мутации, многокритериальная приспособленность, оценка стоимости — и примитивы EvoC для внешних движков эволюции.
 sidebar:
   order: 1
 ---
@@ -8,8 +8,7 @@ sidebar:
 `ChainEvolver` ведёт генетический поиск по вариантам цепочки. В каждом
 поколении он оценивает каждый вариант на вашем
 [датасете](/ru/carl/evaluation/datasets/), оставляет лучших (`elitism`) и
-получает остальных **мутацией** одного родителя или, при
-`crossover_rate > 0`, **рекомбинацией** двух.
+получает остальных **мутацией** родителя. Оператора кроссовера в 0.5.2 нет.
 
 Пример ниже работает офлайн: вместо настоящего клиента стоит заглушка LLM.
 
@@ -49,12 +48,9 @@ evolver = ChainEvolver(
     dataset=dataset,
     metric=ExactLabel(),
     mutator=ChainMutator(
-        aim_suffix_pool=[" Be brief."],
-        sampling_n_pool=[3],                                         # обернуть шаг в голосование N сэмплов
-        debate_pool=[{"roles": ["optimist", "skeptic"], "rounds": 1}],  # обернуть шаг в дебаты
-        allow_collaboration_unwrap=True,                             # разрешить снимать эти обёртки
+        aim_suffix_pool=[" Be brief."],                                       # переписать промпт
+        step_template_pool=[{"step_type": "llm", "title": "Verify", "aim": "Check the answer."}],  # вставить шаг
     ),
-    crossover_rate=0.3,          # 30% новых потомков от двух родителей
     population_size=4,
     generations=2,
     elitism=1,
@@ -82,8 +78,6 @@ asyncio.run(main())
 | `metric` | `MetricBase \| list[MetricBase]` | — | Одна метрика или несколько (многокритериально). |
 | `fitness_fn` | `Callable[[dict[str, float]], float] \| None` | среднее метрик | Сводит оценки метрик в одну приспособленность. |
 | `mutator` | `ChainMutator \| None` | `None` | Операторы мутации, см. [мутации и результаты](/ru/carl/evolution/mutation-and-results/). При `None` потомки это просто клоны. |
-| `crossover_rate` | `float` в `[0, 1]` | `0.0` | Вероятность, что потомок получен кроссовером, а не мутацией. |
-| `crossover` | `ChainCrossover \| None` | `ChainCrossover()` | Оператор рекомбинации. Используется только при `crossover_rate > 0`. |
 | `population_size` | `int` | `6` | Вариантов в поколении (≥ 1). |
 | `generations` | `int` | `3` | Число поколений. `1` только оценивает начальную популяцию. |
 | `elitism` | `int` | `2` | Лучшие варианты, которые переходят без изменений (не больше `population_size`). |
@@ -95,27 +89,6 @@ asyncio.run(main())
 
 `evolve(context_factory)` асинхронный и возвращает
 [`EvolutionResult`](/ru/carl/evolution/mutation-and-results/#результаты).
-
-## Кроссовер
-
-`ChainCrossover` берёт топологический префикс родителя A и топологический
-суффикс родителя B в одной общей точке разреза, перенумеровывает шаги
-`1..N` и перенаправляет висячие зависимости на последний шаг префикса. Поэтому
-потомок ацикличен. Настройки уровня цепочки берутся у родителя A. Потомок
-проходит `from_dict` и `to_dict`. Если это не удалось или разрез ломает
-`loop_back_to`, цель ветки условного шага или `plan_source` запланированной
-команды, оператор возвращает клон родителя A.
-
-Чего кроссовер не сохраняет: смысловую согласованность двух половин и ссылки
-`$memory` / `$history` через разрез (шаг суффикса может читать ключ, который
-писал только отброшенный префикс). Шаги взаимодействия переходят целиком,
-вместе с субагентами.
-
-При `crossover_rate=0.0` (по умолчанию) случайные числа для кроссовера не
-берутся, поэтому прогон с тем же seed повторяется в точности. Потомки
-кроссовера записываются с `mutation_kind = CROSSOVER_KIND` (`"crossover"`) и
-оценкой лучшего родителя в `parent_score`. Поэтому в
-`format_mutation_effectiveness()` они стоят рядом с операторами мутации.
 
 ## Несколько критериев
 
@@ -150,6 +123,31 @@ print(estimate.format_summary())   # smoke + популяция × поколе�
 `total_cost_usd` и `pricing_missing_models`. Он умножает
 [оценку стоимости](/ru/carl/tracing/cost/) одной цепочки на размер прогона.
 Мутации, которые добавляют шаги, делают реальные расходы выше.
+
+## Примитивы EvoC
+
+С 0.5.0 CARL поставляет и строительные блоки для **внешнего** движка эволюции
+(EvoC), который правит спецификации цепочек как данные. Всё это экспорты
+верхнего уровня:
+
+| Задача | Имена |
+| --- | --- |
+| Каталог шагов и проверка спецификаций | `get_step_catalog`, `validate_spec`, `validate_and_build`, `auto_generate_minimal_step`, `schema_for` |
+| Правка полей | `mutable_fields`, `get_field_by_path`, `set_field_by_path`, `iter_mutable_values`, `sample_field_value`, `mutate_content`, `mutable_targets` |
+| Правка графа | `insert_step_at`, `remove_step`, `rewire_dependencies`, `change_step_type`, `apply_records`, `MutationRecord`, `MutationError` |
+| Запросы к графу | `find_root_steps`, `find_leaf_steps`, `dependents_of`, `steps_of_type`, `deletable_steps`, `can_delete_step` |
+| Заморозка | `StepDescriptionBase.frozen`, `frozen_step_numbers`; помощники мутаций соблюдают `respect_frozen=True` |
+| Инструменты как данные | `CodeTool`, `CodeToolLibrary`, `validate_code_tool`, `compile_code_tool`; для запуска нужен `ReasoningContext(allow_code_tools=True)` |
+| Дескрипторы запуска | `RunDescriptor`, `ComplexityDescriptor`, `extract_run_descriptor`, `extract_complexity` |
+| Парето | `pareto_front`, `pareto_rank`, `dominates` |
+| Датасеты | `subsample`, `split`, `select_cases`, `CaseSplit`, `CaseDiff` |
+
+`validate_spec` проверяет и поток данных: явный вход `$steps.N` должен указывать
+на объявленного предшественника (код ошибки `step_result_without_dependency`).
+`ReasoningChain.from_dict` эту проверку не делает. Правки графа прогоняют её,
+прежде чем принять изменение. У `IndividualMetrics` появились `id`, `parent_id`
+и `mutation_records`, поэтому `to_lineage_mermaid()` может рисовать точную
+родословную.
 
 ## См. также
 

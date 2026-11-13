@@ -61,4 +61,4 @@ chain.reflect(
 ## Смотрите также
 
 - [Метрики](/ru/carl/evaluation/metrics/) · [Датасеты и оценка](/ru/carl/evaluation/datasets/)
-- [Пример рефлексии](https://github.com/Glazkoff/carl/blob/main/examples/evaluation/reflection_example.py) в репозитории.
+- [Пример рефлексии](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/evaluation/reflection_example.py) в репозитории.

@@ -1,14 +1,14 @@
 ---
 title: Evolution Overview
-description: Evolutionary search over chain variants with ChainEvolver — mutation, crossover, multi-objective fitness, cost preflight.
+description: Evolutionary search over chain variants with ChainEvolver — mutation, multi-objective fitness, cost preflight — and the EvoC primitives for external evolution engines.
 sidebar:
   order: 1
 ---
 
 `ChainEvolver` runs a genetic search over variants of a chain. Each generation
 it scores every variant on your [dataset](/carl/evaluation/datasets/), keeps
-the best (`elitism`), and breeds the rest by **mutating** one parent or, with
-`crossover_rate > 0`, **recombining** two parents.
+the best (`elitism`), and breeds the rest by **mutating** a parent. There is
+no crossover operator in 0.5.2.
 
 The example below runs offline: a stub LLM client stands in for a real one.
 
@@ -48,12 +48,9 @@ evolver = ChainEvolver(
     dataset=dataset,
     metric=ExactLabel(),
     mutator=ChainMutator(
-        aim_suffix_pool=[" Be brief."],
-        sampling_n_pool=[3],                                         # wrap a step in N-sample voting
-        debate_pool=[{"roles": ["optimist", "skeptic"], "rounds": 1}],  # wrap a step in a debate
-        allow_collaboration_unwrap=True,                             # allow undoing those wraps
+        aim_suffix_pool=[" Be brief."],                                       # prompt rewrite
+        step_template_pool=[{"step_type": "llm", "title": "Verify", "aim": "Check the answer."}],  # insert a step
     ),
-    crossover_rate=0.3,          # 30% of bred children come from two parents
     population_size=4,
     generations=2,
     elitism=1,
@@ -80,8 +77,6 @@ asyncio.run(main())
 | `metric` | `MetricBase \| list[MetricBase]` | — | One metric, or several (multi-objective). |
 | `fitness_fn` | `Callable[[dict[str, float]], float] \| None` | mean of metrics | Combines per-metric scores into one fitness. |
 | `mutator` | `ChainMutator \| None` | `None` | Mutation operators — see [mutation & results](/carl/evolution/mutation-and-results/). With `None` children are plain clones. |
-| `crossover_rate` | `float` in `[0, 1]` | `0.0` | Probability that a bred child comes from crossover instead of mutation. |
-| `crossover` | `ChainCrossover \| None` | `ChainCrossover()` | The recombination operator; used only when `crossover_rate > 0`. |
 | `population_size` | `int` | `6` | Variants per generation (≥ 1). |
 | `generations` | `int` | `3` | Generations. `1` evaluates the initial population only. |
 | `elitism` | `int` | `2` | Best variants carried over unchanged (clamped to `population_size`). |
@@ -93,27 +88,6 @@ asyncio.run(main())
 
 `evolve(context_factory)` is async and returns an
 [`EvolutionResult`](/carl/evolution/mutation-and-results/#results).
-
-## Crossover
-
-`ChainCrossover` splices a topological prefix of parent A onto a topological
-suffix of parent B at one shared cut point, renumbers the steps `1..N`, and
-re-points dangling dependencies at the last prefix step, so the child is
-acyclic. Chain-level settings come from parent A. The child is round-tripped
-through `from_dict` and `to_dict`; if that fails, or if the cut would break a
-`loop_back_to`, a conditional branch target or a planned command's
-`plan_source`, the operator returns a clone of parent A.
-
-What crossover does not preserve: semantic coherence of the two halves, and
-`$memory` / `$history` references across the cut (a suffix step may read a
-key that only the discarded prefix wrote). Collaboration steps cross over
-intact, with their sub-agents.
-
-With `crossover_rate=0.0` (the default) no random number is drawn for
-crossover, so an existing seeded run reproduces exactly. Children made by
-crossover are recorded with `mutation_kind = CROSSOVER_KIND` (`"crossover"`)
-and the better parent's score as `parent_score`, so they show up next to the
-mutation operators in `format_mutation_effectiveness()`.
 
 ## Multi-objective
 
@@ -148,6 +122,29 @@ print(estimate.format_summary())   # smoke + population × generations × cases
 `total_cost_usd` and `pricing_missing_models`. It multiplies a single-chain
 [cost estimate](/carl/tracing/cost/) by the run size; mutations that add steps
 make the real spend higher.
+
+## EvoC primitives
+
+Since 0.5.0 CARL also ships the building blocks for an **external** evolution
+engine (EvoC) that edits chain specs as data. They are top-level exports:
+
+| Need | Names |
+| --- | --- |
+| Step catalog and spec checks | `get_step_catalog`, `validate_spec`, `validate_and_build`, `auto_generate_minimal_step`, `schema_for` |
+| Field-level edits | `mutable_fields`, `get_field_by_path`, `set_field_by_path`, `iter_mutable_values`, `sample_field_value`, `mutate_content`, `mutable_targets` |
+| Graph edits | `insert_step_at`, `remove_step`, `rewire_dependencies`, `change_step_type`, `apply_records`, `MutationRecord`, `MutationError` |
+| Graph queries | `find_root_steps`, `find_leaf_steps`, `dependents_of`, `steps_of_type`, `deletable_steps`, `can_delete_step` |
+| Freezing | `StepDescriptionBase.frozen`, `frozen_step_numbers`; mutation helpers honour `respect_frozen=True` |
+| Tools as data | `CodeTool`, `CodeToolLibrary`, `validate_code_tool`, `compile_code_tool`; running them needs `ReasoningContext(allow_code_tools=True)` |
+| Run descriptors | `RunDescriptor`, `ComplexityDescriptor`, `extract_run_descriptor`, `extract_complexity` |
+| Pareto | `pareto_front`, `pareto_rank`, `dominates` |
+| Datasets | `subsample`, `split`, `select_cases`, `CaseSplit`, `CaseDiff` |
+
+`validate_spec` also checks dataflow: an explicit `$steps.N` input must point
+at a declared predecessor (error code `step_result_without_dependency`).
+`ReasoningChain.from_dict` does not run this check. Graph edits run it before
+they accept a change. `IndividualMetrics` gained `id`, `parent_id` and `mutation_records`, so
+`to_lineage_mermaid()` can draw exact lineage.
 
 ## See also
 

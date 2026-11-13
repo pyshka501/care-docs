@@ -101,4 +101,4 @@ diff = previous_report.diff(report)   # EvalSuiteDiff: изменения оце
 ## Смотрите также
 
 - [Метрики](/ru/carl/evaluation/metrics/)
-- [Пример датасетного оценщика](https://github.com/Glazkoff/carl/blob/main/examples/evaluation/dataset_evaluator_example.py) в репозитории.
+- [Пример датасетного оценщика](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/evaluation/dataset_evaluator_example.py) в репозитории.

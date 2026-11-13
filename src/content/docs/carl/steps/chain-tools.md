@@ -88,10 +88,12 @@ register a definition on a context directly, call
 `context.register_chain_tool(definition)`; re-registering the same contract is a
 no-op, and a name clash with a different tool raises unless `replace=True`.
 
-:::caution
-The tool step that calls a chain tool **succeeds even when the nested chain
-failed**: the tool returned a valid envelope. Always check
-`ChainToolOutcome.status` (or `success`). Only `completed` is a success.
+:::note[Changed in 0.5.0]
+A tool step that calls a chain tool now **fails** when the call does not end
+in `completed`. The step's `result_data` still holds the full
+`ChainToolOutcome`, and `error_message` carries its message. Before 0.5.0 the
+step succeeded with a failed envelope inside, so older host code that only
+read `ChainToolOutcome.status` should now also handle the failed step.
 :::
 
 ## ChainToolDefinition
@@ -108,7 +110,6 @@ The model is frozen and rejects unknown fields.
 | `output_schema` | `dict` | required | Schema for the value read from the child after it finishes. |
 | `output_reference` | `str` | required | Child reference to read: `$history…`, `$memory.…`, `$metadata.…`, `$steps.…` or `$outer_context…`. |
 | `allowed_tools` | `list[str]` | `[]` | Host tools copied into the child context. Unique names; a tool cannot list itself. |
-| `required_tool_revisions` | `dict[str, str]` | `{}` | Pinned revisions of host tools (see below). |
 | `tags` | `list[str]` | `["chain"]` | Tags of the registered tool (for `allowed_tool_tags`). |
 | `max_depth` | `int` | `4` | Nesting limit, 1–32. |
 | `timeout_seconds` | `float` | `120.0` | Budget for one invocation, finite, ≤ 86 400. |
@@ -151,31 +152,10 @@ When the parent runs, every `allowed_tools` entry must be registered on the
 context, or execution stops with `Embedded chain tools require missing host
 tools: …`. A name already taken by a different tool is an error.
 
-## Versioned host tools
-
-`required_tool_revisions` pins the host tools a chain tool depends on. Keys must
-be in `allowed_tools`; values are SHA-256 hex digests. Before each invocation the
-runtime compares each value with the callable's `__carl_tool_revision__`
-attribute. A tool with another revision (or none) makes the call `unavailable`
-with `error_code="missing_host_tools"`.
-
-```python
-def normalize(payload):
-    return {"normalized": payload["text"].strip().lower()}
-
-normalize.__carl_tool_revision__ = "<sha256 of this tool version>"
-
-pinned = ChainToolDefinition.model_validate({
-    **normalizer.model_dump(),
-    "required_tool_revisions": {"normalize": "<sha256 of this tool version>"},
-})
-```
-
-`from_chain` has no parameter for revisions, so add them as shown.
-
 ## ChainToolOutcome
 
-Every call returns this envelope (as a dict in the tool step's `result_data`):
+Every call returns this envelope (as a dict in the tool step's `result_data`,
+on success and on failure):
 
 | Field | Meaning |
 | --- | --- |
@@ -209,4 +189,4 @@ with `ChainFormatNewerError` instead of silently dropping nested chains. See
 
 - [Handoff](/carl/orchestration/handoff/): run a sub-chain that shares the parent's state.
 - [Tool step](/carl/steps/tool/) · [Agent step](/carl/steps/agent/) · [Map step](/carl/steps/map/)
-- [Example](https://github.com/Glazkoff/carl/blob/main/examples/agents/chain_as_tool_example.py) in the repo.
+- [Example](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/agents/chain_as_tool_example.py) in the repo.

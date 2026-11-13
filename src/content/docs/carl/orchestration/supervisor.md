@@ -103,5 +103,5 @@ map that you must fill. Limits are on the
 ## See also
 
 - [Handoff](/carl/orchestration/handoff/): delegate to one fixed sub-chain.
-- [Supervisor routing example](https://github.com/Glazkoff/carl/blob/main/examples/agents/supervisor_routing_example.py)
+- [Supervisor routing example](https://github.com/AIRI-MAESTRO/carl/blob/v0.5.2/examples/agents/supervisor_routing_example.py)
   (mock client, no API key).

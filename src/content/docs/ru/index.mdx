@@ -1,6 +1,6 @@
 ---
 title: MAESTRO
-description: Опишите задачу, и Maestro соберёт, запустит и улучшит reasoning-цепочку. Релиз 0.5.0.
+description: Опишите задачу, и Maestro соберёт, запустит и улучшит reasoning-цепочку.
 template: splash
 hero:
   tagline: Опишите задачу в приложении Maestro. Maestro сгенерирует reasoning-цепочку, запустит её на ваших данных, сохранит в Библиотеке и улучшит эволюцией с идеями из IdeaL.
@@ -10,7 +10,7 @@ hero:
     - text: Начать
       link: care/getting-started/overview/
       variant: primary
-    - text: CARL 0.5.0
+    - text: CARL 0.5.2
       link: carl/getting-started/overview/
       variant: minimal
     - text: IdeaL
@@ -20,8 +20,8 @@ hero:
 
 import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
-:::note[Релиз 0.5.0]
-Документация описывает релиз 0.5.0: Maestro с Библиотекой, Активностью и меньшим числом подтверждений, решатели STARM, CARL 0.5.0 с шагами кода, Codex и Claude Code, озеро идей IdeaL. Что изменилось: [заметки к релизу Maestro](care/reference/release-0-5-0/) и [журнал изменений CARL](carl/reference/changelog/).
+:::note[Что описывает документация]
+**CARL 0.5.2** выпущен на PyPI ([журнал изменений](carl/reference/changelog/)). **Maestro**, **MAGE 0.2.0** и **Автобенч** описаны по текущей линии разработки; на страницах отмечено, чего ещё нет в выпущенной сборке ([журнал MAGE](mage/reference/changelog/), [заметки Maestro 0.5.0](care/reference/release-0-5-0/)).
 :::
 
 ## С чего начать
@@ -36,6 +36,16 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 		title="CARL → формат и исполнение цепочек"
 		href="carl/getting-started/overview/"
 		description="Как цепочка устроена и исполняется: типизированные шаги (LLM, инструменты, код, Codex, Claude Code, map, wait и другие), зависимости, управление запуском."
+	/>
+	<LinkCard
+		title="MAGE → генерация цепочек"
+		href="mage/getting-started/overview/"
+		description="Генератор внутри Maestro: из задачи на обычном языке в проверенную цепочку CARL. Python API, CLI, интеграция с хостом."
+	/>
+	<LinkCard
+		title="Автобенч → данные для эволюции"
+		href="care/autobench/overview/"
+		description="Сгенерировать, проверить и версионировать набор оценок для цепочки, а потом эволюционировать её на нём."
 	/>
 	<LinkCard
 		title="IdeaL → озеро идей"
