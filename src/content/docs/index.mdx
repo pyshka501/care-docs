@@ -1,6 +1,6 @@
 ---
 title: MAESTRO
-description: Describe a task, and Maestro builds, runs and evolves a reasoning chain for it. Release 0.5.0.
+description: Describe a task, and Maestro builds, runs and evolves a reasoning chain for it.
 template: splash
 hero:
   tagline: Describe a task in the Maestro app. Maestro generates a reasoning chain, runs it on your data, keeps it in the Library and evolves it with ideas from IdeaL.
@@ -10,7 +10,7 @@ hero:
     - text: Get started
       link: care/getting-started/overview/
       variant: primary
-    - text: CARL 0.5.0
+    - text: CARL 0.5.2
       link: carl/getting-started/overview/
       variant: minimal
     - text: IdeaL
@@ -20,8 +20,8 @@ hero:
 
 import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
-:::note[Release 0.5.0]
-These docs describe release 0.5.0: Maestro with the Library, Activity and fewer confirmations, STARM solver tools, CARL 0.5.0 with code, Codex and Claude Code steps, and the IdeaL idea lake. See the [Maestro release notes](care/reference/release-0-5-0/) and the [CARL changelog](carl/reference/changelog/).
+:::note[What these docs cover]
+**CARL 0.5.2** is released on PyPI ([changelog](carl/reference/changelog/)). **Maestro**, **MAGE 0.2.0** and **Autobench** are described as in the current development line; pages mark what is not in a released build yet ([MAGE changelog](mage/reference/changelog/), [Maestro 0.5.0 notes](care/reference/release-0-5-0/)).
 :::
 
 ## Choose your path
@@ -36,6 +36,16 @@ These docs describe release 0.5.0: Maestro with the Library, Activity and fewer 
 		title="CARL → the chain format and runtime"
 		href="carl/getting-started/overview/"
 		description="How a chain is written and executed: typed steps (LLM, tools, code, Codex, Claude Code, map, wait and more), dependencies, run controls."
+	/>
+	<LinkCard
+		title="MAGE → chain generation"
+		href="mage/getting-started/overview/"
+		description="The generator behind Maestro: from a plain-language task to an admitted CARL chain. Python API, CLI, host integration."
+	/>
+	<LinkCard
+		title="Autobench → data for evolution"
+		href="care/autobench/overview/"
+		description="Generate, check and version evaluation datasets for a chain, then use them to evolve it."
 	/>
 	<LinkCard
 		title="IdeaL → the idea lake"

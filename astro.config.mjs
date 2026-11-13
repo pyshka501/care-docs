@@ -191,6 +191,11 @@ document.addEventListener('astro:page-load', fixTitle);
 								items: [{ autogenerate: { directory: 'care/workflows' } }],
 							},
 							{
+								label: 'Autobench',
+								translations: { ru: 'Автобенч' },
+								items: [{ autogenerate: { directory: 'care/autobench' } }],
+							},
+							{
 								label: 'Configuration',
 								translations: { ru: 'Конфигурация' },
 								items: [{ autogenerate: { directory: 'care/configuration' } }],
@@ -340,6 +345,33 @@ document.addEventListener('astro:page-load', fixTitle);
 								label: 'Reference',
 								translations: { ru: 'Справочник' },
 								items: [{ autogenerate: { directory: 'carl/reference' } }],
+							},
+						],
+					},
+					{
+						label: 'MAGE',
+						link: '/mage/getting-started/overview/',
+						icon: 'rocket',
+						items: [
+							{
+								label: 'Getting Started',
+								translations: { ru: 'Начало работы' },
+								items: [{ autogenerate: { directory: 'mage/getting-started' } }],
+							},
+							{
+								label: 'Concepts',
+								translations: { ru: 'Концепции' },
+								items: [{ autogenerate: { directory: 'mage/concepts' } }],
+							},
+							{
+								label: 'Integration',
+								translations: { ru: 'Интеграция' },
+								items: [{ autogenerate: { directory: 'mage/integration' } }],
+							},
+							{
+								label: 'Reference',
+								translations: { ru: 'Справочник' },
+								items: [{ autogenerate: { directory: 'mage/reference' } }],
 							},
 						],
 					},
