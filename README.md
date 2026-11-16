@@ -1,6 +1,6 @@
 # care-docs
 
-**Live site:** https://airi-maestro.github.io/care-docs/
+**Live site:** https://airi-maestro.github.io/maestro-docs/
 
 Documentation site for **CARE** (TUI + CLI) and **CARL** (reasoning library),
 built with [Astro Starlight](https://starlight.astro.build/).
@@ -8,7 +8,7 @@ built with [Astro Starlight](https://starlight.astro.build/).
 - **Bilingual**: English (default) + Russian (`/ru`).
 - **Two products, two sidebars**: a splash landing routes to independent CARE and
   CARL doc sets (via `starlight-sidebar-topics`).
-- **Brand**: mirrors [care-page](https://github.com/AIRI-MAESTRO/care-page)
+- **Brand**: mirrors [maestro-page](https://github.com/AIRI-MAESTRO/maestro-page)
   (AIRI aesthetic, mascot EVOC, Manrope + JetBrains Mono).
 
 ## Local development
