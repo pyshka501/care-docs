@@ -1,6 +1,6 @@
 # care-docs
 
-**Live site:** https://airi-maestro.github.io/care-docs/
+**Live site:** https://airi-maestro.github.io/maestro-docs/
 
 Documentation site for **Maestro** (desktop app, `care` CLI and TUI), **CARL**
 (chain format and runtime) and **IdeaL** (idea lake). Content describes release **0.5.0**;

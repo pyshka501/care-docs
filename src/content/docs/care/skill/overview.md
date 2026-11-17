@@ -27,7 +27,7 @@ uvx maestro-install skill
 ```
 Unpacks the skill for Claude Code, Codex, hermes or OpenClaw (pick with `--agent`).
 Full steps: [Install & Use](/care/skill/install/). Direct bundle:
-[`maestro.skill`](https://airi-maestro.github.io/care-docs/maestro.skill).
+[`maestro.skill`](https://airi-maestro.github.io/maestro-docs/maestro.skill).
 :::
 
 ### What's in the bundle

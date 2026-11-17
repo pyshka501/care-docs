@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://airi-maestro.github.io/care-docs/sitemap-index.xml
+Sitemap: https://airi-maestro.github.io/maestro-docs/sitemap-index.xml

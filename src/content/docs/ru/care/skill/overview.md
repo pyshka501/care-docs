@@ -26,7 +26,7 @@ uvx maestro-install skill
 ```
 Распаковывает навык для Claude Code, Codex, hermes или OpenClaw (выбор через
 `--agent`). Подробно: [Установка и использование](/ru/care/skill/install/). Бандл
-напрямую: [`maestro.skill`](https://airi-maestro.github.io/care-docs/maestro.skill).
+напрямую: [`maestro.skill`](https://airi-maestro.github.io/maestro-docs/maestro.skill).
 :::
 
 ### Что в бандле

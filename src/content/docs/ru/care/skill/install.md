@@ -38,12 +38,12 @@ uvx maestro-install skill --agent all
 папка бандла — `maestro/`. Существующая `maestro/` сохраняется как `maestro.bak`.
 
 По умолчанию бандл скачивается с
-`https://airi-maestro.github.io/care-docs/maestro.skill`. Другой адрес задаётся
+`https://airi-maestro.github.io/maestro-docs/maestro.skill`. Другой адрес задаётся
 через `--skill-url` или `$MAESTRO_SKILL_URL` (зеркало, форк, локальная сборка):
 
 ```bash
 uvx maestro-install skill --agent claude \
-  --skill-url https://airi-maestro.github.io/care-docs/maestro.skill
+  --skill-url https://airi-maestro.github.io/maestro-docs/maestro.skill
 ```
 
 :::note[Старый пакет]
@@ -54,7 +54,7 @@ uvx maestro-install skill --agent claude \
 **Вручную.** Скачайте тот же адрес и распакуйте сами:
 
 ```bash
-curl -fsSLO https://airi-maestro.github.io/care-docs/maestro.skill
+curl -fsSLO https://airi-maestro.github.io/maestro-docs/maestro.skill
 unzip maestro.skill -d ~/.claude/skills/     # → ~/.claude/skills/maestro/
 ```
 

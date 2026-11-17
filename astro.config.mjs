@@ -3,9 +3,10 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import starlightSidebarTopics from 'starlight-sidebar-topics';
 
-// Deploy base. GitHub Pages project site → '/care-docs'.
+// The source preview follows its repository name while the rename is pending.
 // Custom domain / Vercel / Netlify → set to '' and adjust `site`.
-const base = '/care-docs';
+const legacyPreview = process.env.GITHUB_REPOSITORY === 'pyshka501/care-docs';
+const base = legacyPreview ? '/care-docs' : '/maestro-docs';
 
 /**
  * Prefix `base` onto root-absolute links/images authored in Markdown/MDX bodies.
@@ -55,11 +56,8 @@ function remarkMermaid() {
 
 // https://astro.build/config
 export default defineConfig({
-	// Production canonical host: the public mirror's GitHub Pages
-	// (AIRI-MAESTRO/care-docs → airi-maestro.github.io/care-docs). The private
-	// preview at airi-maestro.github.io/care-docs serves the same `base`, so only
-	// canonical/sitemap URLs differ — they intentionally point at production.
-	site: 'https://airi-maestro.github.io',
+	// GitHub Pages uses the repository path for each project site.
+	site: legacyPreview ? 'https://pyshka501.github.io' : 'https://airi-maestro.github.io',
 	base,
 	markdown: { remarkPlugins: [remarkMermaid], rehypePlugins: [rehypeBaseLinks] },
 	integrations: [
@@ -143,7 +141,7 @@ document.addEventListener('astro:page-load', render);
 				{
 					icon: 'github',
 					label: 'GitHub',
-					href: 'https://github.com/AIRI-MAESTRO/care-docs',
+					href: 'https://github.com/AIRI-MAESTRO/maestro-docs',
 				},
 			],
 			// EN is the root locale; RU lives under /ru.

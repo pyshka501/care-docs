@@ -38,12 +38,12 @@ whose home directory exists, or into Claude Code when none does. The bundle's to
 folder is `maestro/`; an existing `maestro/` is kept as `maestro.bak`.
 
 By default the bundle is fetched from
-`https://airi-maestro.github.io/care-docs/maestro.skill`. Override it with
+`https://airi-maestro.github.io/maestro-docs/maestro.skill`. Override it with
 `--skill-url` or `$MAESTRO_SKILL_URL` (a mirror, a fork or a local build):
 
 ```bash
 uvx maestro-install skill --agent claude \
-  --skill-url https://airi-maestro.github.io/care-docs/maestro.skill
+  --skill-url https://airi-maestro.github.io/maestro-docs/maestro.skill
 ```
 
 :::note[Legacy package]
@@ -54,7 +54,7 @@ Refresh the installer itself with `uvx --refresh maestro-install`.
 **Manual fallback.** Download the same URL and unzip it yourself:
 
 ```bash
-curl -fsSLO https://airi-maestro.github.io/care-docs/maestro.skill
+curl -fsSLO https://airi-maestro.github.io/maestro-docs/maestro.skill
 unzip maestro.skill -d ~/.claude/skills/     # → ~/.claude/skills/maestro/
 ```
 

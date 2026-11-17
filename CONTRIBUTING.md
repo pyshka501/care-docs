@@ -38,7 +38,7 @@ Three topics (Maestro, CARL, IdeaL), three sidebars, via `starlight-sidebar-topi
 
 - **Internal links** are root-absolute: `/carl/steps/llm/`. A rehype plugin in
   `astro.config.mjs` prepends the deploy `base` automatically — do **not** hardcode
-  `/care-docs`. RU pages link to RU pages: `/ru/carl/...`.
+  `/maestro-docs`. RU pages link to RU pages: `/ru/carl/...`.
 - **Splash pages** (`.mdx` with `template: splash`) use **relative** links in
   `hero.actions` / component `href`s (component props aren't rehype-processed).
 - **Code examples must be real** — verify against the release sources below.
