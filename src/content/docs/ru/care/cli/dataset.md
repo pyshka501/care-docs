@@ -5,7 +5,7 @@ sidebar:
   order: 6.5
 ---
 
-`care dataset` управляет небольшим оценочным датасетом, привязанным к одной
+`maestro dataset` управляет небольшим оценочным датасетом, привязанным к одной
 цепочке, — терминальный аналог `/dataset` в TUI. Каждая запись связывает входную
 **задачу** с **ожидаемой** подстрокой; `run` прогоняет все записи через цепочку и
 выставляет оценку. Под-действие **обязательно**: `list`, `add`, `run` или
@@ -23,44 +23,44 @@ sidebar:
    фреймворке.
 
 :::note[Для `run` нужен LLM]
-`care dataset run` действительно выполняет цепочку через CARL, поэтому требует
-настроенного ключа LLM (так же, как `care run --execute`). А `list`, `add` и
+`maestro dataset run` действительно выполняет цепочку через CARL, поэтому требует
+настроенного ключа LLM (так же, как `maestro run --execute`). А `list`, `add` и
 `export` работают только с memory-картами и LLM не требуют.
 :::
 
-## `care dataset add <chain_id> <task>`
+## `maestro dataset add <chain_id> <task>`
 
 Добавляет один тест-кейс в датасет цепочки.
 
 ```bash
-care dataset add weather "погода в Париже завтра" --expected "Париж"
+maestro dataset add weather "погода в Париже завтра" --expected "Париж"
 ```
 
 | Флаг | По умолчанию | Назначение |
 | --- | --- | --- |
 | `--expected EXPECTED` | **обязателен** | Подстрока, которую должен содержать ответ (гейт `run` сверяет её без учёта регистра). |
-| `--rubric RUBRIC` | `""` | Рубрика LLM-судьи, используется **только при прогоне из TUI** — `care dataset run` её игнорирует и оценивает по подстроке. |
+| `--rubric RUBRIC` | `""` | Рубрика LLM-судьи, используется **только при прогоне из TUI** — `maestro dataset run` её игнорирует и оценивает по подстроке. |
 
-## `care dataset list <chain_id>`
+## `maestro dataset list <chain_id>`
 
 Выводит записи датасета цепочки — по строке на случай, со статусом и усечённой
 задачей.
 
 ```bash
-care dataset list weather
-care dataset list weather --json
+maestro dataset list weather
+maestro dataset list weather --json
 ```
 
 | Флаг | По умолчанию | Назначение |
 | --- | --- | --- |
 | `--json` | выкл. | Выдать записи в JSON вместо построчного вида. |
 
-## `care dataset run <chain_id>`
+## `maestro dataset run <chain_id>`
 
 Прогоняет каждую запись через цепочку и выставляет оценку.
 
 ```bash
-care dataset run weather
+maestro dataset run weather
 ```
 
 ```text
@@ -76,12 +76,12 @@ score: 1/2 passed (substring)
 
 Код возврата равен `0`, только если прошли **все** оценённые случаи; иначе — `1`.
 
-## `care dataset export <chain_id> <output>`
+## `maestro dataset export <chain_id> <output>`
 
 Выгружает датасет в JSONL — по записи на строку — для внешнего фреймворка оценки.
 
 ```bash
-care dataset export weather weather-eval.jsonl
+maestro dataset export weather weather-eval.jsonl
 ```
 
 ---
@@ -93,22 +93,22 @@ care dataset export weather weather-eval.jsonl
 
 ```bash
 # один раз наполняем датасет (или коммитим случаи через `add` на этапе setup)
-care dataset add weather "погода в Париже завтра"   --expected "Париж"
-care dataset add weather "идёт ли дождь в Лондоне"  --expected "Лондон"
+maestro dataset add weather "погода в Париже завтра"   --expected "Париж"
+maestro dataset add weather "идёт ли дождь в Лондоне"  --expected "Лондон"
 
 # гейт: ненулевой код роняет пайплайн
-care dataset run weather
+maestro dataset run weather
 ```
 
 ```yaml
 # .github/workflows/eval.yml (фрагмент)
 - name: Оценка цепочки weather
-  run: care dataset run weather
+  run: maestro dataset run weather
   env:
     OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
 ```
 
-Запустите `care dataset --help` для полного и актуального списка флагов.
+Запустите `maestro dataset --help` для полного и актуального списка флагов.
 
 ## См. также
 

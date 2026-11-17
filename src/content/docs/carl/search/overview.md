@@ -28,9 +28,9 @@ Configure search at the **chain** level with `ContextSearchConfig`:
 | `strategy` | `"substring" \| "vector"` | `"substring"` | The default search strategy. |
 | `substring_config` | `dict \| None` | `None` | Options for substring search. |
 | `vector_config` | `dict \| None` | `None` | Options for [vector search](/carl/search/vector-search/). |
-| `embedding_model` | `str \| None` | `None` | Embedding model for vector search. |
+| `embedding_model` | `str \| None` | `None` | Accepted but **ignored**: vector search always uses `sentence-transformers/all-MiniLM-L6-v2`. |
 
-- **Substring** (default) — fast, exact keyword matching, **no extra dependencies**.
+- **Substring** (default) — keyword matching line by line, **no extra dependencies**.
 - **Vector** — semantic similarity via FAISS embeddings; see [vector search](/carl/search/vector-search/).
 
 ### Substring options
@@ -51,6 +51,12 @@ chain = ReasoningChain(steps=steps, search_config=search_config)
 ```
 
 Or with the builder: `ChainBuilder().with_search_config(search_config)`.
+
+How substring search works: `outer_context` is split into lines; a line
+matches when any word of the query (at least `min_word_length` characters)
+occurs in it as a substring. Up to `max_matches_per_query` lines are joined
+with ` | ` and injected as `Query '<q>': ...`; with no match the step gets
+`Query '<q>': No matches found`.
 
 ## Per-query overrides
 

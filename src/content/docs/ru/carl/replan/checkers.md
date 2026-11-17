@@ -47,7 +47,11 @@ LLMReplanCheckerConfig(
 ```
 
 Также принимает пользовательский `prompt_template`, `temperature`, `max_tokens` и
-`parse_error_action` (что делать, если ответ LLM нельзя разобрать).
+`parse_error_action` (что делать, если ответ LLM нельзя разобрать, по умолчанию
+`ReplanAction.FAIL`). Значения по умолчанию: `history_entries=6`,
+`error_entries=4`, `retries=1`. Чекер на правилах по умолчанию делает
+`RETRY_CURRENT_STEP` при упавшем шаге и `REPLAN_FROM_CHECKPOINT` при совпадении
+подстроки.
 
 ## Зарегистрированный чекер
 

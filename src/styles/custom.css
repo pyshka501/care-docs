@@ -1,13 +1,12 @@
 /* CARE & CARL docs — brand theme.
    Tokens mirror github.com/Glazkoff/maestro-page (AIRI aesthetic, mascot EVOC).
-   Fonts: Manrope (sans) + JetBrains Mono (mono).
    Themes: light = Warm Sand (#2a7d6f on #faf6ef), dark = Deep Crystal (#33d9b2 on #0f1115). */
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Manrope:wght@400;500;600;700;800&display=swap');
+@import '@fontsource-variable/inter';
 
 :root {
-	--sl-font: 'Manrope', 'Segoe UI', system-ui, -apple-system, sans-serif;
-	--sl-font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+	--sl-font: 'Inter Variable', 'Segoe UI', system-ui, -apple-system, sans-serif;
+	--sl-font-mono: var(--sl-font);
 
 	/* radii / glow lifted from the landing; glow tracks the active accent */
 	--brand-radius-sm: 8px;
@@ -86,9 +85,4 @@
 	max-width: 300px;
 	height: auto;
 	margin-inline: auto;
-}
-
-/* Crisper inline code in the brand mono face */
-.sl-markdown-content code {
-	font-family: var(--sl-font-mono);
 }

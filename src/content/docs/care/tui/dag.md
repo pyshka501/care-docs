@@ -5,7 +5,7 @@ sidebar:
   order: 3
 ---
 
-Every chain in MAESTRO CARE is a small **DAG** — boxes for steps, arrows for
+Every Maestro chain is a small **DAG** — boxes for steps, arrows for
 the data flow between them. The TUI draws that graph everywhere a chain
 appears: inline under a fresh generation, in the inspect pane, live during a
 run, and full-screen in the **chain DAG modal** (the *View chain* button under
@@ -175,6 +175,6 @@ whole chain.
 
 ## See also
 
-- [Screens reference](/care/tui/screens/) — every MAESTRO CARE screen and modal.
+- [Screens reference](/care/tui/screens/) — every TUI screen and modal.
 - [The Evolution screen](/care/tui/evolution/) — watch a GA improve a chain.
 - [CARL trace visualization](/carl/tracing/visualization/) — the trace-side graph.

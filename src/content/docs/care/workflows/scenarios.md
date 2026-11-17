@@ -1,140 +1,148 @@
 ---
 title: Scenarios
-description: End-to-end worked workflows — from a quick answer to building, evolving, and shipping an agent.
+description: End-to-end walkthroughs in the Maestro desktop app — from a quick agent to a saved, evolved one, with documents and IdeaL — plus TUI and CLI equivalents.
 sidebar:
-  order: 3
+  order: 6
 ---
 
-Concrete walkthroughs of the main ways people use MAESTRO. They assume you've run
-[`care init`](/care/cli/setup/) and launched the TUI with `care`.
+Concrete walkthroughs. The app scenarios assume you finished the
+[Quick start](/care/getting-started/quick-start/): a chat model is set, and
+for saving and evolution, Memory and the platform are configured.
 
-## 1. Quick one-off answer (Interactive)
+Paid steps (test runs, generation, execution, repair, data generation,
+evolution start) show one confirmation dialog, unless the session uses
+**Full access**. Free steps (save, rename, import a file, pause, cancel) do
+not ask.
 
-The fastest path — no setup beyond MAGE creds.
+## 1. A quick agent from a description
 
-1. Stay in **Interactive** (the default surface).
-2. Type the task, optionally attaching files with `@`:
+1. **New agent**. Describe the task:
    ```text
-   Summarise the key risks in @report.pdf and rank them by severity.
+   Make an agent that summarises a support ticket in one sentence and rates
+   its urgency from 1 to 5.
    ```
-3. The answer prints inline. Follow up in the same thread; `/new` starts fresh.
+2. Answer the question card (input, output format) or say *"do it
+   yourself"*.
+3. The agent writes the chain and test-runs it; approve the test run. Look
+   at the step graph on the card: it should say *Checked by a run*.
+4. Ask to run it on your ticket. Approve the run.
+5. Not satisfied? Say what to change. Nothing is saved until you ask.
 
-## 2. Iterate in Interactive, then keep what works
+## 2. Work on a document
 
-Interactive runs the chain **on the spot** and persists nothing — until you decide to.
-It's the natural place to explore a chain before committing it.
+1. Attach a PDF or a Word file with the paperclip, or drop it into the chat.
+2. Ask: *"make an agent that extracts the parties, the amount and the due
+   date from contracts like this one"*. The agent reads the file first and
+   uses it as the realistic test input.
+3. Later, run the saved agent on another contract by attaching it.
 
-1. In **Interactive**, type a task → MAGE generates → CARL runs → the answer prints.
-2. Refine with follow-up prompts (they reuse the chain for context); inspect the chain
-   with [`/visualize`](/care/slash-commands/overview/).
-3. When a chain is worth keeping, press the **Save to library** chain-action button —
-   or hand it straight to evolution with **Evolve**, which opens the same launch picker
-   (budget preview included) described below.
-4. Want to tweak the steps by hand instead of regenerating? Export the chain and edit
-   the JSON directly:
-   ```bash
-   care memory show <chain_id> --content-only > chain.json
-   # edit chain.json — reorder steps, tweak prompts, change tool args
-   care validate chain.json                 # preflight before re-importing
-   care import chain.json --apply
-   ```
-   Or pack it into a portable bundle with [`care export`](/care/cli/export/) to move it
-   between machines.
+See [Chat](/care/app/chat/#attaching-files).
 
-## 3. Build & evolve a Production agent
+## 3. Keep what works
 
-Turn a task into a saved, evolving agent.
+1. After a good run, say *"save this agent"*. It is written to memory as a
+   new version.
+2. Open **My agents**. The chain is under **Chains**; rename it there if the
+   name is unclear (a rename is a new version too).
 
-1. Switch to Production: `/mode production` (needs Memory configured).
-2. Type the task → MAESTRO **generates → saves** the chain (you get a `chain_id`) →
-   runs a **baseline** → (if Platform is wired) **kicks off evolution**.
-3. Watch evolution on the [Evolution dashboard](/care/tui/evolution/) (or
-   `/evolution watch <run_id>` in chat) — the live **Fitness** chart, **Pareto front**,
-   and a **cost meter** that tracks token/USD spend against the launch budget.
-4. Accept the winner: `/evolution accept <run_id> <individual_id>` (or
-   `/promote <chain_id> <version>`).
-5. The improved chain is now in your [Library](/care/tui/screens/).
+## 4. Reuse a saved agent
 
-Headless equivalent:
+1. **My agents → Chains**, open the chain, press **Run**.
+2. A session opens with a drafted request. Send it; the agent shows the input
+   contract and asks only for missing input.
+3. Approve the run.
+
+Or just ask in any session: *"run the ticket-summary agent on this text: …"*.
+
+## 5. Repair a failed run
+
+1. A run fails at a step. The card says what went wrong, and the agent
+   proposes a repair right away.
+2. Approve the repair proposal. You get a new chain; the original stays as it
+   was.
+3. Ask to run the proposal. That is a separate, separately approved run.
+4. If it works, save it.
+
+See [Runs, pause and repair](/care/app/runs/).
+
+## 6. From a saved agent to an evolved one
+
+1. **Data.** Put your examples into a spreadsheet in the project folder and
+   ask the agent to import it, or generate a dataset: on the chain card press
+   **Data for evolution**, or open **My agents → Datasets**. See
+   [Datasets](/care/autobench/overview/).
+2. **Evolve.** On the chain card press **Evolve**, or **Use for evolution**
+   on a dataset version, and send the request. For free-text answers ask for
+   an LLM judge with your rubric. The agent makes a plan with a token
+   estimate and starts the run after your approval.
+3. **Watch.** Follow the live evolution card, the progress dock and
+   [Activity](/care/app/activity/). With IdeaL on, open **Radar in IdeaL**.
+4. **Take the result.** Press **Save best version** or ask for the result:
+   the best chain is staged in the session. Run it on a real example, then
+   save it.
+
+See [Evolution](/care/workflows/evolution/).
+
+## 7. Seed ideas and steer evolution (IdeaL)
+
+1. Turn on IdeaL in **Settings → MAESTRO** (chain memory and namespace or
+   project), restart the app, open **IdeaL** in the sidebar and sign in with
+   your key once.
+2. Ask the agent to *"seed ideas for this task"*. It drafts ideas, checks
+   them against the lake and shows the list. Approve what to save.
+3. Start an evolution. Its mutations get slates of ideas from your namespace.
+4. Ask the agent to push a promising idea into the next mutations of the
+   running evolution.
+5. After the run, the run's page in IdeaL shows which ideas helped.
+
+See [The IdeaL panel](/care/app/ideas/).
+
+## 8. Add a missing tool
+
+1. **My agents → Tools & skills → Create tool.** Describe it.
+2. Prepare the draft; check that the sandbox run on samples succeeded.
+3. Save. Rework it later the same way; a rework is a new version.
+
+See [Tools and skills workshop](/care/workflows/workshop/).
+
+## 9. Long work in the background
+
+Ask *"run this evolution in the background"* (also works for generation,
+execution and repair). The job appears in the jobs panel and in Activity. You
+can keep chatting. **Stop** in the progress dock or killing the job stops the
+work; for evolution it cancels the run on the platform.
+
+---
+
+## TUI equivalents
+
+- Quick answers: **Interactive** mode, type the task, confirm the run.
+  `/new` starts fresh.
+- Durable chains: `/mode production`; each prompt generates, saves, runs a
+  baseline and starts evolution. Follow-ups revise the chain.
+- Datasets and evolution: `/dataset …`, `/evolution …`; see
+  [Production mode](/care/workflows/production/).
+- `@file` attaches a file to the task.
+
+## CLI and CI
 
 ```bash
-care generate "Triage support tickets by severity" --save triage
-care evolve triage --iterations 8 --wait --accept
+maestro doctor --no-probes                         # offline health check
+maestro generate "Triage support tickets" --save triage --output triage.json
+maestro validate triage.json                       # parse + preflight
+maestro run <chain_id> --execute --task "Checkout is down for everyone"
+maestro search "triage" --search-type hybrid
+maestro evolve <chain_id> --wait --accept
 ```
 
-## 4. Dataset-driven improvement
-
-Measure before you optimise.
-
-1. In Production, after the chain is saved, add test cases:
-   ```text
-   /dataset add <chain_id> "Checkout is down for everyone" --expected "high"
-   /dataset add <chain_id> "Typo on the pricing page" --expected "low"
-   ```
-2. Score the chain against them: `/dataset run <chain_id>`.
-3. Evolve with the dataset as the fitness signal — the launch picker's **budget preview**
-   estimates the run's cost up front, and the [Evolution dashboard](/care/tui/evolution/)'s
-   **cost meter** tracks it live. Re-run the dataset afterwards to confirm the gain.
-4. Export the set to share or version: `/dataset export <chain_id> dataset.jsonl`.
-
-## 5. Re-run a saved agent from the Library
-
-Reuse an agent on new input.
-
-1. `/library` (or `Ctrl+P` → search) → open a saved chain.
-2. Use the **Run context** form to set a new task + attach context files, then run
-   it. Or headless:
-   ```bash
-   care run <chain_id> --execute --task "New quarter, same analysis" --input region=EU
-   ```
-3. In Production, the run is recorded; review history with
-   [`care memory history <chain_id>`](/care/cli/memory/).
-
-## 6. Revise an existing chain
-
-Edit a chain in natural language instead of regenerating.
-
-```text
-/revise <chain_id> add a verification step before the final answer
-```
-
-MAESTRO previews the edit plan, you confirm, and it saves a **new version**. (In
-Production, a plain follow-up prompt does this automatically against the current
-chain.) Promote the version you like with `/promote`.
-
-Prefer surgical control? Export the chain, edit the JSON by hand, then re-import it:
+Edit a saved chain by hand and re-import it:
 
 ```bash
-care memory show <chain_id> --content-only > chain.json
-# edit chain.json, then:
-care validate chain.json
-care import chain.json --apply
+maestro memory show <chain_id> --content-only > chain.json
+# edit chain.json
+maestro validate chain.json
+maestro import chain.json --apply
 ```
 
-See [Export & import bundles](/care/cli/export/) for moving chains between machines.
-
-## 7. The canonical multi-agent flow
-
-The end-to-end loop MAESTRO is built around:
-
-> Generate agent **A** → save it → generate **B** and **C** → return to **A** from
-> the Library → re-run it from the same task + context files → **evolve A** and
-> **accept** the best individual back into the stable channel.
-
-## 8. Headless / CI
-
-Everything has a terminal twin — script it:
-
-```bash
-care doctor --no-probes                       # health check (offline)
-care generate "<task>" --save my-agent --output agent.py
-care validate agent.json                      # preflight a chain file
-care run my-agent --execute --save-result run1
-care search "triage" --search-type hybrid     # find saved agents
-care evolve my-agent --wait --accept
-```
-
-## See also
-
-- [Production mode](/care/workflows/production/) · [Ad-Hoc vs Production](/care/workflows/modes/)
-- [CLI reference](/care/cli/overview/) · [Slash commands](/care/slash-commands/overview/)
+See the [CLI reference](/care/cli/overview/) and
+[Export and import](/care/cli/export/).

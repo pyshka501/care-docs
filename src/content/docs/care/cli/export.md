@@ -5,18 +5,18 @@ sidebar:
   order: 4.5
 ---
 
-`care export` writes saved chains — and, optionally, the AgentSkills they depend
-on — into a single portable tarball you can copy to another machine. `care
+`maestro export` writes saved chains — and, optionally, the AgentSkills they depend
+on — into a single portable tarball you can copy to another machine. `maestro
 import` is its inverse: it reads chain JSON back and (with `--apply`) saves it
 into the local Memory. Both default to the `latest` channel. This pair is the
 terminal twin of the Library's **export bundle** action.
 
-## `care export <output> <entity_id>...`
+## `maestro export <output> <entity_id>...`
 
 Bundle one or more chains into a tarball (e.g. `bundle.tar.gz`).
 
 ```bash
-care export bundle.tar.gz weather-report risk-digest \
+maestro export bundle.tar.gz weather-report risk-digest \
   --skill web-search --channel latest
 ```
 
@@ -41,13 +41,13 @@ skipped (fetch failed): typo-chain-id
 ```
 
 :::note[No `--json`]
-`care export` writes a human-readable summary only — there is no `--json`
+`maestro export` writes a human-readable summary only — there is no `--json`
 output. It exits `1` on a bundling error.
 :::
 
-## `care import <PATTERN>...`
+## `maestro import <PATTERN>...`
 
-`care import` is the inverse of `care export`: it validates chain JSON files
+`maestro import` is the inverse of `maestro export`: it validates chain JSON files
 (glob patterns are accepted) and, with `--apply`, saves them to Memory. **It
 runs as a dry-run preview by default** — nothing is written until you pass
 `--apply`. See [Discovery & validation](/care/cli/discovery/) for the full flag
@@ -68,7 +68,7 @@ It exits `0` when every chain validates, `1` otherwise.
 Export two chains plus the skill they share on the source machine:
 
 ```bash
-care export bundle.tar.gz weather-report risk-digest --skill web-search
+maestro export bundle.tar.gz weather-report risk-digest --skill web-search
 # exported 2 chain(s) + 1 skill(s) → bundle.tar.gz (40817 bytes)
 ```
 
@@ -77,11 +77,11 @@ committing — the dry-run shows exactly what would be saved:
 
 ```bash
 tar xzf bundle.tar.gz
-care import "*.json"            # dry-run preview, writes nothing
-care import "*.json" --apply    # commit the chains to local Memory
+maestro import "*.json"            # dry-run preview, writes nothing
+maestro import "*.json" --apply    # commit the chains to local Memory
 ```
 
 ## See also
 
-- [Discovery & validation](/care/cli/discovery/) — `care import` flags and chain validation.
+- [Discovery & validation](/care/cli/discovery/) — `maestro import` flags and chain validation.
 - [Memory & Library](/care/cli/memory/) — browse and curate what you imported.

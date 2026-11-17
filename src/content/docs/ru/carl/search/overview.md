@@ -28,9 +28,9 @@ LLMStepDescription(
 | `strategy` | `"substring" \| "vector"` | `"substring"` | Стратегия поиска по умолчанию. |
 | `substring_config` | `dict \| None` | `None` | Параметры substring-поиска. |
 | `vector_config` | `dict \| None` | `None` | Параметры [векторного поиска](/ru/carl/search/vector-search/). |
-| `embedding_model` | `str \| None` | `None` | Модель эмбеддингов для векторного поиска. |
+| `embedding_model` | `str \| None` | `None` | Принимается, но **игнорируется**: векторный поиск всегда использует `sentence-transformers/all-MiniLM-L6-v2`. |
 
-- **Substring** (по умолчанию) — быстрое точное сопоставление по ключевым словам, **без дополнительных зависимостей**.
+- **Substring** (по умолчанию) — сопоставление по ключевым словам построчно, **без дополнительных зависимостей**.
 - **Vector** — семантическое сходство через FAISS-эмбеддинги; см. [векторный поиск](/ru/carl/search/vector-search/).
 
 ### Параметры substring
@@ -51,6 +51,12 @@ chain = ReasoningChain(steps=steps, search_config=search_config)
 ```
 
 Или через построитель: `ChainBuilder().with_search_config(search_config)`.
+
+Как работает поиск подстроки: `outer_context` делится на строки. Строка
+подходит, если в ней встречается как подстрока любое слово запроса длиной не
+меньше `min_word_length`. До `max_matches_per_query` строк склеиваются через
+` | ` и попадают в промпт как `Query '<q>': ...`. Если совпадений нет, шаг
+получает `Query '<q>': No matches found`.
 
 ## Переопределения на уровне запроса
 

@@ -66,11 +66,14 @@ client = AnthropicClient(AnthropicClientConfig(
 - **`get_response_with_tools(...)`** — native Anthropic tool-calling. Convert
   OpenAI-style tool schemas with `openai_tools_to_anthropic(tools)`.
 
-A missing SDK or key raises `AnthropicClientError`.
+A missing SDK or key raises `AnthropicClientError`. `AnthropicClientConfig`
+has no `retry_policy`; its retry methods use plain retries.
 
 ## The client interface
 
-`LLMClientBase` defines the methods executors use:
+`LLMClientBase` defines the methods executors use. Only `get_response` and
+`get_response_with_retries` are abstract; the others have default
+implementations built on them.
 
 | Method | Purpose |
 | --- | --- |
@@ -80,6 +83,7 @@ A missing SDK or key raises `AnthropicClientError`.
 | `get_response_with_usage(prompt)` | Returns text + token usage. |
 | `get_response_with_messages(messages)` | Multi-turn (see `ChatMessage`). |
 | `get_response_with_tools(...)` | Tool-calling. |
+| `get_response_with_tools_and_usage(...)` | Tool-calling plus token usage, `(content, tool_calls, usage)`. The base implementation returns empty usage; `OpenAICompatibleClient` and `AnthropicClient` return real counters. Agent steps use it to enforce token budgets. |
 | `stream_response(prompt)` | Token streaming. |
 
 Plus introspection: `model_name`, `temperature`, `max_tokens`, `supports_streaming`.
@@ -87,14 +91,36 @@ Plus introspection: `model_name`, `temperature`, `max_tokens`, `supports_streami
 `ChatMessage(role, content)` (`role: "system" | "user" | "assistant"`) models
 multi-turn history.
 
-## Auto-detection
+## Custom and stub clients
 
-You don't have to construct a client yourself — pass any supported API object to
-`ReasoningContext(api=...)` and CARL picks the right client:
+`ReasoningContext(api=...)` takes the object as is; there is no
+auto-detection or wrapping. Executors call `LLMClientBase` methods on it, so
+pass an `LLMClientBase` subclass. For tests and offline examples a stub needs
+only the two abstract methods:
 
-- `OpenAICompatibleClient` / `AnthropicClient`
-- `LLMHub` (from `mmar-llm`), `LLMHubAPI` (from `mmar-mapi`)
-- Mock objects implementing `__getitem__` or `get_response` (for tests)
+```python
+from mmar_carl import LLMClientBase
+
+class StubLLM(LLMClientBase):
+    async def get_response(self, prompt: str) -> str:
+        return "ok"
+    async def get_response_with_retries(self, prompt: str, retries: int = 3) -> str:
+        return await self.get_response(prompt)
+```
+
+Override `model_name` if you want the trace to show a model.
+
+## Who closes the client
+
+The caller owns the client passed as `api`. CARL runs each step on a copy of
+the context; when the step finishes, the copy calls
+`ReasoningContext.close_derived_clients()`, which closes only the clients the
+context built for per-step `llm_config` overrides. The shared `api` client
+stays open, so several chains can share one `OpenAICompatibleClient`
+concurrently (for example in a dataset evaluation).
+
+Close it yourself when you are done: `await context.close()` closes `api` (if
+it is an `OpenAICompatibleClient`) and the derived clients.
 
 ## See also
 

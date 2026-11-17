@@ -5,18 +5,18 @@ sidebar:
   order: 5
 ---
 
-Эти команды читают и курируют хранилище GigaEvo Memory — библиотеку сохранённых
-цепочек, агентов, навыков и записей запусков. Каждая из них является терминальным
-аналогом экрана Библиотеки TUI. Команды просмотра принимают `--json`, большинство —
+Эти команды читают и курируют хранилище Memory — библиотеку сохранённых
+цепочек, агентов, навыков и записей запусков. Ту же библиотеку показывают
+приложение и экран Library в TUI. Команды просмотра принимают `--json`, большинство —
 `--channel` (по умолчанию `latest`); у команд работы с версиями, каналами и
 долговременной памятью свои флаги, описанные ниже.
 
-## `care memory ...`
+## `maestro memory ...`
 
 ```bash
-care memory ls --entity-type chain --tag finance --q "weather"
-care memory show <entity_id> --content-only
-care memory history <chain_id>
+maestro memory ls --entity-type chain --tag finance --q "weather"
+maestro memory show <entity_id> --content-only
+maestro memory history <chain_id>
 ```
 
 | Подкоманда | Назначение |
@@ -25,12 +25,12 @@ care memory history <chain_id>
 | `memory show <id>` | Детали одной сущности (`--content-only`). |
 | `memory history <chain_id>` | Список записанных запусков цепочки. |
 
-## `care search "<query>"`
+## `maestro search "<query>"`
 
 Поиск BM25 / vector / hybrid по сохранённым сущностям.
 
 ```bash
-care search "quarterly risk" --search-type hybrid
+maestro search "quarterly risk" --search-type hybrid
 ```
 
 | Флаг | Назначение |
@@ -40,12 +40,12 @@ care search "quarterly risk" --search-type hybrid
 ## Сравнение и курирование
 
 ```bash
-care diff <left_id> <right_id>     # сравнение цепочек бок о бок
-care lineage <chain_id>            # пройти по DAG предков
-care favourite <entity_id>         # добавить звезду сущности (--off чтобы убрать)
+maestro diff <left_id> <right_id>     # сравнение цепочек бок о бок
+maestro lineage <chain_id>            # пройти по DAG предков
+maestro favourite <entity_id>         # добавить звезду сущности (--off чтобы убрать)
 ```
 
-Запустите `care <команда> --help` для полного списка флагов.
+Запустите `maestro <команда> --help` для полного списка флагов.
 
 ---
 
@@ -57,14 +57,14 @@ care favourite <entity_id>         # добавить звезду сущнос�
 Команды ниже позволяют смотреть версии и переключать каналы, ничего при этом не
 разрушая.
 
-### `care versions <entity_id>`
+### `maestro versions <entity_id>`
 
 Показывает историю версий сущности с пометками о том, какие каналы указывают на
 каждую версию (терминальный аналог `/versions` в TUI).
 
 ```bash
-care versions my-chain
-care versions my-agent --entity-type agent --limit 50 --json
+maestro versions my-chain
+maestro versions my-agent --entity-type agent --limit 50 --json
 ```
 
 | Флаг | По умолчанию | Назначение |
@@ -73,20 +73,20 @@ care versions my-agent --entity-type agent --limit 50 --json
 | `--limit N` | `20` | Сколько версий показать. |
 | `--json` | выкл. | Вывести список версий в JSON. |
 
-### `care rollback <entity_id> --to <version-id>`
+### `maestro rollback <entity_id> --to <version-id>`
 
 Переключает канал на конкретную версию. Это **неразрушающая привязка** (pin), а
 не откат: указатель канала перемещается, но история не удаляется. Аналог в TUI —
 `/rollback`.
 
 ```bash
-care rollback my-chain --to 7f3a9c1b2d4e            # привязать stable
-care rollback my-chain --to 7f3a9c1b2d4e --channel latest
+maestro rollback my-chain --to 7f3a9c1b2d4e            # привязать stable
+maestro rollback my-chain --to 7f3a9c1b2d4e --channel latest
 ```
 
 | Флаг | По умолчанию | Назначение |
 | --- | --- | --- |
-| `--to <version-id>` | — (**обязателен**) | Версия, к которой привязать канал (см. `care versions`). |
+| `--to <version-id>` | — (**обязателен**) | Версия, к которой привязать канал (см. `maestro versions`). |
 | `--channel C` | `stable` | Какой канал переключить. |
 | `--entity-type …` | `chain` | Тип сущности. |
 
@@ -95,7 +95,7 @@ care rollback my-chain --to 7f3a9c1b2d4e --channel latest
 статуса — флаг `--json` они не поддерживают.
 :::
 
-### `care promote <entity_id>`
+### `maestro promote <entity_id>`
 
 Копирует указатель одного канала в другой — по умолчанию `latest → stable`. Это
 прямое переключение канала. В TUI `/promote` добавляет сверху интерактивную
@@ -104,8 +104,8 @@ care rollback my-chain --to 7f3a9c1b2d4e --channel latest
 продвигайте осознанно.
 
 ```bash
-care promote my-chain                          # latest -> stable
-care promote my-chain --from latest --to canary
+maestro promote my-chain                          # latest -> stable
+maestro promote my-chain --from latest --to canary
 ```
 
 | Флаг | По умолчанию | Назначение |
@@ -114,15 +114,15 @@ care promote my-chain --from latest --to canary
 | `--to C` | `stable` | Канал-получатель. |
 | `--entity-type …` | `chain` | Тип сущности. |
 
-### `care forget <entity_id>`
+### `maestro forget <entity_id>`
 
 Мягко удаляет сохранённую сущность. Удаление **обратимо через корзину Memory**.
 Без `--force` команда лишь показывает, что будет удалено; чтобы удалить на самом
 деле, добавьте `--force`. Аналог в TUI — `/forget`.
 
 ```bash
-care forget my-chain               # только предпросмотр — ничего не удаляется
-care forget my-chain --force       # мягкое удаление (обратимо)
+maestro forget my-chain               # только предпросмотр — ничего не удаляется
+maestro forget my-chain --force       # мягкое удаление (обратимо)
 ```
 
 | Флаг | По умолчанию | Назначение |
@@ -138,13 +138,13 @@ care forget my-chain --force       # мягкое удаление (обрати
 сохраняет факты и предпочтения между запусками, отдельно от библиотеки сущностей
 выше.
 
-### `care remember <note>`
+### `maestro remember <note>`
 
 Сохраняет явную заметку в долговременную память. Заметка хранится **дословно** —
 LLM-слияние с дедупликацией есть только в TUI. Аналог в TUI — `/remember`.
 
 ```bash
-care remember "для финансовых цепочек предпочитать hybrid-поиск"
+maestro remember "для финансовых цепочек предпочитать hybrid-поиск"
 ```
 
 LTM должна быть включена, иначе команда завершится с кодом `2`:
@@ -159,15 +159,15 @@ export CARE_CONTEXT__LTM_ENABLED=true   # и установите extra `carl`
 её включить.
 :::
 
-### `care notes`
+### `maestro notes`
 
 Показывает сводку (digest) сохранённых заметок долговременной памяти
 (терминальный аналог команды `/memory` в TUI). Когда LTM выключена, печатает
 подсказку, а не завершается с ошибкой.
 
 ```bash
-care notes
-care notes --max-chars 500
+maestro notes
+maestro notes --max-chars 500
 ```
 
 | Флаг | По умолчанию | Назначение |
@@ -176,6 +176,6 @@ care notes --max-chars 500
 
 ## Смотрите также
 
-- [`care evolve`](/ru/care/cli/capabilities/) — порождает новые версии для продвижения.
-- [`care run`](/ru/care/cli/generate-run/) — записывает запуски, наполняющие `memory history`.
-- [TUI MAESTRO CARE](/ru/care/tui/overview/) — аналоги `/versions`, `/rollback`, `/promote`, `/forget`, `/remember` и `/memory`.
+- [`maestro evolve`](/ru/care/cli/capabilities/) — порождает новые версии для продвижения.
+- [`maestro run`](/ru/care/cli/generate-run/) — записывает запуски, наполняющие `memory history`.
+- [TUI](/ru/care/tui/overview/) — аналоги `/versions`, `/rollback`, `/promote`, `/forget`, `/remember` и `/memory`.
