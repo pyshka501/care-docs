@@ -396,6 +396,16 @@ document.addEventListener('astro:page-load', fixTitle);
 								items: [{ autogenerate: { directory: 'ideal/maestro' } }],
 							},
 							{
+								label: 'Console',
+								translations: { ru: 'Консоль' },
+								items: [{ autogenerate: { directory: 'ideal/console' } }],
+							},
+							{
+								label: 'Agent Connection',
+								translations: { ru: 'Подключение агента' },
+								items: [{ autogenerate: { directory: 'ideal/agent-connection' } }],
+							},
+							{
 								label: 'API & Operations',
 								translations: { ru: 'API и эксплуатация' },
 								items: [{ autogenerate: { directory: 'ideal/api' } }],
