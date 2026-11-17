@@ -1,6 +1,5 @@
 ---
 import { Image } from 'astro:assets';
-import icon from '../assets/airi-icon.png';
 import airi from '../assets/airi-logo.png';
 import airiWhite from '../assets/airi-logo-white.png';
 
@@ -9,13 +8,12 @@ const ru = locale === 'ru';
 ---
 
 <div class="brands">
-  <a class="maestro" href={`https://airi-maestro.github.io/maestro-page/?lang=${ru ? 'ru' : 'en'}`}>
-    <Image src={icon} alt="" width={64} loading="eager" />
-    <span translate="no">{siteTitle}</span>
-  </a>
   <a class="airi" href={ru ? 'https://airi.net/ru/' : 'https://airi.net/?force=en'} aria-label="AIRI">
     <Image src={airi} alt="" width={144} class="light" loading="eager" />
     <Image src={airiWhite} alt="" width={144} class="dark" loading="eager" />
+  </a>
+  <a class="maestro" href={`https://airi-maestro.github.io/maestro-page/?lang=${ru ? 'ru' : 'en'}`}>
+    <span translate="no">{siteTitle}</span>
   </a>
 </div>
 
@@ -23,15 +21,12 @@ const ru = locale === 'ru';
   .brands, .maestro, .airi { display: flex; align-items: center; }
   .brands { gap: clamp(0.4rem, 1.5vw, 1rem); }
   .maestro {
-    gap: 0.4rem;
     color: var(--sl-color-white);
     font-size: clamp(0.94rem, 2vw, 1.15rem);
     font-weight: 700;
     letter-spacing: -0.02em;
     text-decoration: none;
   }
-  .maestro img { width: clamp(24px, 4vw, 32px); height: auto; }
-  .airi { padding-inline-start: clamp(0.4rem, 1.5vw, 1rem); border-inline-start: 1px solid var(--sl-color-gray-5); }
   .airi img { width: clamp(44px, 8vw, 72px); height: auto; }
   .dark, :global([data-theme='dark']) .light { display: none; }
   :global([data-theme='dark']) .dark { display: block; }
