@@ -47,7 +47,10 @@ LLMReplanCheckerConfig(
 ```
 
 It also takes a custom `prompt_template`, `temperature`, `max_tokens`, and
-`parse_error_action` (what to do if the LLM's reply can't be parsed).
+`parse_error_action` (what to do if the LLM's reply can't be parsed; default
+`ReplanAction.FAIL`). Defaults: `history_entries=6`, `error_entries=4`,
+`retries=1`. The rule-based checker defaults to `RETRY_CURRENT_STEP` on a
+failed step and `REPLAN_FROM_CHECKPOINT` on a substring match.
 
 ## Registered checker
 

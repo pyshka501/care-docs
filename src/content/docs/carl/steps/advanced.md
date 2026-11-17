@@ -1,95 +1,76 @@
 ---
 title: Advanced Steps
-description: MCP, AgentSkills, multi-agent orchestration, tool discovery, evaluation, and human-in-the-loop steps.
+description: A map of the non-foundational step types — agents, runtime execution, time, MCP, skills, orchestration and evaluation — with links to their guides.
 sidebar:
   order: 10
 ---
 
-Beyond the [foundational steps](/carl/steps/overview/#foundational), CARL ships
-step types for MCP, skills, multi-agent orchestration, and more. Each gets a full
-guide in its own section; this page is the map with the essentials.
+Beyond the [foundational steps](/carl/steps/overview/#reasoning-and-data), CARL
+ships step types for agents, code and command execution, time, MCP, skills and
+multi-agent orchestration. Each has a full guide; this page is the map.
 
-## MCP — call tools on an MCP server
+## Agents and delegation
 
-`MCPStepDescription` + `MCPStepConfig`. Transports: `stdio`, `http`, `sse`.
+| Step | Class · config | What it does |
+| --- | --- | --- |
+| [Agent](/carl/steps/agent/) | `AgentStepDescription` · `AgentStepConfig` | A bounded ReAct loop over an explicit tool allowlist. One tool call per iteration; `finish` is the only successful exit. |
+| [Claude Code](/carl/steps/claude-code/) | `ClaudeCodeStepDescription` · `ClaudeCodeStepConfig` | Hands a subtask to a headless `claude` CLI agent with its own tools. |
+| [Codex](/carl/steps/codex/) | `CodexStepDescription` · `CodexStepConfig` | Hands a subtask to a local Codex agent (read-only or workspace-write sandbox). |
+| [Chain tools](/carl/steps/chain-tools/) | `ChainToolDefinition` (chain field, not a step) | Exposes a whole chain as an isolated, typed tool. |
+| [AgentSkill](/carl/skills/overview/) | `AgentSkillStepDescription` · `AgentSkillStepConfig` | Runs an AgentSkill folder (LLM / SCRIPT / HYBRID / SUBAGENT / LLM_AGENT modes). |
 
-```python
-from mmar_carl import MCPStepDescription
-from mmar_carl.models.config import MCPStepConfig, MCPServerConfig
+## Code and commands
 
-MCPStepDescription(
-    number=1,
-    title="Call MCP tool",
-    config=MCPStepConfig(
-        server=MCPServerConfig(server_name="my_server", command="python", args=["-m", "my_mcp_server"]),
-        tool_name="search",
-        argument_mapping={"query": "$history[-1]"},
-    ),
-)
-```
+| Step | Class · config | What it does |
+| --- | --- | --- |
+| [Code](/carl/steps/code/) | `CodeStepDescription` · `CodeStepConfig` | Runs one exact `def run(inputs)` Python source under a host `CodeExecutionPolicy` profile, with input and output schemas. |
+| [Command](/carl/steps/command/) | `CommandStepDescription` · `CommandStepConfig` | Runs one argv command through a runtime (`local`, `docker`, `e2b`, `firejail`) under a host `CommandPolicy`. |
+| [Command plan](/carl/steps/command-plan/) | `CommandPlanStepDescription` · `CommandPlanStepConfig` | An LLM picks typed arguments for a host-registered capability; a planned command step runs it after approval. |
+| [Shell session](/carl/steps/shell-session/) | `ShellSessionStepDescription` · `ShellSessionStepConfig` | Runs a static script in one shell process. |
 
-→ Full guide: [MCP overview](/carl/mcp/overview/).
+## Time and fan-out
 
-## MCP resource — read a resource into memory
+| Step | Class · config | What it does |
+| --- | --- | --- |
+| [Wait](/carl/steps/wait/) | `WaitStepDescription` · `WaitStepConfig` | Waits for a duration, an absolute time, a named event, or the first of several. |
+| [Map](/carl/steps/map/) | `MapStepDescription` · `MapStepConfig` | Calls one tool for every element of a JSON array, bounded and in order. |
 
-`MCPResourceStepDescription` + `MCPResourceStepConfig`. Fetches read-only data
-(files, docs, schemas) and writes it to memory + history.
+## MCP
 
-```python
-from mmar_carl import MCPResourceStepDescription
-from mmar_carl.models.config import MCPResourceStepConfig, MCPServerConfig
+| Step | Class · config | What it does |
+| --- | --- | --- |
+| [MCP](/carl/mcp/overview/) | `MCPStepDescription` · `MCPStepConfig` | Calls a tool on an MCP server (`stdio`, `http`, `sse`). |
+| [MCP resource](/carl/mcp/resources/) | `MCPResourceStepDescription` · `MCPResourceStepConfig` | Reads a named resource into memory and history. |
 
-MCPResourceStepDescription(
-    number=1,
-    title="Load API reference",
-    config=MCPResourceStepConfig(
-        server=MCPServerConfig(server_name="docs", transport="sse", url="http://docs/sse"),
-        resource_uri="docs://api/reference.md",
-        output_memory_key="api_docs",
-    ),
-)
-```
+## Orchestration
 
-## Agent handoff — delegate to a sub-chain
+| Step | Class · config | What it does |
+| --- | --- | --- |
+| [Handoff](/carl/orchestration/handoff/) | `AgentHandoffStepDescription` · `AgentHandoffStepConfig` | Runs a complete sub-chain and merges its result back. |
+| [Supervisor](/carl/orchestration/supervisor/) | `SupervisorStepDescription` · `SupervisorStepConfig` | An LLM routes the task to one of N sub-chains. |
+| [Debate](/carl/orchestration/debate/) | `DebateStepDescription` · `DebateStepConfig` | Round-robin roles, then a judge. |
+| [Parallel sampling](/carl/orchestration/parallel-sampling/) | `ParallelSamplingStepDescription` · `ParallelSamplingStepConfig` | N samples of one LLM step, then a vote or a judge. |
+| [Human input](/carl/orchestration/human-in-the-loop/) | `HumanInputStepDescription` · `HumanInputStepConfig` | Asks a person through a host provider; typed outcome (`answered` is the only success). |
 
-`AgentHandoffStepDescription` runs a complete sub-chain with an isolated context;
-inputs are resolved from parent memory/history and the result is merged back via
-`config.output_memory_key`.
+## Tools and quality
 
-```python
-from mmar_carl import AgentHandoffStepDescription
-from mmar_carl.models.config import AgentHandoffStepConfig
+| Step | Class · config | What it does |
+| --- | --- | --- |
+| [Tool discovery](/carl/steps/tool-discovery/) | `ToolDiscoveryStepDescription` · `ToolDiscoveryStepConfig` | Registers tools from a module, factory or dict during the run. |
+| Evaluation | `EvaluationStepDescription` · `EvaluationStepConfig` | Inline quality gate on another step's output (below). |
 
-AgentHandoffStepDescription(
-    number=3,
-    title="Delegate to research agent",
-    sub_chain=research_chain,
-    config=AgentHandoffStepConfig(
-        input_mapping={"input.topic": "$memory.input.topic"},
-        output_memory_key="research_result",
-    ),
-)
-```
+### Evaluation step
 
-The sub-chain's full `ReasoningResult` is available at
-`step_result.result_data["sub_result"]`.
+`EvaluationStepConfig` checks the output of `evaluates_step` against `criteria`
+and reacts with `on_fail`:
 
-## The rest at a glance
+| Field | Default | Purpose |
+| --- | --- | --- |
+| `evaluates_step` | required | Step number whose output is checked. |
+| `criteria` | required | Rule expressions (`simpleeval`) or, with `evaluation_method="llm"`, statements for an LLM judge. |
+| `evaluation_method` | `"rule"` | `"rule"` or `"llm"`. |
+| `on_fail` | `EvalFailAction.CONTINUE` | `CONTINUE`, `ABORT` or `RETRY_WITH_FEEDBACK`. |
+| `input_source` | `"$history[-1]"` | What is evaluated. |
+| `max_retries` | `1` | Retries for `RETRY_WITH_FEEDBACK`. |
 
-| Step | Class · config | What it does | Example |
-| --- | --- | --- | --- |
-| AgentSkill | `AgentSkillStepDescription` · `AgentSkillStepConfig` | Run an [AgentSkill](https://agentskills.io) folder (LLM / SCRIPT / HYBRID / SUBAGENT / LLM_AGENT modes; sandboxed). | [agent_skill_example.py](https://github.com/Glazkoff/carl-experiments/blob/main/examples/agents/agent_skill_example.py) |
-| Supervisor | `SupervisorStepDescription` · `SupervisorStepConfig` | LLM routes the task to one of N registered specialist sub-chains. | [supervisor_routing_example.py](https://github.com/Glazkoff/carl-experiments/blob/main/examples/agents/supervisor_routing_example.py) |
-| Debate | `DebateStepDescription` · `DebateStepConfig` | Round-robin role-based debate, then a judge synthesises. | — |
-| Parallel sampling | `ParallelSamplingStepDescription` · `ParallelSamplingStepConfig` | Sample N independent responses, then vote / LLM-judge the best. | [llm_council_example.py](https://github.com/Glazkoff/carl-experiments/blob/main/examples/agents/llm_council_example.py) |
-| Human input | `HumanInputStepDescription` · `HumanInputStepConfig` | Pause for human input (in-process callable or webhook). | [human_in_the_loop_example.py](https://github.com/Glazkoff/carl-experiments/blob/main/examples/agents/human_in_the_loop_example.py) |
-| Tool discovery | `ToolDiscoveryStepDescription` · `ToolDiscoveryStepConfig` | Discover + register tools at runtime from a module / callables / dict. | — |
-| Evaluation | `EvaluationStepDescription` · `EvaluationStepConfig` | Inline quality gate on a prior step's output; reacts via `on_fail` (continue / abort / retry-with-feedback). | — |
-
-:::note
-Each of these has a dedicated section with full guides:
-[Orchestration](/carl/orchestration/overview/) (supervisor / debate / parallel
-sampling / handoff / human-in-the-loop), [AgentSkills](/carl/skills/overview/),
-[MCP](/carl/mcp/overview/), and [Evaluation](/carl/evaluation/metrics/). This page
-is the at-a-glance map.
-:::
+See also [metrics](/carl/evaluation/metrics/) for step- and chain-level scoring.

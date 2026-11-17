@@ -1,15 +1,16 @@
 ---
 title: RunRecord
-description: Долговечная, воспроизводимая запись одного выполнения цепочки.
+description: Долговечная запись одного прогона цепочки, которую можно воспроизвести.
 sidebar:
   order: 3
 ---
 
-`RunRecord` собирает всё об одном выполнении — снимок цепочки, вход, (без потерь) результат
-и тайминги — в единую JSON-сериализуемую запись. Именно её MAESTRO хранит как историю прогонов
-и именно её читает обратно [`care replay`](/ru/care/cli/generate-run/).
+`RunRecord` собирает один прогон в объект, который сериализуется в JSON:
+снимок цепочки, вход, полный результат и время. Команда Maestro
+`maestro replay` читает такие файлы (см.
+[генерация и запуск](/ru/care/cli/generate-run/)).
 
-## Захват прогона
+## Записать прогон
 
 ```python
 from datetime import datetime, timezone
@@ -23,38 +24,50 @@ record = RunRecord.from_run(
     context=context,
     result=result,
     started_at=started,
-    chain_id="my-chain",        # optional
-    chain_version="v3",         # optional
+    chain_id="my-chain",        # необязательно
+    chain_version="v3",         # необязательно
 )
 ```
 
-`from_run` делает снимок `chain.to_dict()`, захватывает `outer_context` + память +
-метаданные контекста (отбрасывая внутренние для фреймворка ключи с префиксом `__`) и
-проставляет `finished_at = now()`, если вы не передали его.
+`from_run` сохраняет `chain.to_dict()`, берёт `outer_context`, память и
+метаданные контекста (без служебных ключей с префиксом `__`) и ставит
+`finished_at` на текущий момент, если его не передали.
 
 ## Поля
 
-| Поле | Значение |
+| Поле | Смысл |
 | --- | --- |
-| `chain_id` / `chain_version` | Идентичность выполненной цепочки (опционально). |
-| `chain_dict` | Полная сериализованная цепочка (долговечный снимок). |
-| `input` | `{outer_context, memory}`, с которых начался прогон. |
-| `result` | Результат `ReasoningResult` без потерь. |
-| `started_at` / `finished_at` | Временные метки. |
-| `runtime_info` | Версия библиотеки + информация об окружении. |
+| `chain_id` / `chain_version` | Идентичность цепочки (необязательно). |
+| `chain_dict` | Сериализованная цепочка. Ограничения те же, что у [JSON-сериализации](/ru/carl/serialization/json/#что-не-сериализуется). |
+| `input` | `outer_context`, `memory` и `context_metadata`, с которых начался прогон. |
+| `result` | `ReasoningResult` в полной форме. |
+| `started_at` / `finished_at` | Отметки времени. |
+| `runtime_info` | Версия библиотеки и сведения о среде. |
 
-## Сохранение и перезагрузка
+:::note
+В `input` нет `runtime_input`. Хост, который запускает цепочки со
+структурированным входом (как Maestro), должен сам хранить этот вход, если
+хочет перезапустить запись с теми же данными.
+:::
+
+## Сохранить и загрузить
 
 ```python
 record.save("runs/run-001.json")
 loaded = RunRecord.load("runs/run-001.json")
 
 d = record.to_dict();  RunRecord.from_dict(d)
+s = record.to_json();  RunRecord.from_json(s)
 ```
 
-Затем пройдите по нему с помощью [`care replay run-001.json`](/ru/care/cli/generate-run/).
+## В Maestro
 
-## Смотрите также
+Приложение хранит свои квитанции исполнения (хеши цепочки и входа,
+ограниченное превью шагов), а не файлы `RunRecord`. См.
+[Прогоны](/ru/care/app/runs/). `maestro replay` принимает и файл `RunRecord`,
+и просто `ReasoningResult`.
 
-- [Сериализация результата](/ru/carl/serialization/json/#result-serialization) — `ReasoningResult` внутри записи.
-- [Обзор интеграции с MAESTRO](/ru/carl/care-integration/overview/)
+## См. также
+
+- [Сериализация результатов](/ru/carl/serialization/json/#сериализация-результатов)
+- [Интеграция с Maestro](/ru/carl/care-integration/overview/)

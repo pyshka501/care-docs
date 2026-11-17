@@ -31,8 +31,9 @@ print(chain.to_mermaid_heatmap(result, metric="tokens"))  # "tokens" | "latency"
 ```
 
 :::note
-Mermaid renders `<br/>` (not `\n`) as a line break inside node labels — every
-CARL `to_mermaid_*` method already uses `<br/>`.
+Line breaks inside node labels differ: `to_mermaid_heatmap` uses `<br/>`,
+while `to_mermaid` and `to_mermaid_critical_path` write a literal `\n`.
+Some Mermaid renderers show `\n` as text.
 :::
 
 ## ChainVisualizer — compose many views
@@ -45,7 +46,10 @@ from mmar_carl import ChainVisualizer
 ChainVisualizer(result, chain=chain).token_pie().gantt().heatmap(metric="tokens").print()
 ```
 
-It also accepts `evolution_result=` to fold in evolution charts.
+Views: `token_pie`, `prompt_completion`, `profiling_table`, `gantt`, `dag`,
+`critical_path`, `heatmap`, `score_evolution`, `spend_vs_quality`. Finish with
+`print()` or `render()`; `view_titles` lists what is buffered and `clear()`
+empties it. Pass `evolution_result=` to use the evolution views.
 
 ## Jupyter
 
@@ -57,4 +61,4 @@ notebook cell and it renders a status banner + tables + Mermaid, no `print()`.
 
 - [Tracing & observability](/carl/tracing/overview/)
 - [Cost estimation](/carl/tracing/cost/)
-- [The chain DAG in MAESTRO CARE](/care/tui/dag/) — the TUI renders this same DAG live as a coloured box-and-arrow graph, with an [ASCII glyph mode](/care/tui/dag/) for plain terminals.
+- [The chain DAG in the TUI](/care/tui/dag/) — the same DAG rendered live in the terminal.

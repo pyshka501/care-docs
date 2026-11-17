@@ -34,12 +34,26 @@ context = ReasoningContext(
 Программно:
 
 ```python
-context.ltm_retrieve("preferred_tone")              # exact-key lookup (None if absent)
-context.recall("past decisions about pricing", top_k=5)  # similarity search
+context.ltm_retrieve("preferred_tone")   # поиск по точному ключу (None, если нет)
+context.recall("pricing", top_k=5)       # поиск, см. ниже
 ```
 
-`LTMBase` определяет `store`, `retrieve`, `delete`, `search` и `clear` — все
-с областью видимости сессии через ключевое слово `session_id` (по умолчанию `session_id` контекста).
+`LTMBase` определяет `store`, `retrieve`, `delete`, `keys`, `search` и
+`clear`. Все они работают в области `session_id`. Два контекста с одним
+`session_id` делят одну область LTM.
+
+`search()` / `recall()` во встроенных хранилищах это **поиск подстроки**.
+Запись подходит, если её значение в JSON содержит запрос (оценка `1.0`) или
+содержит его без учёта регистра (оценка `0.5`). Это не семантический поиск.
+Чтобы подключить векторное хранилище, переопределите `search()` в своём
+подклассе `LTMBase`.
+
+```python
+ctx = ReasoningContext(outer_context="...", api=client,
+                       long_term_memory=InMemoryLTM(), session_id="u1")
+ctx.long_term_memory.store("tone", "formal", session_id="u1")
+ctx.recall("FORM")   # [{"key": "tone", "value": "formal", "score": 0.5}]
+```
 
 :::note
 `recall()` вызывает исключение, если не настроена `long_term_memory`; `ltm_retrieve()` просто

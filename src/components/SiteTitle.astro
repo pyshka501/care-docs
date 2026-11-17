@@ -1,0 +1,35 @@
+---
+import { Image } from 'astro:assets';
+import airi from '../assets/airi-logo.png';
+import airiWhite from '../assets/airi-logo-white.png';
+
+const { locale, siteTitle } = Astro.locals.starlightRoute;
+const ru = locale === 'ru';
+---
+
+<div class="brands">
+  <a class="airi" href={ru ? 'https://airi.net/ru/' : 'https://airi.net/?force=en'} aria-label="AIRI">
+    <Image src={airi} alt="" width={192} class="light" loading="eager" />
+    <Image src={airiWhite} alt="" width={192} class="dark" loading="eager" />
+  </a>
+  <a class="maestro" href={`https://airi-maestro.github.io/maestro-page/?lang=${ru ? 'ru' : 'en'}`}>
+    <span translate="no">{siteTitle}</span>
+  </a>
+</div>
+
+<style>
+  .brands, .maestro, .airi { display: flex; align-items: center; }
+  .brands { gap: clamp(0.4rem, 1.5vw, 1rem); }
+  .maestro {
+    color: var(--sl-color-white);
+    font-size: 1.15rem;
+    line-height: 1.1em;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+  }
+  :global([data-theme='light']) .maestro { color: #2a2520; }
+  .airi img { width: clamp(64px, 11vw, 96px); height: auto; }
+  .dark, :global([data-theme='dark']) .light { display: none; }
+  :global([data-theme='dark']) .dark { display: block; }
+</style>

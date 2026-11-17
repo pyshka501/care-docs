@@ -63,6 +63,7 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'MAESTRO',
+			components: { SiteTitle: './src/components/SiteTitle.astro' },
 			favicon: '/favicon.png',
 			customCss: ['./src/styles/custom.css'],
 			// Client-side Mermaid rendering (build-safe; renders `<pre class="mermaid">`).
@@ -119,23 +120,12 @@ const render = () => {
   const vars = dark
     ? { primaryColor: '#1f3b37', primaryBorderColor: '#33d9b2', primaryTextColor: '#e6f7f4', lineColor: '#9cebdd', secondaryColor: '#252b35', tertiaryColor: '#1f242c' }
     : { primaryColor: '#e8f5f1', primaryBorderColor: '#2a7d6f', primaryTextColor: '#13242e', lineColor: '#6b5f52', secondaryColor: '#f4ebe0', tertiaryColor: '#ffffff' };
-  mermaid.initialize({ startOnLoad: false, theme: 'base', themeVariables: vars, securityLevel: 'loose', fontFamily: 'Manrope, sans-serif' });
+  mermaid.initialize({ startOnLoad: false, theme: 'base', themeVariables: vars, securityLevel: 'loose', fontFamily: 'Inter Variable, sans-serif' });
   const nodes = document.querySelectorAll('pre.mermaid:not([data-processed])');
   if (nodes.length) mermaid.run({ nodes }).catch(() => {});
 };
 render();
 document.addEventListener('astro:page-load', render);
-`,
-				},
-				{
-					// Brand wordmark (top-left "MAESTRO CARE") links to the marketing landing site.
-					tag: 'script',
-					attrs: { type: 'module' },
-					content: `
-const LANDING = 'https://airi-maestro.github.io/maestro-page/';
-const fixTitle = () => document.querySelectorAll('a.site-title').forEach((a) => a.setAttribute('href', LANDING));
-fixTitle();
-document.addEventListener('astro:page-load', fixTitle);
 `,
 				},
 				{
@@ -174,6 +164,11 @@ document.addEventListener('astro:page-load', fixTitle);
 								items: [{ autogenerate: { directory: 'care/getting-started' } }],
 							},
 							{
+								label: 'Desktop App',
+								translations: { ru: 'Приложение' },
+								items: [{ autogenerate: { directory: 'care/app' } }],
+							},
+							{
 								label: 'Concepts',
 								translations: { ru: 'Концепции' },
 								items: [{ autogenerate: { directory: 'care/concepts' } }],
@@ -182,6 +177,11 @@ document.addEventListener('astro:page-load', fixTitle);
 								label: 'Workflows',
 								translations: { ru: 'Сценарии работы' },
 								items: [{ autogenerate: { directory: 'care/workflows' } }],
+							},
+							{
+								label: 'Autobench',
+								translations: { ru: 'Автобенч' },
+								items: [{ autogenerate: { directory: 'care/autobench' } }],
 							},
 							{
 								label: 'Configuration',
@@ -211,6 +211,11 @@ document.addEventListener('astro:page-load', fixTitle);
 								label: 'Capabilities',
 								translations: { ru: 'Возможности' },
 								items: [{ autogenerate: { directory: 'care/capabilities' } }],
+							},
+							{
+								label: 'Solvers',
+								translations: { ru: 'Решатели' },
+								items: [{ autogenerate: { directory: 'care/solvers' } }],
 							},
 							{
 								label: 'Examples',
@@ -328,6 +333,70 @@ document.addEventListener('astro:page-load', fixTitle);
 								label: 'Reference',
 								translations: { ru: 'Справочник' },
 								items: [{ autogenerate: { directory: 'carl/reference' } }],
+							},
+						],
+					},
+					{
+						label: 'MAGE',
+						link: '/mage/getting-started/overview/',
+						icon: 'rocket',
+						items: [
+							{
+								label: 'Getting Started',
+								translations: { ru: 'Начало работы' },
+								items: [{ autogenerate: { directory: 'mage/getting-started' } }],
+							},
+							{
+								label: 'Concepts',
+								translations: { ru: 'Концепции' },
+								items: [{ autogenerate: { directory: 'mage/concepts' } }],
+							},
+							{
+								label: 'Integration',
+								translations: { ru: 'Интеграция' },
+								items: [{ autogenerate: { directory: 'mage/integration' } }],
+							},
+							{
+								label: 'Reference',
+								translations: { ru: 'Справочник' },
+								items: [{ autogenerate: { directory: 'mage/reference' } }],
+							},
+						],
+					},
+					{
+						label: 'IdeaL',
+						link: '/ideal/getting-started/overview/',
+						icon: 'star',
+						items: [
+							{
+								label: 'Getting Started',
+								translations: { ru: 'Начало работы' },
+								items: [{ autogenerate: { directory: 'ideal/getting-started' } }],
+							},
+							{
+								label: 'Concepts',
+								translations: { ru: 'Концепции' },
+								items: [{ autogenerate: { directory: 'ideal/concepts' } }],
+							},
+							{
+								label: 'In Maestro',
+								translations: { ru: 'В Maestro' },
+								items: [{ autogenerate: { directory: 'ideal/maestro' } }],
+							},
+							{
+								label: 'Console',
+								translations: { ru: 'Консоль' },
+								items: [{ autogenerate: { directory: 'ideal/console' } }],
+							},
+							{
+								label: 'Agent Connection',
+								translations: { ru: 'Подключение агента' },
+								items: [{ autogenerate: { directory: 'ideal/agent-connection' } }],
+							},
+							{
+								label: 'API & Operations',
+								translations: { ru: 'API и эксплуатация' },
+								items: [{ autogenerate: { directory: 'ideal/api' } }],
 							},
 						],
 					},

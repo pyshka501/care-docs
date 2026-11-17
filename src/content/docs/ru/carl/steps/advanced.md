@@ -1,95 +1,77 @@
 ---
 title: Расширенные шаги
-description: MCP, AgentSkills, многоагентная оркестрация, обнаружение инструментов, оценка и шаги с участием человека.
+description: Карта небазовых типов шагов (агенты, выполнение в рантайме, время, MCP, навыки, оркестрация и оценка) со ссылками на их руководства.
 sidebar:
   order: 10
 ---
 
-Помимо [базовых шагов](/ru/carl/steps/overview/#базовые), CARL поставляет
-типы шагов для MCP, навыков, многоагентной оркестрации и многого другого. Каждый
-получает полное руководство в своём разделе; эта страница — карта с основной информацией.
+Помимо [базовых шагов](/ru/carl/steps/overview/#рассуждение-и-данные), в CARL есть
+типы шагов для агентов, выполнения кода и команд, времени, MCP, навыков и
+многоагентной оркестрации. У каждого есть полное руководство. Эта страница служит
+картой.
 
-## MCP — вызов инструментов на MCP-сервере
+## Агенты и делегирование
 
-`MCPStepDescription` + `MCPStepConfig`. Транспорты: `stdio`, `http`, `sse`.
+| Шаг | Класс · конфиг | Что делает |
+| --- | --- | --- |
+| [Agent](/ru/carl/steps/agent/) | `AgentStepDescription` · `AgentStepConfig` | Ограниченный цикл ReAct по явному списку разрешённых инструментов. Один вызов инструмента за итерацию. `finish` единственный успешный выход. |
+| [Claude Code](/ru/carl/steps/claude-code/) | `ClaudeCodeStepDescription` · `ClaudeCodeStepConfig` | Передаёт подзадачу headless-агенту `claude` CLI с собственными инструментами. |
+| [Codex](/ru/carl/steps/codex/) | `CodexStepDescription` · `CodexStepConfig` | Передаёт подзадачу локальному агенту Codex (песочница read-only или workspace-write). |
+| [Цепочки как инструменты](/ru/carl/steps/chain-tools/) | `ChainToolDefinition` (поле цепочки, не шаг) | Открывает целую цепочку как изолированный типизированный инструмент. |
+| [AgentSkill](/ru/carl/skills/overview/) | `AgentSkillStepDescription` · `AgentSkillStepConfig` | Запускает папку AgentSkill (режимы LLM / SCRIPT / HYBRID / SUBAGENT / LLM_AGENT). |
 
-```python
-from mmar_carl import MCPStepDescription
-from mmar_carl.models.config import MCPStepConfig, MCPServerConfig
+## Код и команды
 
-MCPStepDescription(
-    number=1,
-    title="Call MCP tool",
-    config=MCPStepConfig(
-        server=MCPServerConfig(server_name="my_server", command="python", args=["-m", "my_mcp_server"]),
-        tool_name="search",
-        argument_mapping={"query": "$history[-1]"},
-    ),
-)
-```
+| Шаг | Класс · конфиг | Что делает |
+| --- | --- | --- |
+| [Code](/ru/carl/steps/code/) | `CodeStepDescription` · `CodeStepConfig` | Выполняет один точный исходник Python с `def run(inputs)` под профилем `CodeExecutionPolicy` хоста, со схемами входа и выхода. |
+| [Command](/ru/carl/steps/command/) | `CommandStepDescription` · `CommandStepConfig` | Запускает одну argv-команду через рантайм (`local`, `docker`, `e2b`, `firejail`) под `CommandPolicy` хоста. |
+| [Command plan](/ru/carl/steps/command-plan/) | `CommandPlanStepDescription` · `CommandPlanStepConfig` | LLM выбирает типизированные аргументы для возможности, зарегистрированной хостом. Запланированный command-шаг выполняет её после одобрения. |
+| [Shell session](/ru/carl/steps/shell-session/) | `ShellSessionStepDescription` · `ShellSessionStepConfig` | Выполняет статический скрипт в одном процессе shell. |
 
-→ Полное руководство: [Обзор MCP](/ru/carl/mcp/overview/).
+## Время и fan-out
 
-## MCP-ресурс — чтение ресурса в память
+| Шаг | Класс · конфиг | Что делает |
+| --- | --- | --- |
+| [Wait](/ru/carl/steps/wait/) | `WaitStepDescription` · `WaitStepConfig` | Ждёт заданное время, абсолютный момент, именованное событие или первое из нескольких. |
+| [Map](/ru/carl/steps/map/) | `MapStepDescription` · `MapStepConfig` | Вызывает один инструмент для каждого элемента JSON-массива, с ограничением и по порядку. |
 
-`MCPResourceStepDescription` + `MCPResourceStepConfig`. Получает данные только для чтения
-(файлы, документацию, схемы) и записывает их в память и историю.
+## MCP
 
-```python
-from mmar_carl import MCPResourceStepDescription
-from mmar_carl.models.config import MCPResourceStepConfig, MCPServerConfig
+| Шаг | Класс · конфиг | Что делает |
+| --- | --- | --- |
+| [MCP](/ru/carl/mcp/overview/) | `MCPStepDescription` · `MCPStepConfig` | Вызывает инструмент на MCP-сервере (`stdio`, `http`, `sse`). |
+| [MCP-ресурс](/ru/carl/mcp/resources/) | `MCPResourceStepDescription` · `MCPResourceStepConfig` | Читает именованный ресурс в память и историю. |
 
-MCPResourceStepDescription(
-    number=1,
-    title="Load API reference",
-    config=MCPResourceStepConfig(
-        server=MCPServerConfig(server_name="docs", transport="sse", url="http://docs/sse"),
-        resource_uri="docs://api/reference.md",
-        output_memory_key="api_docs",
-    ),
-)
-```
+## Оркестрация
 
-## Передача управления агенту — делегирование под-цепочке
+| Шаг | Класс · конфиг | Что делает |
+| --- | --- | --- |
+| [Handoff](/ru/carl/orchestration/handoff/) | `AgentHandoffStepDescription` · `AgentHandoffStepConfig` | Запускает полную подцепочку и вливает её результат обратно. |
+| [Supervisor](/ru/carl/orchestration/supervisor/) | `SupervisorStepDescription` · `SupervisorStepConfig` | LLM направляет задачу в одну из N подцепочек. |
+| [Дебаты](/ru/carl/orchestration/debate/) | `DebateStepDescription` · `DebateStepConfig` | Роли выступают по кругу, затем судья. |
+| [Параллельный сэмплинг](/ru/carl/orchestration/parallel-sampling/) | `ParallelSamplingStepDescription` · `ParallelSamplingStepConfig` | N сэмплов одного LLM-шага, затем голосование или судья. |
+| [Ввод человека](/ru/carl/orchestration/human-in-the-loop/) | `HumanInputStepDescription` · `HumanInputStepConfig` | Спрашивает человека через провайдер хоста. Исход типизирован (`answered` единственный успешный). |
 
-`AgentHandoffStepDescription` запускает полную под-цепочку с изолированным контекстом;
-входные данные разрешаются из памяти/истории родителя, результат объединяется обратно через
-`config.output_memory_key`.
+## Инструменты и качество
 
-```python
-from mmar_carl import AgentHandoffStepDescription
-from mmar_carl.models.config import AgentHandoffStepConfig
+| Шаг | Класс · конфиг | Что делает |
+| --- | --- | --- |
+| [Обнаружение инструментов](/ru/carl/steps/tool-discovery/) | `ToolDiscoveryStepDescription` · `ToolDiscoveryStepConfig` | Регистрирует инструменты из модуля, фабрики или словаря во время запуска. |
+| Evaluation | `EvaluationStepDescription` · `EvaluationStepConfig` | Встроенная проверка качества результата другого шага (ниже). |
 
-AgentHandoffStepDescription(
-    number=3,
-    title="Delegate to research agent",
-    sub_chain=research_chain,
-    config=AgentHandoffStepConfig(
-        input_mapping={"input.topic": "$memory.input.topic"},
-        output_memory_key="research_result",
-    ),
-)
-```
+### Evaluation-шаг
 
-Полный `ReasoningResult` под-цепочки доступен по адресу
-`step_result.result_data["sub_result"]`.
+`EvaluationStepConfig` проверяет результат шага `evaluates_step` по `criteria` и
+реагирует согласно `on_fail`:
 
-## Остальные — кратко
+| Поле | По умолчанию | Назначение |
+| --- | --- | --- |
+| `evaluates_step` | обязательное | Номер шага, результат которого проверяется. |
+| `criteria` | обязательное | Правила-выражения (`simpleeval`) или, при `evaluation_method="llm"`, утверждения для LLM-судьи. |
+| `evaluation_method` | `"rule"` | `"rule"` или `"llm"`. |
+| `on_fail` | `EvalFailAction.CONTINUE` | `CONTINUE`, `ABORT` или `RETRY_WITH_FEEDBACK`. |
+| `input_source` | `"$history[-1]"` | Что именно оценивается. |
+| `max_retries` | `1` | Число повторов для `RETRY_WITH_FEEDBACK`. |
 
-| Шаг | Класс · конфиг | Что делает | Пример |
-| --- | --- | --- | --- |
-| AgentSkill | `AgentSkillStepDescription` · `AgentSkillStepConfig` | Запускает папку [AgentSkill](https://agentskills.io) (режимы LLM / SCRIPT / HYBRID / SUBAGENT / LLM_AGENT; в изолированной среде). | [agent_skill_example.py](https://github.com/Glazkoff/carl-experiments/blob/main/examples/agents/agent_skill_example.py) |
-| Supervisor | `SupervisorStepDescription` · `SupervisorStepConfig` | LLM маршрутизирует задачу в одну из N зарегистрированных специализированных под-цепочек. | [supervisor_routing_example.py](https://github.com/Glazkoff/carl-experiments/blob/main/examples/agents/supervisor_routing_example.py) |
-| Debate | `DebateStepDescription` · `DebateStepConfig` | Ролевая дискуссия по кругу, затем судья синтезирует. | — |
-| Параллельное семплирование | `ParallelSamplingStepDescription` · `ParallelSamplingStepConfig` | Семплирует N независимых ответов, затем голосует / LLM-судья выбирает лучший. | [llm_council_example.py](https://github.com/Glazkoff/carl-experiments/blob/main/examples/agents/llm_council_example.py) |
-| Ввод от человека | `HumanInputStepDescription` · `HumanInputStepConfig` | Пауза для ввода от человека (внутрипроцессный вызываемый объект или вебхук). | [human_in_the_loop_example.py](https://github.com/Glazkoff/carl-experiments/blob/main/examples/agents/human_in_the_loop_example.py) |
-| Обнаружение инструментов | `ToolDiscoveryStepDescription` · `ToolDiscoveryStepConfig` | Обнаруживает и регистрирует инструменты во время выполнения из модуля / вызываемых объектов / словаря. | — |
-| Оценка | `EvaluationStepDescription` · `EvaluationStepConfig` | Встроенный контроль качества вывода предыдущего шага; реагирует через `on_fail` (continue / abort / retry-with-feedback). | — |
-
-:::note
-У каждого из них есть отдельный раздел с полными руководствами:
-[Оркестрация](/ru/carl/orchestration/overview/) (supervisor / debate / parallel
-sampling / handoff / human-in-the-loop), [AgentSkills](/ru/carl/skills/overview/),
-[MCP](/ru/carl/mcp/overview/) и [Оценка](/ru/carl/evaluation/metrics/). Эта
-страница — карта с основной информацией.
-:::
+См. также [метрики](/ru/carl/evaluation/metrics/) для оценки на уровне шага и цепочки.
