@@ -65,6 +65,7 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'MAESTRO',
+			components: { SiteTitle: './src/components/SiteTitle.astro' },
 			favicon: '/favicon.png',
 			customCss: ['./src/styles/custom.css'],
 			// Client-side Mermaid rendering (build-safe; renders `<pre class="mermaid">`).
@@ -127,17 +128,6 @@ const render = () => {
 };
 render();
 document.addEventListener('astro:page-load', render);
-`,
-				},
-				{
-					// Brand wordmark (top-left "MAESTRO CARE") links to the marketing landing site.
-					tag: 'script',
-					attrs: { type: 'module' },
-					content: `
-const LANDING = 'https://airi-maestro.github.io/care-page/';
-const fixTitle = () => document.querySelectorAll('a.site-title').forEach((a) => a.setAttribute('href', LANDING));
-fixTitle();
-document.addEventListener('astro:page-load', fixTitle);
 `,
 				},
 				{
