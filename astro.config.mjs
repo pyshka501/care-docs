@@ -122,7 +122,7 @@ const render = () => {
   const vars = dark
     ? { primaryColor: '#1f3b37', primaryBorderColor: '#33d9b2', primaryTextColor: '#e6f7f4', lineColor: '#9cebdd', secondaryColor: '#252b35', tertiaryColor: '#1f242c' }
     : { primaryColor: '#e8f5f1', primaryBorderColor: '#2a7d6f', primaryTextColor: '#13242e', lineColor: '#6b5f52', secondaryColor: '#f4ebe0', tertiaryColor: '#ffffff' };
-  mermaid.initialize({ startOnLoad: false, theme: 'base', themeVariables: vars, securityLevel: 'loose', fontFamily: 'Manrope, sans-serif' });
+  mermaid.initialize({ startOnLoad: false, theme: 'base', themeVariables: vars, securityLevel: 'loose', fontFamily: 'Inter Variable, sans-serif' });
   const nodes = document.querySelectorAll('pre.mermaid:not([data-processed])');
   if (nodes.length) mermaid.run({ nodes }).catch(() => {});
 };
