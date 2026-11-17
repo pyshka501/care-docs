@@ -7,8 +7,8 @@ hero:
   image:
     file: ../../../assets/evoc-mascot-square.webp
   actions:
-    - text: Начать
-      link: care/getting-started/overview/
+    - text: Установить MAESTRO UI
+      link: '#установка-maestro-ui'
       variant: primary
     - text: CARL 0.5.2
       link: carl/getting-started/overview/
@@ -20,9 +20,35 @@ hero:
 
 import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
-:::note[Что описывает документация]
-**CARL 0.5.2** выпущен на PyPI ([журнал изменений](carl/reference/changelog/)). **Maestro**, **MAGE 0.2.0** и **Автобенч** описаны по текущей линии разработки; на страницах отмечено, чего ещё нет в выпущенной сборке ([журнал MAGE](mage/reference/changelog/), [заметки Maestro 0.5.0](care/reference/release-0-5-0/)).
-:::
+## Установка MAESTRO UI
+
+Проверьте [релизы MAESTRO UI](https://github.com/AIRI-MAESTRO/maestro-ui/releases). Если для вашей системы опубликована сборка, скачайте и распакуйте архив. На macOS перенесите `Maestro.app` в «Программы» и откройте его.
+
+<details>
+<summary>Запуск из исходников</summary>
+
+Понадобятся Git, Python 3.12 или 3.13, [uv](https://docs.astral.sh/uv/), Node.js и pnpm. Команды установят приложение, соберут среду выполнения агента и откроют окно MAESTRO UI.
+
+```bash
+git clone https://github.com/AIRI-MAESTRO/maestro-ui.git
+cd maestro-ui
+uv sync --extra desktop
+git clone https://github.com/deepseek-ai/deepseek-harness ../deepseek-harness
+git -C ../deepseek-harness checkout dd6322d604e00eec1ba5e0c8541159906a21094a
+pnpm -C ../deepseek-harness install --frozen-lockfile
+pnpm -C ../deepseek-harness run build
+uv run maestro app --dsh-source ../deepseek-harness
+```
+
+</details>
+
+## Первый агент
+
+1. Выберите папку проекта. В **Настройки → Модель чата** укажите провайдера, введите его API-ключ и выберите модель.
+2. В новой сессии опишите задачу и приведите пример: «Собери агента, который извлекает сумму и валюту из чека. Для строки „Итого 450 ₽“ ожидаю сумму 450 и валюту RUB».
+3. Ответьте на уточнения и подтвердите сборку. Затем попросите запустить агента на другом чеке и проверьте результат в чате.
+
+[Подробнее о работе в приложении](care/getting-started/quick-start/)
 
 ## С чего начать
 

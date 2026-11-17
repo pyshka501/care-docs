@@ -7,8 +7,8 @@ hero:
   image:
     file: ../../assets/evoc-mascot-square.webp
   actions:
-    - text: Get started
-      link: care/getting-started/overview/
+    - text: Install MAESTRO UI
+      link: '#install-maestro-ui'
       variant: primary
     - text: CARL 0.5.2
       link: carl/getting-started/overview/
@@ -20,9 +20,35 @@ hero:
 
 import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
-:::note[What these docs cover]
-**CARL 0.5.2** is released on PyPI ([changelog](carl/reference/changelog/)). **Maestro**, **MAGE 0.2.0** and **Autobench** are described as in the current development line; pages mark what is not in a released build yet ([MAGE changelog](mage/reference/changelog/), [Maestro 0.5.0 notes](care/reference/release-0-5-0/)).
-:::
+## Install MAESTRO UI
+
+Check the [MAESTRO UI releases](https://github.com/AIRI-MAESTRO/maestro-ui/releases) for a build for your system. If one is available, download and extract the archive. On macOS, move `Maestro.app` to Applications and open it.
+
+<details>
+<summary>Run from source</summary>
+
+Install Git, Python 3.12 or 3.13, [uv](https://docs.astral.sh/uv/), Node.js and pnpm. The commands below install the app, build the agent runtime and open the MAESTRO UI window.
+
+```bash
+git clone https://github.com/AIRI-MAESTRO/maestro-ui.git
+cd maestro-ui
+uv sync --extra desktop
+git clone https://github.com/deepseek-ai/deepseek-harness ../deepseek-harness
+git -C ../deepseek-harness checkout dd6322d604e00eec1ba5e0c8541159906a21094a
+pnpm -C ../deepseek-harness install --frozen-lockfile
+pnpm -C ../deepseek-harness run build
+uv run maestro app --dsh-source ../deepseek-harness
+```
+
+</details>
+
+## Build your first agent
+
+1. Choose a project folder. In **Settings → Chat model**, select a provider, enter its API key and choose a model.
+2. Start a session and give the agent a task and an example: “Build an agent that extracts the total and currency from a receipt. For ‘Total: $4.50 USD’, I expect an amount of 4.50 and a currency of USD.”
+3. Answer any follow-up questions and confirm the build. Ask the agent to run on a different receipt and check the result in the chat.
+
+[More about using the app](care/getting-started/quick-start/)
 
 ## Choose your path
 

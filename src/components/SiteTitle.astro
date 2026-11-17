@@ -9,8 +9,8 @@ const ru = locale === 'ru';
 
 <div class="brands">
   <a class="airi" href={ru ? 'https://airi.net/ru/' : 'https://airi.net/?force=en'} aria-label="AIRI">
-    <Image src={airi} alt="" width={144} class="light" loading="eager" />
-    <Image src={airiWhite} alt="" width={144} class="dark" loading="eager" />
+    <Image src={airi} alt="" width={192} class="light" loading="eager" />
+    <Image src={airiWhite} alt="" width={192} class="dark" loading="eager" />
   </a>
   <a class="maestro" href={`https://airi-maestro.github.io/maestro-page/?lang=${ru ? 'ru' : 'en'}`}>
     <span translate="no">{siteTitle}</span>
@@ -29,7 +29,7 @@ const ru = locale === 'ru';
     text-decoration: none;
   }
   :global([data-theme='light']) .maestro { color: #2a2520; }
-  .airi img { width: clamp(44px, 8vw, 72px); height: auto; }
+  .airi img { width: clamp(64px, 11vw, 96px); height: auto; }
   .dark, :global([data-theme='dark']) .light { display: none; }
   :global([data-theme='dark']) .dark { display: block; }
 </style>
